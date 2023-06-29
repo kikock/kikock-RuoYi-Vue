@@ -1,7 +1,7 @@
 # 项目相关配置
 ruoyi:
   # 名称
-  name: jxkj
+  name: ssosrasb
   # 版本
   version: 3.8.1
   # 版权年份
@@ -22,7 +22,7 @@ server:
   port: 8080
   servlet:
     # 应用的访问路径
-    context-path: /jxsp-service
+    context-path: /ssosrasb-service
   tomcat:
     # tomcat的URI编码
     uri-encoding: UTF-8
