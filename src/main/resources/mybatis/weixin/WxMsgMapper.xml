@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.weixin.mapper.WxMsgMapper">
+    
+    <resultMap type="WxMsg" id="WxMsgResult">
+        <result property="id"    column="id"    />
+        <result property="createId"    column="create_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateId"    column="update_id"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="appName"    column="app_name"    />
+        <result property="appLogo"    column="app_logo"    />
+        <result property="wxUserId"    column="wx_user_id"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="headimgUrl"    column="headimg_url"    />
+        <result property="type"    column="type"    />
+        <result property="repType"    column="rep_type"    />
+        <result property="repEvent"    column="rep_event"    />
+        <result property="repContent"    column="rep_content"    />
+        <result property="repMediaId"    column="rep_media_id"    />
+        <result property="repName"    column="rep_name"    />
+        <result property="repDesc"    column="rep_desc"    />
+        <result property="repUrl"    column="rep_url"    />
+        <result property="repHqUrl"    column="rep_hq_url"    />
+        <result property="content"    column="content"    />
+        <result property="repThumbMediaId"    column="rep_thumb_media_id"    />
+        <result property="repThumbUrl"    column="rep_thumb_url"    />
+        <result property="repLocationX"    column="rep_location_x"    />
+        <result property="repLocationY"    column="rep_location_y"    />
+        <result property="repScale"    column="rep_scale"    />
+        <result property="readFlag"    column="read_flag"    />
+    </resultMap>
+
+    <sql id="selectWxMsgVo">
+        select id, create_id, create_time, update_id, update_time, remark, del_flag, app_name, app_logo, wx_user_id, nick_name, headimg_url, type, rep_type, rep_event, rep_content, rep_media_id, rep_name, rep_desc, rep_url, rep_hq_url, content, rep_thumb_media_id, rep_thumb_url, rep_location_x, rep_location_y, rep_scale, read_flag from wx_msg
+    </sql>
+
+    <select id="selectWxMsgList" parameterType="WxMsg" resultMap="WxMsgResult">
+        <include refid="selectWxMsgVo"/>
+        <where>  
+            <if test="createId != null  and createId != ''"> and create_id = #{createId}</if>
+            <if test="updateId != null  and updateId != ''"> and update_id = #{updateId}</if>
+            <if test="appName != null  and appName != ''"> and app_name like concat('%', #{appName}, '%')</if>
+            <if test="appLogo != null  and appLogo != ''"> and app_logo = #{appLogo}</if>
+            <if test="wxUserId != null  and wxUserId != ''"> and wx_user_id = #{wxUserId}</if>
+            <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="headimgUrl != null  and headimgUrl != ''"> and headimg_url = #{headimgUrl}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="repType != null  and repType != ''"> and rep_type = #{repType}</if>
+            <if test="repEvent != null  and repEvent != ''"> and rep_event = #{repEvent}</if>
+            <if test="repContent != null  and repContent != ''"> and rep_content = #{repContent}</if>
+            <if test="repMediaId != null  and repMediaId != ''"> and rep_media_id = #{repMediaId}</if>
+            <if test="repName != null  and repName != ''"> and rep_name like concat('%', #{repName}, '%')</if>
+            <if test="repDesc != null  and repDesc != ''"> and rep_desc = #{repDesc}</if>
+            <if test="repUrl != null  and repUrl != ''"> and rep_url = #{repUrl}</if>
+            <if test="repHqUrl != null  and repHqUrl != ''"> and rep_hq_url = #{repHqUrl}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="repThumbMediaId != null  and repThumbMediaId != ''"> and rep_thumb_media_id = #{repThumbMediaId}</if>
+            <if test="repThumbUrl != null  and repThumbUrl != ''"> and rep_thumb_url = #{repThumbUrl}</if>
+            <if test="repLocationX != null "> and rep_location_x = #{repLocationX}</if>
+            <if test="repLocationY != null "> and rep_location_y = #{repLocationY}</if>
+            <if test="repScale != null "> and rep_scale = #{repScale}</if>
+            <if test="readFlag != null  and readFlag != ''"> and read_flag = #{readFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectWxMsgById" parameterType="String" resultMap="WxMsgResult">
+        <include refid="selectWxMsgVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertWxMsg" parameterType="WxMsg">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select  replace(uuid(),'-','')
+        </selectKey>
+        insert into wx_msg
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="createId != null">create_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateId != null">update_id,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="appName != null">app_name,</if>
+            <if test="appLogo != null">app_logo,</if>
+            <if test="wxUserId != null and wxUserId != ''">wx_user_id,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="headimgUrl != null">headimg_url,</if>
+            <if test="type != null">type,</if>
+            <if test="repType != null">rep_type,</if>
+            <if test="repEvent != null">rep_event,</if>
+            <if test="repContent != null">rep_content,</if>
+            <if test="repMediaId != null">rep_media_id,</if>
+            <if test="repName != null">rep_name,</if>
+            <if test="repDesc != null">rep_desc,</if>
+            <if test="repUrl != null">rep_url,</if>
+            <if test="repHqUrl != null">rep_hq_url,</if>
+            <if test="content != null">content,</if>
+            <if test="repThumbMediaId != null">rep_thumb_media_id,</if>
+            <if test="repThumbUrl != null">rep_thumb_url,</if>
+            <if test="repLocationX != null">rep_location_x,</if>
+            <if test="repLocationY != null">rep_location_y,</if>
+            <if test="repScale != null">rep_scale,</if>
+            <if test="readFlag != null">read_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="createId != null">#{createId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateId != null">#{updateId},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="appName != null">#{appName},</if>
+            <if test="appLogo != null">#{appLogo},</if>
+            <if test="wxUserId != null and wxUserId != ''">#{wxUserId},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="headimgUrl != null">#{headimgUrl},</if>
+            <if test="type != null">#{type},</if>
+            <if test="repType != null">#{repType},</if>
+            <if test="repEvent != null">#{repEvent},</if>
+            <if test="repContent != null">#{repContent},</if>
+            <if test="repMediaId != null">#{repMediaId},</if>
+            <if test="repName != null">#{repName},</if>
+            <if test="repDesc != null">#{repDesc},</if>
+            <if test="repUrl != null">#{repUrl},</if>
+            <if test="repHqUrl != null">#{repHqUrl},</if>
+            <if test="content != null">#{content},</if>
+            <if test="repThumbMediaId != null">#{repThumbMediaId},</if>
+            <if test="repThumbUrl != null">#{repThumbUrl},</if>
+            <if test="repLocationX != null">#{repLocationX},</if>
+            <if test="repLocationY != null">#{repLocationY},</if>
+            <if test="repScale != null">#{repScale},</if>
+            <if test="readFlag != null">#{readFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateWxMsg" parameterType="WxMsg">
+        update wx_msg
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="createId != null">create_id = #{createId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateId != null">update_id = #{updateId},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="appName != null">app_name = #{appName},</if>
+            <if test="appLogo != null">app_logo = #{appLogo},</if>
+            <if test="wxUserId != null and wxUserId != ''">wx_user_id = #{wxUserId},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="headimgUrl != null">headimg_url = #{headimgUrl},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="repType != null">rep_type = #{repType},</if>
+            <if test="repEvent != null">rep_event = #{repEvent},</if>
+            <if test="repContent != null">rep_content = #{repContent},</if>
+            <if test="repMediaId != null">rep_media_id = #{repMediaId},</if>
+            <if test="repName != null">rep_name = #{repName},</if>
+            <if test="repDesc != null">rep_desc = #{repDesc},</if>
+            <if test="repUrl != null">rep_url = #{repUrl},</if>
+            <if test="repHqUrl != null">rep_hq_url = #{repHqUrl},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="repThumbMediaId != null">rep_thumb_media_id = #{repThumbMediaId},</if>
+            <if test="repThumbUrl != null">rep_thumb_url = #{repThumbUrl},</if>
+            <if test="repLocationX != null">rep_location_x = #{repLocationX},</if>
+            <if test="repLocationY != null">rep_location_y = #{repLocationY},</if>
+            <if test="repScale != null">rep_scale = #{repScale},</if>
+            <if test="readFlag != null">read_flag = #{readFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteWxMsgById" parameterType="String">
+        delete from wx_msg where id = #{id}
+    </delete>
+
+    <delete id="deleteWxMsgByIds" parameterType="String">
+        delete from wx_msg where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

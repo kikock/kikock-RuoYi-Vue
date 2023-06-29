@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.visitor.mapper.VisitorHealthMapper">
+
+    <resultMap type="VisitorHealth" id="VisitorHealthResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="wxId"    column="wx_id"    />
+        <result property="wxType"    column="wx_type"    />
+        <result property="userName"    column="user_name"    />
+        <result property="userPhone"    column="user_phone"    />
+        <result property="userIdCard"    column="user_id_card"    />
+        <result property="healthUrl"    column="health_url"    />
+        <result property="monitorUrl"    column="monitor_url"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectVisitorHealthVo">
+        select id, user_id, wx_id, wx_type, user_name, user_phone, user_id_card, health_url, monitor_url, create_time from visitor_health
+    </sql>
+
+    <select id="selectVisitorHealthList" parameterType="VisitorHealth" resultMap="VisitorHealthResult">
+        <include refid="selectVisitorHealthVo"/>
+        <where>
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="wxId != null  and wxId != ''"> and wx_id = #{wxId}</if>
+            <if test="wxType != null  and wxType != ''"> and wx_type = #{wxType}</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+            <if test="userPhone != null  and userPhone != ''"> and user_phone = #{userPhone}</if>
+            <if test="userIdCard != null  and userIdCard != ''"> and user_id_card = #{userIdCard}</if>
+            <if test="healthUrl != null  and healthUrl != ''"> and health_url = #{healthUrl}</if>
+            <if test="monitorUrl != null  and monitorUrl != ''"> and monitor_url = #{monitorUrl}</if>
+        </where>
+    </select>
+
+    <select id="selectVisitorHealthById" parameterType="String" resultMap="VisitorHealthResult">
+        <include refid="selectVisitorHealthVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertVisitorHealth" parameterType="VisitorHealth">
+        insert into visitor_health
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="wxId != null and wxId != ''">wx_id,</if>
+            <if test="wxType != null">wx_type,</if>
+            <if test="userName != null">user_name,</if>
+            <if test="userPhone != null">user_phone,</if>
+            <if test="userIdCard != null">user_id_card,</if>
+            <if test="healthUrl != null">health_url,</if>
+            <if test="monitorUrl != null">monitor_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="wxId != null and wxId != ''">#{wxId},</if>
+            <if test="wxType != null">#{wxType},</if>
+            <if test="userName != null">#{userName},</if>
+            <if test="userPhone != null">#{userPhone},</if>
+            <if test="userIdCard != null">#{userIdCard},</if>
+            <if test="healthUrl != null">#{healthUrl},</if>
+            <if test="monitorUrl != null">#{monitorUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVisitorHealth" parameterType="VisitorHealth">
+        update visitor_health
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="wxId != null and wxId != ''">wx_id = #{wxId},</if>
+            <if test="wxType != null">wx_type = #{wxType},</if>
+            <if test="userName != null">user_name = #{userName},</if>
+            <if test="userPhone != null">user_phone = #{userPhone},</if>
+            <if test="userIdCard != null">user_id_card = #{userIdCard},</if>
+            <if test="healthUrl != null">health_url = #{healthUrl},</if>
+            <if test="monitorUrl != null">monitor_url = #{monitorUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteVisitorHealthById" parameterType="String">
+        delete from visitor_health where id = #{id}
+    </delete>
+
+    <delete id="deleteVisitorHealthByIds" parameterType="String">
+        delete from visitor_health where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="getVisitorHealthList" parameterType="String" resultMap="VisitorHealthResult">
+        <include refid="selectVisitorHealthVo"/>
+        <where>
+            <if test="wxId != null  and wxId != ''">  and wx_id = #{wxId}</if>
+        <if test="createTime != null and createTime != ''"> and  date_format(create_time, '%Y-%m-%d') = #{createTime} </if>
+        <if test="createTime == null"> and create_time > DATE_ADD(NOW(),INTERVAL -7 DAY) </if>
+        </where>
+        ORDER BY
+        create_time DESC
+    </select>
+
+
+
+</mapper>

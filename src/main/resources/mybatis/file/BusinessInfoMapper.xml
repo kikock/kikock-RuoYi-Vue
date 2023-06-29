@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.file.mapper.BusinessInfoMapper">
+    
+    <resultMap type="BusinessInfo" id="BusinessInfoResult">
+        <result property="id"    column="id"    />
+        <result property="entityIdIndex"    column="entity_id_index"    />
+        <result property="documentId"    column="document_id"    />
+    </resultMap>
+
+    <sql id="selectBusinessInfoVo">
+        select id, entity_id_index, document_id from business_info
+    </sql>
+
+    <select id="selectBusinessInfoList" parameterType="BusinessInfo" resultMap="BusinessInfoResult">
+        <include refid="selectBusinessInfoVo"/>
+        <where>  
+            <if test="entityIdIndex != null  and entityIdIndex != ''"> and entity_id_index = #{entityIdIndex}</if>
+            <if test="documentId != null  and documentId != ''"> and document_id = #{documentId}</if>
+        </where>
+    </select>
+    
+    <select id="selectBusinessInfoById" parameterType="String" resultMap="BusinessInfoResult">
+        <include refid="selectBusinessInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBusinessInfo" parameterType="BusinessInfo">
+        <selectKey keyProperty="id" resultType="String" order="BEFORE">
+            select  replace(uuid(),'-','')
+        </selectKey>
+        insert into business_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="entityIdIndex != null">entity_id_index,</if>
+            <if test="documentId != null">document_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="entityIdIndex != null">#{entityIdIndex},</if>
+            <if test="documentId != null">#{documentId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBusinessInfo" parameterType="BusinessInfo">
+        update business_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="entityIdIndex != null">entity_id_index = #{entityIdIndex},</if>
+            <if test="documentId != null">document_id = #{documentId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBusinessInfoById" parameterType="String">
+        delete from business_info where id = #{id}
+    </delete>
+
+    <delete id="deleteBusinessInfoByIds" parameterType="String">
+        delete from business_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--根据业务实体Id查询-->
+    <select id="selectBusinessInfoByIndex" parameterType="String" resultMap="BusinessInfoResult">
+        <include refid="selectBusinessInfoVo"/>
+        where entity_id_index = #{entityIdIndex}
+    </select>
+
+    <!--批量插入-->
+    <insert id="batchBusinessInfo">
+        insert into business_info(id, entity_id_index, document_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.id},#{item.entityIdIndex},#{item.documentId})
+        </foreach>
+    </insert>
+
+    <!--根据文档ids删除-->
+    <delete id="deleteBusinessInfoByDocIds" parameterType="String">
+        delete from business_info where document_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>
