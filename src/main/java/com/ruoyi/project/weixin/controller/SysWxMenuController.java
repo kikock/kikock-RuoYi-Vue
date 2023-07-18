@@ -4,9 +4,11 @@ import java.util.List;
 import java.util.Objects;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONObject;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.project.weixin.config.WxMpProperties;
+import com.ruoyi.project.weixin.domain.SysWxMenu;
+import com.ruoyi.project.weixin.service.ISysWxMenuService;
 import com.ruoyi.project.weixin.utils.JsonUtils;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.bean.menu.WxMenuButton;
@@ -24,18 +26,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.project.weixin.domain.SysWxMenu;
-import com.ruoyi.project.weixin.service.ISysWxMenuService;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.page.TableDataInfo;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 /**
  * 自定义菜单Controller
- * 
+ *
  * @author ruoyi
  * @date 2022-04-14
  */

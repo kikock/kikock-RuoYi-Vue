@@ -2,27 +2,27 @@ package com.ruoyi.project.weixin.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.project.weixin.domain.WxMsg;
+import com.ruoyi.project.weixin.mapper.WxMsgMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.project.weixin.mapper.WxMsgMapper;
-import com.ruoyi.project.weixin.domain.WxMsg;
 import com.ruoyi.project.weixin.service.IWxMsgService;
 
 /**
  * 微信消息Service业务层处理
- * 
+ *
  * @author ruoyi
  * @date 2022-04-20
  */
 @Service
-public class WxMsgServiceImpl implements IWxMsgService 
+public class WxMsgServiceImpl implements IWxMsgService
 {
     @Autowired
     private WxMsgMapper wxMsgMapper;
 
     /**
      * 查询微信消息
-     * 
+     *
      * @param id 微信消息主键
      * @return 微信消息
      */
@@ -34,7 +34,7 @@ public class WxMsgServiceImpl implements IWxMsgService
 
     /**
      * 查询微信消息列表
-     * 
+     *
      * @param wxMsg 微信消息
      * @return 微信消息
      */
@@ -46,7 +46,7 @@ public class WxMsgServiceImpl implements IWxMsgService
 
     /**
      * 新增微信消息
-     * 
+     *
      * @param wxMsg 微信消息
      * @return 结果
      */
@@ -59,7 +59,7 @@ public class WxMsgServiceImpl implements IWxMsgService
 
     /**
      * 修改微信消息
-     * 
+     *
      * @param wxMsg 微信消息
      * @return 结果
      */
@@ -72,7 +72,7 @@ public class WxMsgServiceImpl implements IWxMsgService
 
     /**
      * 批量删除微信消息
-     * 
+     *
      * @param ids 需要删除的微信消息主键
      * @return 结果
      */
@@ -84,7 +84,7 @@ public class WxMsgServiceImpl implements IWxMsgService
 
     /**
      * 删除微信消息信息
-     * 
+     *
      * @param id 微信消息主键
      * @return 结果
      */

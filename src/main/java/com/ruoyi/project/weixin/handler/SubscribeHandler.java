@@ -1,10 +1,10 @@
 package com.ruoyi.project.weixin.handler;
 
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.project.system.domain.SysUser;
-import com.ruoyi.project.system.mapper.SysUserMapper;
 import com.ruoyi.project.weixin.builder.TextBuilder;
 import com.ruoyi.project.weixin.domain.SysWxUser;
+import com.ruoyi.project.system.domain.SysUser;
+import com.ruoyi.project.system.mapper.SysUserMapper;
 import com.ruoyi.project.weixin.service.ISysWxUserService;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
@@ -138,9 +138,9 @@ public class SubscribeHandler extends AbstractHandler {
      * @param sysWxUser 微信用户对象
      */
     private void registerUser(SysWxUser sysWxUser) {
-        int unique = userMapper.checkUserNameUnique(sysWxUser.getOpenId());
-        if (unique == 0) {
-            SysUser sysUser = new SysUser();
+        SysUser sysUser = userMapper.checkUserNameUnique(sysWxUser.getOpenId());
+        if (Objects.isNull(sysUser)) {
+             sysUser = new SysUser();
             sysUser.setUserName(sysWxUser.getOpenId());
             sysUser.setNickName(sysWxUser.getOpenId());
             sysUser.setPassword(SecurityUtils.encryptPassword(passWord));

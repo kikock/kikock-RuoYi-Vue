@@ -1,12 +1,13 @@
 package com.ruoyi.framework.aspectj.lang.annotation;
 
+import com.ruoyi.framework.aspectj.lang.enums.DataSourceType;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import com.ruoyi.framework.aspectj.lang.enums.DataSourceType;
 
 /**
  * 自定义多数据源切换注解

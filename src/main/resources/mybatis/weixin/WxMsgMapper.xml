@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.project.weixin.mapper.WxMsgMapper">
-    
+
     <resultMap type="WxMsg" id="WxMsgResult">
         <result property="id"    column="id"    />
         <result property="createId"    column="create_id"    />
@@ -36,12 +36,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectWxMsgVo">
-        select id, create_id, create_time, update_id, update_time, remark, del_flag, app_name, app_logo, wx_user_id, nick_name, headimg_url, type, rep_type, rep_event, rep_content, rep_media_id, rep_name, rep_desc, rep_url, rep_hq_url, content, rep_thumb_media_id, rep_thumb_url, rep_location_x, rep_location_y, rep_scale, read_flag from wx_msg
+        select id, create_id, create_time, update_id, update_time, remark, del_flag, app_name, app_logo, wx_user_id, nick_name, headimg_url, type, rep_type, rep_event, rep_content, rep_media_id, rep_name, rep_desc, rep_url, rep_hq_url, content, rep_thumb_media_id, rep_thumb_url, rep_location_x, rep_location_y, rep_scale, read_flag from sys_wx_msg
     </sql>
 
     <select id="selectWxMsgList" parameterType="WxMsg" resultMap="WxMsgResult">
         <include refid="selectWxMsgVo"/>
-        <where>  
+        <where>
             <if test="createId != null  and createId != ''"> and create_id = #{createId}</if>
             <if test="updateId != null  and updateId != ''"> and update_id = #{updateId}</if>
             <if test="appName != null  and appName != ''"> and app_name like concat('%', #{appName}, '%')</if>
@@ -67,17 +67,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="readFlag != null  and readFlag != ''"> and read_flag = #{readFlag}</if>
         </where>
     </select>
-    
+
     <select id="selectWxMsgById" parameterType="String" resultMap="WxMsgResult">
         <include refid="selectWxMsgVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertWxMsg" parameterType="WxMsg">
         <selectKey keyProperty="id" resultType="String" order="BEFORE">
             select  replace(uuid(),'-','')
         </selectKey>
-        insert into wx_msg
+        insert into sys_wx_msg
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="createId != null">create_id,</if>
@@ -141,7 +141,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
     <update id="updateWxMsg" parameterType="WxMsg">
-        update wx_msg
+        update sys_wx_msg
         <trim prefix="SET" suffixOverrides=",">
             <if test="createId != null">create_id = #{createId},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
@@ -175,11 +175,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteWxMsgById" parameterType="String">
-        delete from wx_msg where id = #{id}
+        delete from sys_wx_msg where id = #{id}
     </delete>
 
     <delete id="deleteWxMsgByIds" parameterType="String">
-        delete from wx_msg where id in 
+        delete from sys_wx_msg where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

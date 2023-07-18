@@ -4,19 +4,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.ruoyi</groupId>
-    <artifactId>jxsp-service</artifactId>
-    <version>3.8.1</version>
-    <!--<packaging>jar</packaging>-->
-    <packaging>war</packaging>
+    <artifactId>ssosrasb-service</artifactId>
+    <version>3.8.6</version>
+    <packaging>jar</packaging>
 
-    <name>ruoyi</name>
+    <name>ssosrasb-service</name>
     <url>http://www.ruoyi.vip</url>
     <description>若依管理系统</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.5.10</version>
+        <version>2.5.15</version>
         <relativePath />
     </parent>
 
@@ -25,25 +24,19 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
         <maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-        <mybatis.spring.boot.starter.version>2.2.2</mybatis.spring.boot.starter.version>
-        <pagehelper.spring.boot.starter.version>1.4.1</pagehelper.spring.boot.starter.version>
-        <fastjson.version>1.2.79</fastjson.version>
-        <druid.version>1.2.8</druid.version>
+        <pagehelper.spring.boot.starter.version>1.4.6</pagehelper.spring.boot.starter.version>
+        <fastjson.version>2.0.34</fastjson.version>
+        <druid.version>1.2.16</druid.version>
         <commons.io.version>2.11.0</commons.io.version>
-        <commons.fileupload.version>1.4</commons.fileupload.version>
         <commons.collections.version>3.2.2</commons.collections.version>
         <bitwalker.version>1.21</bitwalker.version>
         <jwt.version>0.9.1</jwt.version>
-        <kaptcha.version>2.3.2</kaptcha.version>
+        <kaptcha.version>2.3.3</kaptcha.version>
         <swagger.version>3.0.0</swagger.version>
         <poi.version>4.1.2</poi.version>
-        <oshi.version>6.1.2</oshi.version>
-        <jna.version>5.10.0</jna.version>
+        <oshi.version>6.4.3</oshi.version>
         <velocity.version>2.3</velocity.version>
         <weixin-java-mp.version>3.5.0</weixin-java-mp.version>
-        <transmittable-thread-local.version>2.11.4</transmittable-thread-local.version>
-        <flowable.version>6.7.2</flowable.version>
-        <ruoyi.version>3.4.0</ruoyi.version>
         <weixin-java-miniapp.version>3.5.0</weixin-java-miniapp.version>
     </properties>
 
@@ -53,13 +46,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <!-- 移除tomcat模块 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                    <groupId>org.springframework.boot</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- SpringBoot 测试 -->
@@ -113,13 +99,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- SpringBoot集成mybatis框架 -->
-        <dependency>
-            <groupId>org.mybatis.spring.boot</groupId>
-            <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>${mybatis.spring.boot.starter.version}</version>
-        </dependency>
-
         <!-- pagehelper 分页插件 -->
         <dependency>
             <groupId>com.github.pagehelper</groupId>
@@ -153,13 +132,6 @@
             <version>${commons.io.version}</version>
         </dependency>
 
-        <!-- 文件上传工具类 -->
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>${commons.fileupload.version}</version>
-        </dependency>
-
         <!-- 解析客户端操作系统、浏览器等 -->
         <dependency>
             <groupId>eu.bitwalker</groupId>
@@ -169,8 +141,8 @@
 
         <!-- 阿里JSON解析器 -->
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
+            <groupId>com.alibaba.fastjson2</groupId>
+            <artifactId>fastjson2</artifactId>
             <version>${fastjson.version}</version>
         </dependency>
 
@@ -255,76 +227,21 @@
 
         <!-- 验证码 -->
         <dependency>
-            <groupId>com.github.penggle</groupId>
+            <groupId>pro.fessional</groupId>
             <artifactId>kaptcha</artifactId>
             <version>${kaptcha.version}</version>
             <exclusions>
                 <exclusion>
-                    <artifactId>javax.servlet-api</artifactId>
+                    <artifactId>servlet-api</artifactId>
                     <groupId>javax.servlet</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <dependency>
-            <groupId>org.flowable</groupId>
-            <artifactId>flowable-engine</artifactId>
-            <version>${flowable.version}</version>
-            <scope>compile</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.4.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.flowable</groupId>
-            <artifactId>flowable-spring-boot-starter-basic</artifactId>
-            <version>${flowable.version}</version>
-            <exclusions><!-- 需要排除flowable的mybatis依赖，不然会跟mybatis-plus冲突 -->
-                <exclusion>
-                    <groupId>org.mybatis</groupId>
-                    <artifactId>mybatis</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <!-- el 表达式-->
-        <dependency>
-            <groupId>com.googlecode.aviator</groupId>
-            <artifactId>aviator</artifactId>
-            <version>5.3.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-
-        <!-- 微信SDK -->
         <!-- 微信公众号 Java SDK 教程地址: https://github.com/wechat-group/WxJava/wiki -->
         <dependency>
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-mp</artifactId>
             <version>${weixin-java-mp.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <!--单元测试-->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <!--线程-->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>transmittable-thread-local</artifactId>
-            <version>${transmittable-thread-local.version}</version>
         </dependency>
         <!--微信小程序-->
         <dependency>
@@ -332,44 +249,49 @@
             <artifactId>weixin-java-miniapp</artifactId>
             <version>${weixin-java-miniapp.version}</version>
         </dependency>
-	</dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
 
-	<build>
-	    <finalName>${project.artifactId}</finalName>
-	    <plugins>
-	        <plugin>
-	            <groupId>org.springframework.boot</groupId>
-	            <artifactId>spring-boot-maven-plugin</artifactId>
-	            <configuration>
-	                <fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
-	            </configuration>
-	        </plugin>
-	    </plugins>
-	</build>
+    </dependencies>
 
-	<repositories>
-	    <repository>
-	        <id>public</id>
-	        <name>aliyun nexus</name>
-	        <url>https://maven.aliyun.com/repository/public</url>
-	        <releases>
-	            <enabled>true</enabled>
-	        </releases>
-	    </repository>
-	</repositories>
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork> <!-- 如果没有该配置，devtools不会生效 -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
-	<pluginRepositories>
-	    <pluginRepository>
-	        <id>public</id>
-	        <name>aliyun nexus</name>
-	        <url>https://maven.aliyun.com/repository/public</url>
-	        <releases>
-	            <enabled>true</enabled>
-	        </releases>
-	        <snapshots>
-	            <enabled>false</enabled>
-	        </snapshots>
-	    </pluginRepository>
-	</pluginRepositories>
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 </project>

@@ -8,28 +8,28 @@ import java.util.stream.Collectors;
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.framework.web.domain.TreeSelect;
+import com.ruoyi.project.weixin.domain.SysWxMenu;
+import com.ruoyi.project.weixin.mapper.SysWxMenuMapper;
+import com.ruoyi.project.weixin.service.ISysWxMenuService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.project.weixin.mapper.SysWxMenuMapper;
-import com.ruoyi.project.weixin.domain.SysWxMenu;
-import com.ruoyi.project.weixin.service.ISysWxMenuService;
 
 /**
  * 自定义菜单Service业务层处理
- * 
+ *
  * @author ruoyi
  * @date 2022-04-14
  */
 @Service
-public class SysWxMenuServiceImpl implements ISysWxMenuService 
+public class SysWxMenuServiceImpl implements ISysWxMenuService
 {
     @Autowired
     private SysWxMenuMapper sysWxMenuMapper;
 
     /**
      * 查询自定义菜单
-     * 
+     *
      * @param id 自定义菜单主键
      * @return 自定义菜单
      */
@@ -41,7 +41,7 @@ public class SysWxMenuServiceImpl implements ISysWxMenuService
 
     /**
      * 查询自定义菜单列表
-     * 
+     *
      * @param sysWxMenu 自定义菜单
      * @return 自定义菜单
      */
@@ -53,7 +53,7 @@ public class SysWxMenuServiceImpl implements ISysWxMenuService
 
     /**
      * 新增自定义菜单
-     * 
+     *
      * @param sysWxMenu 自定义菜单
      * @return 结果
      */
@@ -69,7 +69,7 @@ public class SysWxMenuServiceImpl implements ISysWxMenuService
 
     /**
      * 修改自定义菜单
-     * 
+     *
      * @param sysWxMenu 自定义菜单
      * @return 结果
      */
@@ -82,7 +82,7 @@ public class SysWxMenuServiceImpl implements ISysWxMenuService
 
     /**
      * 批量删除自定义菜单
-     * 
+     *
      * @param ids 需要删除的自定义菜单主键
      * @return 结果
      */
@@ -94,7 +94,7 @@ public class SysWxMenuServiceImpl implements ISysWxMenuService
 
     /**
      * 删除自定义菜单信息
-     * 
+     *
      * @param id 自定义菜单主键
      * @return 结果
      */
@@ -112,8 +112,9 @@ public class SysWxMenuServiceImpl implements ISysWxMenuService
      */
     @Override
     public List<TreeSelect> buildMenuTreeSelect(List<SysWxMenu> menus) {
-        List<SysWxMenu> sysWxMenus = buildMenuTree(menus);
-        return sysWxMenus.stream().map(TreeSelect::new).collect(Collectors.toList());
+        // List<SysWxMenu> sysWxMenus = buildMenuTree(menus);
+        // return sysWxMenus.stream().map(TreeSelect::new).collect(Collectors.toList());
+        return null;
     }
 
     /**

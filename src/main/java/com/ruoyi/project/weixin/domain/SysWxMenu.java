@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * 自定义菜单对象 sys_wx_menu
- * 
+ *
  * @author ruoyi
  * @date 2022-04-14
  */
@@ -100,174 +100,174 @@ public class SysWxMenu extends BaseEntity
      */
     private String isOauth;
 
-    public void setId(String id) 
+    public void setId(String id)
     {
         this.id = id;
     }
 
-    public String getId() 
+    public String getId()
     {
         return id;
     }
-    public void setDelFlag(String delFlag) 
+    public void setDelFlag(String delFlag)
     {
         this.delFlag = delFlag;
     }
 
-    public String getDelFlag() 
+    public String getDelFlag()
     {
         return delFlag;
     }
-    public void setSort(Long sort) 
+    public void setSort(Long sort)
     {
         this.sort = sort;
     }
 
-    public Long getSort() 
+    public Long getSort()
     {
         return sort;
     }
-    public void setParentId(String parentId) 
+    public void setParentId(String parentId)
     {
         this.parentId = parentId;
     }
 
-    public String getParentId() 
+    public String getParentId()
     {
         return parentId;
     }
-    public void setType(String type) 
+    public void setType(String type)
     {
         this.type = type;
     }
 
-    public String getType() 
+    public String getType()
     {
         return type;
     }
-    public void setName(String name) 
+    public void setName(String name)
     {
         this.name = name;
     }
 
-    public String getName() 
+    public String getName()
     {
         return name;
     }
-    public void setUrl(String url) 
+    public void setUrl(String url)
     {
         this.url = url;
     }
 
-    public String getUrl() 
+    public String getUrl()
     {
         return url;
     }
-    public void setMaAppId(String maAppId) 
+    public void setMaAppId(String maAppId)
     {
         this.maAppId = maAppId;
     }
 
-    public String getMaAppId() 
+    public String getMaAppId()
     {
         return maAppId;
     }
-    public void setMaPagePath(String maPagePath) 
+    public void setMaPagePath(String maPagePath)
     {
         this.maPagePath = maPagePath;
     }
 
-    public String getMaPagePath() 
+    public String getMaPagePath()
     {
         return maPagePath;
     }
-    public void setRepType(String repType) 
+    public void setRepType(String repType)
     {
         this.repType = repType;
     }
 
-    public String getRepType() 
+    public String getRepType()
     {
         return repType;
     }
-    public void setRepContent(String repContent) 
+    public void setRepContent(String repContent)
     {
         this.repContent = repContent;
     }
 
-    public String getRepContent() 
+    public String getRepContent()
     {
         return repContent;
     }
-    public void setRepMediaId(String repMediaId) 
+    public void setRepMediaId(String repMediaId)
     {
         this.repMediaId = repMediaId;
     }
 
-    public String getRepMediaId() 
+    public String getRepMediaId()
     {
         return repMediaId;
     }
-    public void setRepName(String repName) 
+    public void setRepName(String repName)
     {
         this.repName = repName;
     }
 
-    public String getRepName() 
+    public String getRepName()
     {
         return repName;
     }
-    public void setRepDesc(String repDesc) 
+    public void setRepDesc(String repDesc)
     {
         this.repDesc = repDesc;
     }
 
-    public String getRepDesc() 
+    public String getRepDesc()
     {
         return repDesc;
     }
-    public void setRepUrl(String repUrl) 
+    public void setRepUrl(String repUrl)
     {
         this.repUrl = repUrl;
     }
 
-    public String getRepUrl() 
+    public String getRepUrl()
     {
         return repUrl;
     }
-    public void setRepHqUrl(String repHqUrl) 
+    public void setRepHqUrl(String repHqUrl)
     {
         this.repHqUrl = repHqUrl;
     }
 
-    public String getRepHqUrl() 
+    public String getRepHqUrl()
     {
         return repHqUrl;
     }
-    public void setRepThumbMediaId(String repThumbMediaId) 
+    public void setRepThumbMediaId(String repThumbMediaId)
     {
         this.repThumbMediaId = repThumbMediaId;
     }
 
-    public String getRepThumbMediaId() 
+    public String getRepThumbMediaId()
     {
         return repThumbMediaId;
     }
-    public void setRepThumbUrl(String repThumbUrl) 
+    public void setRepThumbUrl(String repThumbUrl)
     {
         this.repThumbUrl = repThumbUrl;
     }
 
-    public String getRepThumbUrl() 
+    public String getRepThumbUrl()
     {
         return repThumbUrl;
     }
-    public void setContent(String content) 
+    public void setContent(String content)
     {
         this.content = content;
     }
 
-    public String getContent() 
+    public String getContent()
     {
         return content;
     }

@@ -2,6 +2,9 @@ package com.ruoyi.project.weixin.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.project.weixin.domain.SysWxUser;
+import com.ruoyi.project.weixin.service.ISysWxUserService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,8 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.framework.aspectj.lang.annotation.Log;
 import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.project.weixin.domain.SysWxUser;
-import com.ruoyi.project.weixin.service.ISysWxUserService;
 import com.ruoyi.framework.web.controller.BaseController;
 import com.ruoyi.framework.web.domain.AjaxResult;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -25,7 +26,7 @@ import io.swagger.annotations.ApiOperation;
 
 /**
  * 微信用户Controller
- * 
+ *
  * @author ruoyi
  * @date 2022-04-18
  */

@@ -1,10 +1,10 @@
 package com.ruoyi.project.system.controller;
 
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.config.RuoYiConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.common.utils.StringUtils;
-import com.ruoyi.framework.config.RuoYiConfig;
 
 /**
  * 首页

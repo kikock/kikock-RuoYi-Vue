@@ -1,11 +1,11 @@
 package com.ruoyi.framework.task;
 
-import org.springframework.stereotype.Component;
 import com.ruoyi.common.utils.StringUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * 定时任务调度测试
- * 
+ *
  * @author ruoyi
  */
 @Component("ryTask")

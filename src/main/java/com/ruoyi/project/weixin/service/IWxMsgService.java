@@ -1,19 +1,20 @@
 package com.ruoyi.project.weixin.service;
 
 import java.util.List;
+
 import com.ruoyi.project.weixin.domain.WxMsg;
 
 /**
  * 微信消息Service接口
- * 
+ *
  * @author ruoyi
  * @date 2022-04-20
  */
-public interface IWxMsgService 
+public interface IWxMsgService
 {
     /**
      * 查询微信消息
-     * 
+     *
      * @param id 微信消息主键
      * @return 微信消息
      */
@@ -21,7 +22,7 @@ public interface IWxMsgService
 
     /**
      * 查询微信消息列表
-     * 
+     *
      * @param wxMsg 微信消息
      * @return 微信消息集合
      */
@@ -29,7 +30,7 @@ public interface IWxMsgService
 
     /**
      * 新增微信消息
-     * 
+     *
      * @param wxMsg 微信消息
      * @return 结果
      */
@@ -37,7 +38,7 @@ public interface IWxMsgService
 
     /**
      * 修改微信消息
-     * 
+     *
      * @param wxMsg 微信消息
      * @return 结果
      */
@@ -45,7 +46,7 @@ public interface IWxMsgService
 
     /**
      * 批量删除微信消息
-     * 
+     *
      * @param ids 需要删除的微信消息主键集合
      * @return 结果
      */
@@ -53,7 +54,7 @@ public interface IWxMsgService
 
     /**
      * 删除微信消息信息
-     * 
+     *
      * @param id 微信消息主键
      * @return 结果
      */

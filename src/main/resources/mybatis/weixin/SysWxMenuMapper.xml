@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.project.weixin.mapper.SysWxMenuMapper">
-    
+
     <resultMap type="SysWxMenu" id="SysWxMenuResult">
         <result property="id"    column="id"    />
         <result property="delFlag"    column="del_flag"    />
@@ -35,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSysWxMenuList" parameterType="SysWxMenu" resultMap="SysWxMenuResult">
         <include refid="selectSysWxMenuVo"/>
-        <where>  
+        <where>
             <if test="sort != null "> and sort = #{sort}</if>
             <if test="parentId != null  and parentId != ''"> and parent_id = #{parentId}</if>
             <if test="type != null  and type != ''"> and type = #{type}</if>
@@ -56,12 +56,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
         order by parent_id, sort
     </select>
-    
+
     <select id="selectSysWxMenuById" parameterType="String" resultMap="SysWxMenuResult">
         <include refid="selectSysWxMenuVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertSysWxMenu" parameterType="SysWxMenu">
         <selectKey keyProperty="id" resultType="String" order="BEFORE">
             select  replace(uuid(),'-','')
@@ -150,7 +150,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteSysWxMenuByIds" parameterType="String">
-        delete from sys_wx_menu where id in 
+        delete from sys_wx_menu where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

@@ -34,7 +34,7 @@ public class WxMpWeChatController{
 
     /**
      * 创建调用jsapi时所需要的签名 传入当前网页的URL，不包含#及其后面部分
-     * 
+     *
      * @author cao_wencao
      * @param
      * @return
@@ -45,13 +45,13 @@ public class WxMpWeChatController{
         String url = request.getRequestURL().toString();
         log.info("【创建jsapi-URL】 : {}", url);
         Map<String, String> paramMap = wXJSAPiService.getJSApiData(url);
-        return paramMap;    
+        return paramMap;
     }
-    
-    
+
+
     /**
      * 获得jsapi_ticket,不强制刷新jsapi_ticket
-     * 
+     *
      * @author cao_wencao
      * @param
      * @return

@@ -1,16 +1,18 @@
 package com.ruoyi.framework.security.service;
 
-import java.util.Set;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.security.LoginUser;
+import com.ruoyi.framework.security.context.PermissionContextHolder;
 import com.ruoyi.project.system.domain.SysRole;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.Set;
 
 /**
  * RuoYi首创 自定义权限实现，ss取自SpringSecurity首字母
- * 
+ *
  * @author ruoyi
  */
 @Service("ss")
@@ -28,7 +30,7 @@ public class PermissionService
 
     /**
      * 验证用户是否具备某权限
-     * 
+     *
      * @param permission 权限字符串
      * @return 用户是否具备某权限
      */
@@ -43,6 +45,7 @@ public class PermissionService
         {
             return false;
         }
+        PermissionContextHolder.setContext(permission);
         return hasPermissions(loginUser.getPermissions(), permission);
     }
 
@@ -60,7 +63,7 @@ public class PermissionService
     /**
      * 验证用户是否具有以下任意一个权限
      *
-     * @param permissions 以 PERMISSION_NAMES_DELIMETER 为分隔符的权限列表
+     * @param permissions 以 PERMISSION_DELIMETER 为分隔符的权限列表
      * @return 用户是否具有以下任意一个权限
      */
     public boolean hasAnyPermi(String permissions)
@@ -74,6 +77,7 @@ public class PermissionService
         {
             return false;
         }
+        PermissionContextHolder.setContext(permissions);
         Set<String> authorities = loginUser.getPermissions();
         for (String permission : permissions.split(PERMISSION_DELIMETER))
         {
@@ -87,7 +91,7 @@ public class PermissionService
 
     /**
      * 判断用户是否拥有某个角色
-     * 
+     *
      * @param role 角色字符串
      * @return 用户是否具备某角色
      */
@@ -153,7 +157,7 @@ public class PermissionService
 
     /**
      * 判断是否包含权限
-     * 
+     *
      * @param permissions 权限列表
      * @param permission 权限字符串
      * @return 用户是否具备某权限

@@ -1,6 +1,5 @@
 package com.ruoyi.project.miniapp.controller.vo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

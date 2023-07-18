@@ -1,16 +1,18 @@
 package com.ruoyi.project.system.domain;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 import com.ruoyi.framework.aspectj.lang.annotation.Excel.ColumnType;
 import com.ruoyi.framework.web.domain.BaseEntity;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 /**
  * 岗位表 sys_post
- * 
+ *
  * @author ruoyi
  */
 public class SysPost extends BaseEntity
@@ -31,7 +33,7 @@ public class SysPost extends BaseEntity
 
     /** 岗位排序 */
     @Excel(name = "岗位排序")
-    private String postSort;
+    private Integer postSort;
 
     /** 状态（0正常 1停用） */
     @Excel(name = "状态", readConverterExp = "0=正常,1=停用")
@@ -74,13 +76,13 @@ public class SysPost extends BaseEntity
         this.postName = postName;
     }
 
-    @NotBlank(message = "显示顺序不能为空")
-    public String getPostSort()
+    @NotNull(message = "显示顺序不能为空")
+    public Integer getPostSort()
     {
         return postSort;
     }
 
-    public void setPostSort(String postSort)
+    public void setPostSort(Integer postSort)
     {
         this.postSort = postSort;
     }
@@ -104,7 +106,7 @@ public class SysPost extends BaseEntity
     {
         this.flag = flag;
     }
-    
+
     @Override
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)

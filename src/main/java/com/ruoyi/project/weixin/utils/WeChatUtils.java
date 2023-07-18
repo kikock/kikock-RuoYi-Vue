@@ -1,8 +1,9 @@
 package com.ruoyi.project.weixin.utils;
 
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
+
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.google.common.collect.Maps;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.api.WxConsts;
@@ -12,7 +13,6 @@ import me.chanjar.weixin.common.util.fs.FileUtils;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.bean.WxMpMassNews;
 import me.chanjar.weixin.mp.bean.material.*;
-import me.chanjar.weixin.mp.bean.material.WxMpMaterialNews.WxMpMaterialNewsArticle;
 import me.chanjar.weixin.mp.bean.material.WxMpMaterialNewsBatchGetResult.WxMaterialNewsBatchGetNewsItem;
 import me.chanjar.weixin.mp.bean.result.WxMpMassUploadResult;
 import org.apache.commons.lang3.StringUtils;
@@ -45,7 +45,7 @@ public class WeChatUtils {
     /**
      * <pre>
      * 上传群发用的图文消息，上传后才能群发图文消息.
-     * 
+     *
      * @see # news
      * @author cao_wencao
      * @param news
@@ -72,17 +72,17 @@ public class WeChatUtils {
 
     /**
      * <pre>
-     * 上传临时多媒体文件 
+     * 上传临时多媒体文件
      * 比如图文消息的封面图 图片（image）: 2M，支持PNG\JPEG\JPG\GIF格式
      * 语音（voice）：2M，播放长度不超过60s，支持AMR\MP3格式 视频（video）：10MB，支持MP4格式
      * 缩略图（thumb）：64KB，支持JPG格式
-     * 
+     *
      * @author cao_wencao
      * @param mediaType
      *            媒体文件类型，分别有图片（image）、语音（voice）、视频（video）和缩略图（thumb）
      * @param fileType
      *            文件后缀
-     * 
+     *
      * @param inputStream
      *            文件输入流
      * @return type,media_id,created_at
@@ -118,7 +118,7 @@ public class WeChatUtils {
     /**
      * <pre>
      * 上传图文消息内的图片获取URL(图文消息里面的图片)
-     * 
+     *
      * 请注意，本接口所上传的图片不占用公众号的素材库中图片数量的5000个的限制。图片仅支持jpg/png格式，大小必须在1MB以下。
      * 详情请见: <a href="http://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729&token=&lang=zh_CN">新增永久素材</a>
      * 接口url格式：https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=ACCESS_TOKEN
@@ -127,7 +127,7 @@ public class WeChatUtils {
      * @param file
      *            上传的文件对象
      * @return WxMediaImgUploadResult 返回图片url
-     * 
+     *
      */
     public WxMediaImgUploadResult uploadimg(File file) {
         if (null == file) {
@@ -184,7 +184,7 @@ public class WeChatUtils {
 
     /**
      * <pre>
-     * 新增其他类型永久素材 非图文永久素材上传 
+     * 新增其他类型永久素材 非图文永久素材上传
      * @author cao_wencao
      * @param mediaType
      *            媒体文件类型 ：分别有图片（image）、语音（voice）、视频（video）和缩略图（thumb）
@@ -227,14 +227,14 @@ public class WeChatUtils {
 
     /**
      * <pre>
-     * 新增永久图文素材 
-     * 方法名： uploadNewsToWeChat 
-     * 参数： WxMpMaterialNews 
+     * 新增永久图文素材
+     * 方法名： uploadNewsToWeChat
+     * 参数： WxMpMaterialNews
      * 返回值：
      * WxMpMaterialUploadResult 图文素材支持单图文和多图文，由类 WxMpMaterialNews 进行封装，图文的数据通过类
      * WxMpMaterialNews.WxMpMaterialNewsArticle 封装。 多图文消息在 WxMpMaterialNews 中调用
      * addArticle 方法添加多个 WxMpMaterialNewsArticle 对象即可。 接口返回 新增图文消息的media_id
-     * 
+     *
      * @author cao_wencao
      * @param materialNews
      *            要上传的图文消息的素材
@@ -264,7 +264,7 @@ public class WeChatUtils {
      * 图文永久素材下载 根据 media_id 获取图文消息，
      * 结果由 WxMpMaterialNews 封装，该类的结构和微信服务器返回的 json,
      * 格式数据的结构保持一致。
-     * 
+     *
      * @author cao_wencao
      * @param newsMediaId
      *            要下载的图文消息的id
@@ -288,7 +288,7 @@ public class WeChatUtils {
     /**
      * <pre>
      * 永久素材删除 根据 media_id 删除素材
-     * 
+     *
      * @author cao_wencao
      * @param mediaId
      *            要删除的图文消息的id
@@ -355,8 +355,8 @@ public class WeChatUtils {
     /**
      * <pre>
      * 图片或声音永久素材下载
-     * 根据 media_id 获取声音或者图片的输入流 
-     * 
+     * 根据 media_id 获取声音或者图片的输入流
+     *
      * @author cao_wencao
      * @param mediaId
      *            要下载的图文消息的id
@@ -396,7 +396,7 @@ public class WeChatUtils {
     /**
      * <pre>
      * 获取视频永久素材
-     * 
+     *
      * 详情请见: <a href="http://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729&token=&lang=zh_CN">获取永久素材</a>
      * 接口url格式：https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=ACCESS_TOKEN
      * </pre>
@@ -454,7 +454,7 @@ public class WeChatUtils {
     /**
      * <pre>
      * 修改永久图文素材 根据更新图文对象更新图文素材，对于多图文消息，如需更新其中某一个，需要设置更新对象中的index属性
-     * 
+     *
      * @author cao_wencao
      * @param newsMediaId
      *            要修改的图文消息的id
@@ -479,11 +479,11 @@ public class WeChatUtils {
         // 图文素材更新实体类
         WxMpMaterialArticleUpdate wxMpMaterialArticleUpdate = new WxMpMaterialArticleUpdate();
         // dest article 目的article
-        WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNewsArticle();
+        WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
         // 更新一条单图文
-        List<WxMpMaterialNewsArticle> newsArticleList = materialNews.getArticles();
+        List<WxMpMaterialNews.WxMpMaterialNewsArticle> newsArticleList = materialNews.getArticles();
         // source article 来源article2
-        WxMpMaterialNews.WxMpMaterialNewsArticle article2 = new WxMpMaterialNewsArticle();
+        WxMpMaterialNews.WxMpMaterialNewsArticle article2 = new WxMpMaterialNews.WxMpMaterialNewsArticle();
         for (int i = 0; i < newsArticleList.size(); i++) {
             article2 = newsArticleList.get(i);
             article.setContent(article2.getContent());
@@ -517,7 +517,7 @@ public class WeChatUtils {
     /**
      * <pre>
      * 获取图文永久素材的信息
-     * 
+     *
      * 详情请见: <a href="http://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738729&token=&lang=zh_CN">获取永久素材</a>
      * 接口url格式：https://api.weixin.qq.com/cgi-bin/material/get_material?access_token=ACCESS_TOKEN
      * </pre>
@@ -541,7 +541,7 @@ public class WeChatUtils {
         return null;
     }
 
-    
+
     /**
      * <pre>
      * 获取各类素材总数
@@ -550,7 +550,7 @@ public class WeChatUtils {
      *  1.永久素材的总数，也会计算公众平台官网素材管理中的素材
      *  2.图片和图文消息素材（包括单图文和多图文）的总数上限为5000，其他素材的总数上限为1000
      *  3.调用该接口需https协议
-     * 
+     *
      * 详情请见: <a href="http://mp.weixin.qq.com/wiki?t=resource/res_main&id=mp1444738733&token=&lang=zh_CN">获取素材总数</a>
      * 接口url格式：https://api.weixin.qq.com/cgi-bin/material/get_materialcount?access_token=ACCESS_TOKEN
      *  "voice_count":COUNT, 语音总数量

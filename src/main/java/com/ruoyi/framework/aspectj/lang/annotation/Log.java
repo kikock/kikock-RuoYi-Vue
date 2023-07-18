@@ -1,16 +1,17 @@
 package com.ruoyi.framework.aspectj.lang.annotation;
 
+import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
+import com.ruoyi.framework.aspectj.lang.enums.OperatorType;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import com.ruoyi.framework.aspectj.lang.enums.BusinessType;
-import com.ruoyi.framework.aspectj.lang.enums.OperatorType;
 
 /**
  * 自定义操作日志记录注解
- * 
+ *
  * @author ruoyi
  *
  */
@@ -20,7 +21,7 @@ import com.ruoyi.framework.aspectj.lang.enums.OperatorType;
 public @interface Log
 {
     /**
-     * 模块 
+     * 模块
      */
     public String title() default "";
 
@@ -43,4 +44,9 @@ public @interface Log
      * 是否保存响应的参数
      */
     public boolean isSaveResponseData() default true;
+
+    /**
+     * 排除指定的请求参数
+     */
+    public String[] excludeParamNames() default {};
 }

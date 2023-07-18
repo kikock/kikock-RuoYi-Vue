@@ -1,15 +1,16 @@
 package com.ruoyi.framework.security;
 
-import java.util.Collection;
-import java.util.Set;
+import com.alibaba.fastjson2.annotation.JSONField;
+import com.ruoyi.project.system.domain.SysUser;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import com.alibaba.fastjson.annotation.JSONField;
-import com.ruoyi.project.system.domain.SysUser;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * 登录用户身份权限
- * 
+ *
  * @author ruoyi
  */
 public class LoginUser implements UserDetails
@@ -71,6 +72,24 @@ public class LoginUser implements UserDetails
      */
     private SysUser user;
 
+    public LoginUser()
+    {
+    }
+
+    public LoginUser(SysUser user, Set<String> permissions)
+    {
+        this.user = user;
+        this.permissions = permissions;
+    }
+
+    public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions)
+    {
+        this.userId = userId;
+        this.deptId = deptId;
+        this.user = user;
+        this.permissions = permissions;
+    }
+
     public Long getUserId()
     {
         return userId;
@@ -101,24 +120,6 @@ public class LoginUser implements UserDetails
         this.token = token;
     }
 
-    public LoginUser()
-    {
-    }
-
-    public LoginUser(SysUser user, Set<String> permissions)
-    {
-        this.user = user;
-        this.permissions = permissions;
-    }
-
-    public LoginUser(Long userId, Long deptId, SysUser user, Set<String> permissions)
-    {
-        this.userId = userId;
-        this.deptId = deptId;
-        this.user = user;
-        this.permissions = permissions;
-    }
-
     @JSONField(serialize = false)
     @Override
     public String getPassword()
@@ -144,7 +145,7 @@ public class LoginUser implements UserDetails
 
     /**
      * 指定用户是否解锁,锁定的用户无法进行身份验证
-     * 
+     *
      * @return
      */
     @JSONField(serialize = false)
@@ -156,7 +157,7 @@ public class LoginUser implements UserDetails
 
     /**
      * 指示是否已过期的用户的凭据(密码),过期的凭据防止认证
-     * 
+     *
      * @return
      */
     @JSONField(serialize = false)
@@ -168,7 +169,7 @@ public class LoginUser implements UserDetails
 
     /**
      * 是否可用 ,禁用的用户不能身份验证
-     * 
+     *
      * @return
      */
     @JSONField(serialize = false)

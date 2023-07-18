@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.project.file.mapper.DocumentInfoMapper">
-    
+
     <resultMap type="DocumentInfo" id="DocumentInfoResult">
         <result property="id"    column="id"    />
         <result property="fullPath"    column="full_path"    />
@@ -30,12 +30,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectDocumentInfoVo">
-        select id, full_path, file_name, upload_user_id, upload_user_account, upload_user_name, create_time, url, com_id, old_file_name from document_info
+        select id, full_path, file_name, upload_user_id, upload_user_account, upload_user_name, create_time, url, com_id, old_file_name from sys_document_info
     </sql>
 
     <select id="selectDocumentInfoList" parameterType="DocumentInfo" resultMap="DocumentInfoResult">
         <include refid="selectDocumentInfoVo"/>
-        <where>  
+        <where>
             <if test="fullPath != null  and fullPath != ''"> and full_path = #{fullPath}</if>
             <if test="fileName != null  and fileName != ''"> and file_name like concat('%', #{fileName}, '%')</if>
             <if test="uploadUserId != null  and uploadUserId != ''"> and upload_user_id = #{uploadUserId}</if>
@@ -46,17 +46,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="oldFileName != null  and oldFileName != ''"> and old_file_name like concat('%', #{oldFileName}, '%')</if>
         </where>
     </select>
-    
+
     <select id="selectDocumentInfoById" parameterType="String" resultMap="DocumentInfoResult">
         <include refid="selectDocumentInfoVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertDocumentInfo" parameterType="DocumentInfo">
         <selectKey keyProperty="id" resultType="String" order="BEFORE">
             select  replace(uuid(),'-','')
         </selectKey>
-        insert into document_info
+        insert into sys_document_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="fullPath != null">full_path,</if>
@@ -84,7 +84,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </insert>
 
     <update id="updateDocumentInfo" parameterType="DocumentInfo">
-        update document_info
+        update sys_document_info
         <trim prefix="SET" suffixOverrides=",">
             <if test="fullPath != null">full_path = #{fullPath},</if>
             <if test="fileName != null">file_name = #{fileName},</if>
@@ -100,11 +100,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteDocumentInfoById" parameterType="String">
-        delete from document_info where id = #{id}
+        delete from sys_document_info where id = #{id}
     </delete>
 
     <delete id="deleteDocumentInfoByIds" parameterType="String">
-        delete from document_info where id in 
+        delete from sys_document_info where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -115,8 +115,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectDocumentInfoVo"/>
         where id in (
             select document_id
-            from business_info where entity_id_index =#{entityIdIndex}
+            from sys_business_info where entity_id_index =#{entityIdIndex}
         )
     </select>
-    
+
 </mapper>

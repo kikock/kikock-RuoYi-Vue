@@ -1,10 +1,8 @@
 package com.ruoyi.project.system.service;
 
-import java.util.List;
-
-import com.ruoyi.project.miniapp.controller.vo.WxUserInfoVo;
 import com.ruoyi.project.system.domain.SysUser;
-import com.ruoyi.project.weixin.domain.SysWxUser;
+
+import java.util.List;
 
 /**
  * 用户 业务层
@@ -72,10 +70,10 @@ public interface ISysUserService
     /**
      * 校验用户名称是否唯一
      *
-     * @param userName 用户名称
+     * @param user 用户信息
      * @return 结果
      */
-    public String checkUserNameUnique(String userName);
+    public boolean checkUserNameUnique(SysUser user);
 
     /**
      * 校验手机号码是否唯一
@@ -83,7 +81,7 @@ public interface ISysUserService
      * @param user 用户信息
      * @return 结果
      */
-    public String checkPhoneUnique(SysUser user);
+    public boolean checkPhoneUnique(SysUser user);
 
     /**
      * 校验email是否唯一
@@ -91,7 +89,7 @@ public interface ISysUserService
      * @param user 用户信息
      * @return 结果
      */
-    public String checkEmailUnique(SysUser user);
+    public boolean checkEmailUnique(SysUser user);
 
     /**
      * 校验用户是否允许操作
@@ -206,9 +204,4 @@ public interface ISysUserService
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
-
-
-
-
-
 }

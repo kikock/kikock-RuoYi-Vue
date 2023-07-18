@@ -2,11 +2,11 @@ package com.ruoyi.project.weixin.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.project.weixin.domain.SysWxUser;
+import com.ruoyi.project.weixin.mapper.SysWxUserMapper;
+import com.ruoyi.project.weixin.service.ISysWxUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.project.weixin.mapper.SysWxUserMapper;
-import com.ruoyi.project.weixin.domain.SysWxUser;
-import com.ruoyi.project.weixin.service.ISysWxUserService;
 
 /**
  * 微信用户Service业务层处理

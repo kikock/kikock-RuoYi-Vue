@@ -5,10 +5,10 @@ import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.security.LoginUser;
 import com.ruoyi.framework.security.service.TokenService;
 import com.ruoyi.framework.web.domain.AjaxResult;
-import com.ruoyi.project.system.domain.SysUser;
-import com.ruoyi.project.system.mapper.SysUserMapper;
 import com.ruoyi.project.weixin.domain.SysWxUser;
 import com.ruoyi.project.weixin.service.ISysWxUserService;
+import com.ruoyi.project.system.domain.SysUser;
+import com.ruoyi.project.system.mapper.SysUserMapper;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -188,9 +188,9 @@ public class WxMpOAuthController {
      * @param sysWxUser 微信用户对象
      */
     private void registerUser(SysWxUser sysWxUser) {
-        int unique = userMapper.checkUserNameUnique(sysWxUser.getOpenId());
-        if (unique == 0) {
-            SysUser sysUser = new SysUser();
+        SysUser sysUser = userMapper.checkUserNameUnique(sysWxUser.getOpenId());
+        if (Objects.isNull(sysUser)) {
+             sysUser = new SysUser();
             sysUser.setUserName(sysWxUser.getOpenId());
             sysUser.setNickName(sysWxUser.getOpenId());
             sysUser.setPassword(SecurityUtils.encryptPassword(passWord));

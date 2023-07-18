@@ -1,4 +1,4 @@
-//package com.ruoyi.framework.config;
+package com.ruoyi.framework.config;//package com.ruoyi.framework.config;
 //
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@
 //
 ///**
 // * 定时任务配置（单机部署建议默认走内存，如需集群需要创建qrtz数据库表/打开类注释）
-// * 
+// *
 // * @author ruoyi
 // */
 //@Configuration

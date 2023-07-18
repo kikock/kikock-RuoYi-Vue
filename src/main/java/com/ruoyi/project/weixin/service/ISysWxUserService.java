@@ -1,6 +1,7 @@
 package com.ruoyi.project.weixin.service;
 
 import java.util.List;
+
 import com.ruoyi.project.weixin.domain.SysWxUser;
 
 /**

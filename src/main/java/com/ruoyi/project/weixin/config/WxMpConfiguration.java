@@ -1,5 +1,15 @@
 package com.ruoyi.project.weixin.config;
 
+import com.ruoyi.project.weixin.handler.KfSessionHandler;
+import com.ruoyi.project.weixin.handler.LocationHandler;
+import com.ruoyi.project.weixin.handler.LogHandler;
+import com.ruoyi.project.weixin.handler.MenuHandler;
+import com.ruoyi.project.weixin.handler.MsgHandler;
+import com.ruoyi.project.weixin.handler.NullHandler;
+import com.ruoyi.project.weixin.handler.ScanHandler;
+import com.ruoyi.project.weixin.handler.StoreCheckNotifyHandler;
+import com.ruoyi.project.weixin.handler.SubscribeHandler;
+import com.ruoyi.project.weixin.handler.UnsubscribeHandler;
 import com.ruoyi.project.weixin.handler.*;
 import lombok.AllArgsConstructor;
 import static me.chanjar.weixin.common.api.WxConsts.EventType;

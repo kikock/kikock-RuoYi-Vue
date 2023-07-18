@@ -45,7 +45,6 @@ public class ${ClassName} extends ${Entity}
 #else
     @Excel(name = "${comment}")
 #end
-    @ApiModelProperty(value = "$column.columnComment")
 #end
     private $column.javaType $column.javaField;
 

@@ -1,6 +1,8 @@
 package com.ruoyi.common.filter;
 
-import java.io.IOException;
+import com.ruoyi.common.utils.StringUtils;
+import org.springframework.http.MediaType;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -8,8 +10,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
-import org.springframework.http.MediaType;
-import com.ruoyi.common.utils.StringUtils;
+import java.io.IOException;
 
 /**
  * Repeatable 过滤器

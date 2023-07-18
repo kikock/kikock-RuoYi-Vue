@@ -7,15 +7,15 @@ import com.ruoyi.project.weixin.domain.SysWxMenu;
 
 /**
  * 自定义菜单Service接口
- * 
+ *
  * @author ruoyi
  * @date 2022-04-14
  */
-public interface ISysWxMenuService 
+public interface ISysWxMenuService
 {
     /**
      * 查询自定义菜单
-     * 
+     *
      * @param id 自定义菜单主键
      * @return 自定义菜单
      */
@@ -23,7 +23,7 @@ public interface ISysWxMenuService
 
     /**
      * 查询自定义菜单列表
-     * 
+     *
      * @param sysWxMenu 自定义菜单
      * @return 自定义菜单集合
      */
@@ -31,7 +31,7 @@ public interface ISysWxMenuService
 
     /**
      * 新增自定义菜单
-     * 
+     *
      * @param sysWxMenu 自定义菜单
      * @return 结果
      */
@@ -39,7 +39,7 @@ public interface ISysWxMenuService
 
     /**
      * 修改自定义菜单
-     * 
+     *
      * @param sysWxMenu 自定义菜单
      * @return 结果
      */
@@ -47,7 +47,7 @@ public interface ISysWxMenuService
 
     /**
      * 批量删除自定义菜单
-     * 
+     *
      * @param ids 需要删除的自定义菜单主键集合
      * @return 结果
      */
@@ -55,7 +55,7 @@ public interface ISysWxMenuService
 
     /**
      * 删除自定义菜单信息
-     * 
+     *
      * @param id 自定义菜单主键
      * @return 结果
      */

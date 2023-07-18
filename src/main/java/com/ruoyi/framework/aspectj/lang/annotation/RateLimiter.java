@@ -1,16 +1,17 @@
 package com.ruoyi.framework.aspectj.lang.annotation;
 
+import com.ruoyi.common.constant.CacheConstants;
+import com.ruoyi.framework.aspectj.lang.enums.LimitType;
+
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import com.ruoyi.common.constant.Constants;
-import com.ruoyi.framework.aspectj.lang.enums.LimitType;
 
 /**
  * 限流注解
- * 
+ *
  * @author ruoyi
  */
 @Target(ElementType.METHOD)
@@ -21,7 +22,7 @@ public @interface RateLimiter
     /**
      * 限流key
      */
-    public String key() default Constants.RATE_LIMIT_KEY;
+    public String key() default CacheConstants.RATE_LIMIT_KEY;
 
     /**
      * 限流时间,单位秒

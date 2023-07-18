@@ -6,8 +6,8 @@ import com.ruoyi.framework.aspectj.lang.annotation.Excel;
 import com.ruoyi.framework.web.domain.BaseEntity;
 
 /**
- * 微信消息对象 wx_msg
- * 
+ * 微信消息对象 sys_wx_msg
+ *
  * @author ruoyi
  * @date 2022-04-20
  */
@@ -113,228 +113,228 @@ public class WxMsg extends BaseEntity
     @Excel(name = "已读标记", readConverterExp = "1=：是；0：否")
     private String readFlag;
 
-    public void setId(String id) 
+    public void setId(String id)
     {
         this.id = id;
     }
 
-    public String getId() 
+    public String getId()
     {
         return id;
     }
-    public void setCreateId(String createId) 
+    public void setCreateId(String createId)
     {
         this.createId = createId;
     }
 
-    public String getCreateId() 
+    public String getCreateId()
     {
         return createId;
     }
-    public void setUpdateId(String updateId) 
+    public void setUpdateId(String updateId)
     {
         this.updateId = updateId;
     }
 
-    public String getUpdateId() 
+    public String getUpdateId()
     {
         return updateId;
     }
-    public void setDelFlag(String delFlag) 
+    public void setDelFlag(String delFlag)
     {
         this.delFlag = delFlag;
     }
 
-    public String getDelFlag() 
+    public String getDelFlag()
     {
         return delFlag;
     }
-    public void setAppName(String appName) 
+    public void setAppName(String appName)
     {
         this.appName = appName;
     }
 
-    public String getAppName() 
+    public String getAppName()
     {
         return appName;
     }
-    public void setAppLogo(String appLogo) 
+    public void setAppLogo(String appLogo)
     {
         this.appLogo = appLogo;
     }
 
-    public String getAppLogo() 
+    public String getAppLogo()
     {
         return appLogo;
     }
-    public void setWxUserId(String wxUserId) 
+    public void setWxUserId(String wxUserId)
     {
         this.wxUserId = wxUserId;
     }
 
-    public String getWxUserId() 
+    public String getWxUserId()
     {
         return wxUserId;
     }
-    public void setNickName(String nickName) 
+    public void setNickName(String nickName)
     {
         this.nickName = nickName;
     }
 
-    public String getNickName() 
+    public String getNickName()
     {
         return nickName;
     }
-    public void setHeadimgUrl(String headimgUrl) 
+    public void setHeadimgUrl(String headimgUrl)
     {
         this.headimgUrl = headimgUrl;
     }
 
-    public String getHeadimgUrl() 
+    public String getHeadimgUrl()
     {
         return headimgUrl;
     }
-    public void setType(String type) 
+    public void setType(String type)
     {
         this.type = type;
     }
 
-    public String getType() 
+    public String getType()
     {
         return type;
     }
-    public void setRepType(String repType) 
+    public void setRepType(String repType)
     {
         this.repType = repType;
     }
 
-    public String getRepType() 
+    public String getRepType()
     {
         return repType;
     }
-    public void setRepEvent(String repEvent) 
+    public void setRepEvent(String repEvent)
     {
         this.repEvent = repEvent;
     }
 
-    public String getRepEvent() 
+    public String getRepEvent()
     {
         return repEvent;
     }
-    public void setRepContent(String repContent) 
+    public void setRepContent(String repContent)
     {
         this.repContent = repContent;
     }
 
-    public String getRepContent() 
+    public String getRepContent()
     {
         return repContent;
     }
-    public void setRepMediaId(String repMediaId) 
+    public void setRepMediaId(String repMediaId)
     {
         this.repMediaId = repMediaId;
     }
 
-    public String getRepMediaId() 
+    public String getRepMediaId()
     {
         return repMediaId;
     }
-    public void setRepName(String repName) 
+    public void setRepName(String repName)
     {
         this.repName = repName;
     }
 
-    public String getRepName() 
+    public String getRepName()
     {
         return repName;
     }
-    public void setRepDesc(String repDesc) 
+    public void setRepDesc(String repDesc)
     {
         this.repDesc = repDesc;
     }
 
-    public String getRepDesc() 
+    public String getRepDesc()
     {
         return repDesc;
     }
-    public void setRepUrl(String repUrl) 
+    public void setRepUrl(String repUrl)
     {
         this.repUrl = repUrl;
     }
 
-    public String getRepUrl() 
+    public String getRepUrl()
     {
         return repUrl;
     }
-    public void setRepHqUrl(String repHqUrl) 
+    public void setRepHqUrl(String repHqUrl)
     {
         this.repHqUrl = repHqUrl;
     }
 
-    public String getRepHqUrl() 
+    public String getRepHqUrl()
     {
         return repHqUrl;
     }
-    public void setContent(String content) 
+    public void setContent(String content)
     {
         this.content = content;
     }
 
-    public String getContent() 
+    public String getContent()
     {
         return content;
     }
-    public void setRepThumbMediaId(String repThumbMediaId) 
+    public void setRepThumbMediaId(String repThumbMediaId)
     {
         this.repThumbMediaId = repThumbMediaId;
     }
 
-    public String getRepThumbMediaId() 
+    public String getRepThumbMediaId()
     {
         return repThumbMediaId;
     }
-    public void setRepThumbUrl(String repThumbUrl) 
+    public void setRepThumbUrl(String repThumbUrl)
     {
         this.repThumbUrl = repThumbUrl;
     }
 
-    public String getRepThumbUrl() 
+    public String getRepThumbUrl()
     {
         return repThumbUrl;
     }
-    public void setRepLocationX(Long repLocationX) 
+    public void setRepLocationX(Long repLocationX)
     {
         this.repLocationX = repLocationX;
     }
 
-    public Long getRepLocationX() 
+    public Long getRepLocationX()
     {
         return repLocationX;
     }
-    public void setRepLocationY(Long repLocationY) 
+    public void setRepLocationY(Long repLocationY)
     {
         this.repLocationY = repLocationY;
     }
 
-    public Long getRepLocationY() 
+    public Long getRepLocationY()
     {
         return repLocationY;
     }
-    public void setRepScale(Long repScale) 
+    public void setRepScale(Long repScale)
     {
         this.repScale = repScale;
     }
 
-    public Long getRepScale() 
+    public Long getRepScale()
     {
         return repScale;
     }
-    public void setReadFlag(String readFlag) 
+    public void setReadFlag(String readFlag)
     {
         this.readFlag = readFlag;
     }
 
-    public String getReadFlag() 
+    public String getReadFlag()
     {
         return readFlag;
     }

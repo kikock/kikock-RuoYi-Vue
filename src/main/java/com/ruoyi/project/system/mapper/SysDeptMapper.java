@@ -1,11 +1,9 @@
 package com.ruoyi.project.system.mapper;
 
-import java.util.List;
-
-import com.ruoyi.project.miniapp.controller.vo.WxDeptVo;
-import com.ruoyi.project.miniapp.controller.vo.WxUserInfoVo;
-import org.apache.ibatis.annotations.Param;
 import com.ruoyi.project.system.domain.SysDept;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * 部门管理 数据层
@@ -118,5 +116,4 @@ public interface SysDeptMapper
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
-
 }

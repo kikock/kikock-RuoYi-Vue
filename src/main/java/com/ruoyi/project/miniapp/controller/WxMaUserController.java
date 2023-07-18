@@ -1,15 +1,13 @@
 package com.ruoyi.project.miniapp.controller;
 
-import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.framework.security.LoginBody;
 import com.ruoyi.framework.security.LoginUser;
 import com.ruoyi.framework.security.service.TokenService;
 import com.ruoyi.framework.web.domain.AjaxResult;
-import com.ruoyi.project.company.domain.CompanyInfo;
-import com.ruoyi.project.company.service.ICompanyInfoService;
 import com.ruoyi.project.miniapp.config.WxMaConfiguration;
 import com.ruoyi.project.miniapp.controller.vo.MiniappLoginVo;
+
 import com.ruoyi.project.system.domain.SysUser;
 import com.ruoyi.project.system.mapper.SysUserMapper;
 import com.ruoyi.project.weixin.domain.SysWxUser;
@@ -51,8 +49,7 @@ public class WxMaUserController {
     private SysUserMapper userMapper;
     @Autowired
     private TokenService tokenService;
-    @Autowired
-    private ICompanyInfoService companyInfoService;
+
 
     /**
      * 登陆接口
@@ -109,9 +106,8 @@ public class WxMaUserController {
     {
         AjaxResult ajax = AjaxResult.success();
         // 检测用户名是否存在
-        int i = userMapper.checkUserNameUnique(loginBody.getUsername());
-        System.out.println(i);
-        if (i == 0) {
+        SysUser user = userMapper.checkUserNameUnique(loginBody.getUsername());
+        if (Objects.isNull(user)) {
           return AjaxResult.error("该用户不存在!");
         }
         SysUser sysUser = userMapper.selectUserByUserName(loginBody.getUsername());
@@ -122,19 +118,19 @@ public class WxMaUserController {
             sysUser.setLoginDate(new Date());
             loginUser.setUser(sysUser);
             String token = "";
-            String userType = sysUser.getUserType();
+            // String userType = sysUser.getUserType();
             Map<String,Object> data = new HashMap<>(5);
             data.put("login", false);
             //判断人员类型
-            if(userType.equals(loginBody.getCode())){
-                data.put("login", true);
-                token = tokenService.createToken(loginUser);
-                logger.info("【微信小程序用户密码登录token】{}",token);
-            }
+            // if(userType.equals(loginBody.getCode())){
+            //     data.put("login", true);
+            //     token = tokenService.createToken(loginUser);
+            //     logger.info("【微信小程序用户密码登录token】{}",token);
+            // }
             data.put("token",token);
             data.put("wxId","");
             data.put("userId",sysUser.getUserId());
-            data.put("wxType", userType);
+            // data.put("wxType", userType);
             ajax.put("data",data);
         }else {
             return AjaxResult.error("密码错误请重试!");
@@ -270,14 +266,14 @@ public class WxMaUserController {
      * @param sysWxUser 微信用户对象
      */
     private void registerUser(SysWxUser sysWxUser) {
-        int i = userMapper.checkUserNameUnique(sysWxUser.getNickName());
-        if (i == 0) {
-            SysUser sysUser = new SysUser();
+        SysUser sysUser = userMapper.checkUserNameUnique(sysWxUser.getNickName());
+        if (Objects.isNull(sysUser)) {
+             sysUser = new SysUser();
             sysUser.setUserName(sysWxUser.getNickName());
             sysUser.setNickName(sysWxUser.getNickName());
             sysUser.setPassword(SecurityUtils.encryptPassword(passWord));
             userMapper.insertUser(sysUser);
-            sysUser.setUserType("100");
+            // sysUser.setUserType("100");
             sysWxUser.setUserId(sysUser.getUserId());
         }
     }
