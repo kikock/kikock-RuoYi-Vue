@@ -25,7 +25,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
 /**
- * 微信用户Controller
+ * 微信公众号用户Controller
  *
  * @author ruoyi
  * @date 2022-04-18

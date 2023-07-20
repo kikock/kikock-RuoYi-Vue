@@ -2,7 +2,6 @@ package com.ruoyi.project.weixin.handler;
 
 import com.ruoyi.project.weixin.builder.TextBuilder;
 import com.ruoyi.project.weixin.utils.JsonUtils;
-import me.chanjar.weixin.common.api.WxConsts;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.common.session.WxSessionManager;
 import me.chanjar.weixin.mp.api.WxMpService;
@@ -13,10 +12,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType;
+
 /**
- * @desc:
- * @author: cao_wencao
- * @date: 2019-09-02 17:15
+ * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
 @Component
 public class MsgHandler extends AbstractHandler {
@@ -26,7 +25,7 @@ public class MsgHandler extends AbstractHandler {
                                     Map<String, Object> context, WxMpService weixinService,
                                     WxSessionManager sessionManager) {
 
-        if (!wxMessage.getMsgType().equals(WxConsts.XmlMsgType.EVENT)) {
+        if (!wxMessage.getMsgType().equals(XmlMsgType.EVENT)) {
             //TODO 可以选择将消息保存到本地
         }
 

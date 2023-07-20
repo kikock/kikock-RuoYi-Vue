@@ -10,21 +10,11 @@ import com.ruoyi.project.weixin.handler.ScanHandler;
 import com.ruoyi.project.weixin.handler.StoreCheckNotifyHandler;
 import com.ruoyi.project.weixin.handler.SubscribeHandler;
 import com.ruoyi.project.weixin.handler.UnsubscribeHandler;
-import com.ruoyi.project.weixin.handler.*;
 import lombok.AllArgsConstructor;
-import static me.chanjar.weixin.common.api.WxConsts.EventType;
-import static me.chanjar.weixin.common.api.WxConsts.EventType.SUBSCRIBE;
-import static me.chanjar.weixin.common.api.WxConsts.EventType.UNSUBSCRIBE;
-import static me.chanjar.weixin.common.api.WxConsts.MenuButtonType.CLICK;
-import static me.chanjar.weixin.common.api.WxConsts.MenuButtonType.VIEW;
-import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType;
-import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType.EVENT;
 import me.chanjar.weixin.mp.api.WxMpMessageRouter;
 import me.chanjar.weixin.mp.api.WxMpService;
 import me.chanjar.weixin.mp.api.impl.WxMpServiceImpl;
 import me.chanjar.weixin.mp.config.impl.WxMpDefaultConfigImpl;
-import static me.chanjar.weixin.mp.constant.WxMpEventConstants.CustomerService.*;
-import static me.chanjar.weixin.mp.constant.WxMpEventConstants.POI_CHECK_NOTIFY;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,13 +22,19 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static me.chanjar.weixin.common.api.WxConsts.EventType;
+import static me.chanjar.weixin.common.api.WxConsts.EventType.SUBSCRIBE;
+import static me.chanjar.weixin.common.api.WxConsts.EventType.UNSUBSCRIBE;
+import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType;
+import static me.chanjar.weixin.common.api.WxConsts.XmlMsgType.EVENT;
+import static me.chanjar.weixin.mp.constant.WxMpEventConstants.CustomerService.*;
+import static me.chanjar.weixin.mp.constant.WxMpEventConstants.POI_CHECK_NOTIFY;
 
 /**
- * @desc:  路由配置
- * @author: cao_wencao
- * @date: 2019-09-02 17:06
+ * wechat mp configuration
+ *
+ * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
-
 @AllArgsConstructor
 @Configuration
 @EnableConfigurationProperties(WxMpProperties.class)
@@ -95,10 +91,10 @@ public class WxMpConfiguration {
         newRouter.rule().async(false).msgType(EVENT).event(POI_CHECK_NOTIFY).handler(this.storeCheckNotifyHandler).end();
 
         // 自定义菜单事件
-        newRouter.rule().async(false).msgType(EVENT).event(CLICK).handler(this.menuHandler).end();
+        newRouter.rule().async(false).msgType(EVENT).event(EventType.CLICK).handler(this.menuHandler).end();
 
         // 点击菜单连接事件
-        newRouter.rule().async(false).msgType(EVENT).event(VIEW).handler(this.nullHandler).end();
+        newRouter.rule().async(false).msgType(EVENT).event(EventType.VIEW).handler(this.nullHandler).end();
 
         // 关注事件
         newRouter.rule().async(false).msgType(EVENT).event(SUBSCRIBE).handler(this.subscribeHandler).end();

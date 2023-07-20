@@ -1,6 +1,7 @@
 package com.ruoyi.project.weixin.mapper;
 
 import java.util.List;
+
 import com.ruoyi.project.weixin.domain.SysWxUser;
 
 /**

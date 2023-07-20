@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 /**
- * @desc: 门店审核事件
- * @author: cao_wencao
- * @date: 2019-09-02 17:16
+ * 门店审核事件处理
+ *
+ * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
 @Component
 public class StoreCheckNotifyHandler extends AbstractHandler {

@@ -7,13 +7,17 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import java.util.List;
 
 /**
- * @desc: yml配置映射成实体类
- * @author: cao_wencao
- * @date: 2019-09-02 17:08
+ * 微信公众号配置
+ *
+ * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
 @Data
 @ConfigurationProperties(prefix = "wx.mp")
 public class WxMpProperties {
+
+    /**
+     * 多个公众号配置信息
+     */
     private List<MpConfig> configs;
 
     @Data

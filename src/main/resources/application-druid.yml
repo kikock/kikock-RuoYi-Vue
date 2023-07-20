@@ -7,7 +7,7 @@ spring:
             # 主库数据源
             master:
               #本地
-              url: jdbc:mysql://localhost:3306/ry?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+              url: jdbc:mysql://localhost:3306/ssosrasb?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
               username: root
               password: 111111
               # 测试
@@ -51,13 +51,13 @@ spring:
             webStatFilter:
                 enabled: true
             statViewServlet:
-                enabled: true
-                # 设置白名单，不填则允许所有访问
-                allow:
-                url-pattern: /druid/*
-                # 控制台管理用户名和密码
-                login-username: ruoyi
-                login-password: 123456
+              enabled: true
+              # 设置白名单，不填则允许所有访问
+              allow:
+              url-pattern: /druid/*
+              # 控制台管理用户名和密码
+              login-username: admin
+              login-password: admin123
             filter:
                 stat:
                     enabled: true

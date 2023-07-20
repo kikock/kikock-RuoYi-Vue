@@ -7,6 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import lombok.Data;
 
 /**
+ * 微信小程序参数
+ *
  * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
 @Data

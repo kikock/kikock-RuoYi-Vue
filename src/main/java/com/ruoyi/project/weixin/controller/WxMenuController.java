@@ -2,7 +2,6 @@ package com.ruoyi.project.weixin.controller;
 
 import lombok.AllArgsConstructor;
 import me.chanjar.weixin.common.api.WxConsts;
-import static me.chanjar.weixin.common.api.WxConsts.MenuButtonType;
 import me.chanjar.weixin.common.bean.menu.WxMenu;
 import me.chanjar.weixin.common.bean.menu.WxMenuButton;
 import me.chanjar.weixin.common.error.WxErrorException;
@@ -17,11 +16,12 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static me.chanjar.weixin.common.api.WxConsts.MenuButtonType;
 
 /**
- * @desc:  自定义菜单
- * @author: cao_wencao
- * @date: 2019-09-02 17:06
+ * 微信公众号菜单创建
+ *
+ * @author <a href="https://github.com/binarywang">Binary Wang</a>
  */
 @AllArgsConstructor
 @RestController
@@ -90,7 +90,7 @@ public class WxMenuController {
         if (servletRequestAttributes != null) {
             HttpServletRequest request = servletRequestAttributes.getRequest();
             URL requestURL = new URL(request.getRequestURL().toString());
-            String url = this.wxService.switchoverTo(appid).oauth2buildAuthorizationUrl(
+            String url = this.wxService.switchoverTo(appid).getOAuth2Service().buildAuthorizationUrl(
                     String.format("%s://%s/wx/redirect/%s/greet", requestURL.getProtocol(), requestURL.getHost(), appid),
                     WxConsts.OAuth2Scope.SNSAPI_USERINFO, null);
             button34.setUrl(url);

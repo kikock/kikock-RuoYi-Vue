@@ -479,11 +479,11 @@ public class WeChatUtils {
         // 图文素材更新实体类
         WxMpMaterialArticleUpdate wxMpMaterialArticleUpdate = new WxMpMaterialArticleUpdate();
         // dest article 目的article
-        WxMpMaterialNews.WxMpMaterialNewsArticle article = new WxMpMaterialNews.WxMpMaterialNewsArticle();
+        WxMpNewsArticle article = new WxMpNewsArticle();
         // 更新一条单图文
-        List<WxMpMaterialNews.WxMpMaterialNewsArticle> newsArticleList = materialNews.getArticles();
+        List<WxMpNewsArticle> newsArticleList = materialNews.getArticles();
         // source article 来源article2
-        WxMpMaterialNews.WxMpMaterialNewsArticle article2 = new WxMpMaterialNews.WxMpMaterialNewsArticle();
+        WxMpNewsArticle article2 = new WxMpNewsArticle();
         for (int i = 0; i < newsArticleList.size(); i++) {
             article2 = newsArticleList.get(i);
             article.setContent(article2.getContent());

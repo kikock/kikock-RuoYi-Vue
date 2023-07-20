@@ -2,11 +2,11 @@ package com.ruoyi.project.weixin.service.impl;
 
 import java.util.List;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.project.weixin.service.IWxMsgService;
 import com.ruoyi.project.weixin.domain.WxMsg;
 import com.ruoyi.project.weixin.mapper.WxMsgMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.ruoyi.project.weixin.service.IWxMsgService;
 
 /**
  * 微信消息Service业务层处理

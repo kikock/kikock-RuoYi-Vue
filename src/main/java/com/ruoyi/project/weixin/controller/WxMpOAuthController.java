@@ -11,9 +11,9 @@ import com.ruoyi.project.system.domain.SysUser;
 import com.ruoyi.project.system.mapper.SysUserMapper;
 import lombok.extern.slf4j.Slf4j;
 import me.chanjar.weixin.common.api.WxConsts;
+import me.chanjar.weixin.common.bean.oauth2.WxOAuth2AccessToken;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.mp.api.WxMpService;
-import me.chanjar.weixin.mp.bean.result.WxMpOAuth2AccessToken;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +56,12 @@ public class WxMpOAuthController {
     @GetMapping("/oauthInfo")
     public AjaxResult oauthInfo(@RequestParam String code) throws Exception {
         AjaxResult ajax = AjaxResult.success();
-        try{
-            log.info("code======"+code);
-            WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
+        try {
+            log.info("code======" + code);
+            //4.5 版本升级
+            WxOAuth2AccessToken wxMpOAuth2AccessToken = wxMpService.getOAuth2Service().getAccessToken(code);
+            // 3.5 版本
+            // WxMpOAuth2AccessToken wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
             // 获取openId
             String openId = wxMpOAuth2AccessToken.getOpenId();
             log.info("openId={}", openId);
@@ -83,8 +86,8 @@ public class WxMpOAuthController {
             user.setLoginDate(new Date());
             loginUser.setUser(user);
             String token = tokenService.createToken(loginUser);
-            log.info("token===="+token);
-            ajax.put("data",token);
+            log.info("token====" + token);
+            ajax.put("data", token);
         } catch (Exception ex) {
             log.error("【微信网页授权】{}", ex.getMessage());
             throw new RuntimeException("网页授权失败！");
@@ -92,6 +95,41 @@ public class WxMpOAuthController {
         return ajax;
     }
 
+    /**
+     * 微信用户转为系统微信用户
+     *
+     * @param userWxInfo 微信用户
+     * @param sysWxUser  系统微信用户
+     */
+    private SysWxUser convertSysWxUser(WxMpUser userWxInfo, SysWxUser sysWxUser) {
+
+        if (Objects.nonNull(sysWxUser)) {
+            sysWxUser.setSubscribeNum(sysWxUser.getSubscribeNum() + 1);
+        } else {
+            sysWxUser = new SysWxUser();
+            sysWxUser.setSubscribeNum(1L);
+            sysWxUser.setOpenId(userWxInfo.getOpenId());
+        }
+        sysWxUser.setAppType("2");
+        sysWxUser.setSubscribe("1");
+        sysWxUser.setSubscribeScene(userWxInfo.getSubscribeScene());
+        sysWxUser.setSubscribeTime(new Date());
+        sysWxUser.setNickName(userWxInfo.getNickname());
+        // sysWxUser.setSex(userWxInfo.getSex()==1?"1":"0");
+        // sysWxUser.setCity(userWxInfo.getCity());
+        // sysWxUser.setCountry(userWxInfo.getCountry());
+        // sysWxUser.setProvince(userWxInfo.getProvince());
+        sysWxUser.setLanguage(userWxInfo.getLanguage());
+        sysWxUser.setHeadimgUrl(userWxInfo.getHeadImgUrl());
+        sysWxUser.setUnionId(userWxInfo.getUnionId());
+        sysWxUser.setGroupId(userWxInfo.getGroupId() + "");
+        Long[] tagIds = userWxInfo.getTagIds();
+        if (tagIds != null && tagIds.length > 0) {
+            sysWxUser.setTagidList(StringUtils.join(tagIds));
+        }
+        sysWxUser.setQrSceneStr(userWxInfo.getQrSceneStr());
+        return sysWxUser;
+    }
 
     @GetMapping("/oauthInfos")
     public void oauthInfos(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -102,7 +140,9 @@ public class WxMpOAuthController {
         host = host.replaceAll("/oauthInfo", "/getInfo") + "?backUrl=" + backUrl;
         // String redirect_uri = URLEncoder.encode(host, "UTF-8");
         // 构建授权URL，方法内会自动encode
-        String redirectUri = wxMpService.oauth2buildAuthorizationUrl(host, WxConsts.OAuth2Scope.SNSAPI_BASE, "1");
+        String redirectUri = wxMpService.getOAuth2Service().buildAuthorizationUrl(host, WxConsts.OAuth2Scope.SNSAPI_USERINFO, "1");
+
+        // String redirectUri = wxMpService.oauth2buildAuthorizationUrl(host, WxConsts.OAuth2Scope.SNSAPI_BASE, "1");
         // 日志
         log.info("redirectUri地址={}", redirectUri);
         response.sendRedirect(redirectUri);
@@ -117,10 +157,10 @@ public class WxMpOAuthController {
         backUrl = URLDecoder.decode(backUrl, "UTF-8");
 
         // 通过code换取access token
-        WxMpOAuth2AccessToken wxMpOAuth2AccessToken = null;
+        WxOAuth2AccessToken wxMpOAuth2AccessToken = null;
         String openId = null;
         try {
-            wxMpOAuth2AccessToken = wxMpService.oauth2getAccessToken(code);
+            wxMpOAuth2AccessToken = wxMpService.getOAuth2Service().getAccessToken(code);
             // 获取openId
             openId = wxMpOAuth2AccessToken.getOpenId();
             log.info("openId={}", openId);
@@ -146,41 +186,6 @@ public class WxMpOAuthController {
             throw new RuntimeException("网页授权失败！");
         }
         response.sendRedirect(backUrl);
-    }
-
-    /**
-     * 微信用户转为系统微信用户
-     * @param userWxInfo 微信用户
-     * @param sysWxUser 系统微信用户
-     */
-    private SysWxUser convertSysWxUser(WxMpUser userWxInfo,SysWxUser sysWxUser) {
-
-        if (Objects.nonNull(sysWxUser)) {
-            sysWxUser.setSubscribeNum(sysWxUser.getSubscribeNum()+1);
-        } else {
-            sysWxUser = new SysWxUser();
-            sysWxUser.setSubscribeNum(1L);
-            sysWxUser.setOpenId(userWxInfo.getOpenId());
-        }
-        sysWxUser.setAppType("2");
-        sysWxUser.setSubscribe("1");
-        sysWxUser.setSubscribeScene(userWxInfo.getSubscribeScene());
-        sysWxUser.setSubscribeTime(new Date());
-        sysWxUser.setNickName(userWxInfo.getNickname());
-        sysWxUser.setSex(userWxInfo.getSex()==1?"1":"0");
-        sysWxUser.setCity(userWxInfo.getCity());
-        sysWxUser.setCountry(userWxInfo.getCountry());
-        sysWxUser.setProvince(userWxInfo.getProvince());
-        sysWxUser.setLanguage(userWxInfo.getLanguage());
-        sysWxUser.setHeadimgUrl(userWxInfo.getHeadImgUrl());
-        sysWxUser.setUnionId(userWxInfo.getUnionId());
-        sysWxUser.setGroupId(userWxInfo.getGroupId()+"");
-        Long[] tagIds = userWxInfo.getTagIds();
-        if (tagIds != null && tagIds.length > 0) {
-            sysWxUser.setTagidList(StringUtils.join(tagIds));
-        }
-        sysWxUser.setQrSceneStr(userWxInfo.getQrSceneStr());
-        return sysWxUser;
     }
 
     /**

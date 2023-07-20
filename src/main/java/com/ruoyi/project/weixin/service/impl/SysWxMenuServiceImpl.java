@@ -3,7 +3,6 @@ package com.ruoyi.project.weixin.service.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import com.ruoyi.common.constant.Constants;
 import com.ruoyi.common.utils.DateUtils;

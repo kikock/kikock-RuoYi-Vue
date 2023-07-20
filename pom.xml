@@ -2,13 +2,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <groupId>com.ruoyi</groupId>
-    <artifactId>ssosrasb-service</artifactId>
+    <artifactId>ruoyi</artifactId>
     <version>3.8.6</version>
     <packaging>jar</packaging>
 
-    <name>ssosrasb-service</name>
+    <name>ruoyi</name>
     <url>http://www.ruoyi.vip</url>
     <description>若依管理系统</description>
 
@@ -36,8 +35,8 @@
         <poi.version>4.1.2</poi.version>
         <oshi.version>6.4.3</oshi.version>
         <velocity.version>2.3</velocity.version>
-        <weixin-java-mp.version>3.5.0</weixin-java-mp.version>
-        <weixin-java-miniapp.version>3.5.0</weixin-java-miniapp.version>
+        <weixin-java-mp.version>4.5.0</weixin-java-mp.version>
+        <weixin-java-miniapp.version>4.5.0</weixin-java-miniapp.version>
     </properties>
 
     <dependencies>
@@ -248,6 +247,12 @@
             <groupId>com.github.binarywang</groupId>
             <artifactId>weixin-java-miniapp</artifactId>
             <version>${weixin-java-miniapp.version}</version>
+        </dependency>
+        <!--hutool工具类-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

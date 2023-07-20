@@ -32,7 +32,7 @@ import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.framework.web.page.TableDataInfo;
 
 /**
- * 自定义菜单Controller
+ * 微信公众号自定义菜单Controller
  *
  * @author ruoyi
  * @date 2022-04-14

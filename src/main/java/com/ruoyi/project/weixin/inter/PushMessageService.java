@@ -12,7 +12,7 @@ public interface PushMessageService {
 
     /**
      * <pre>
-     * 订单结算通知
+     * 订单结算模板
      * @auther: cao_wencao
      * @date: 2019/2/15 10:40
      * </pre>
