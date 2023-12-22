@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysSocialUserBindMapper">
+
+    <resultMap type="SysSocialUserBind" id="SysSocialUserBindResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="socialType" column="social_type"/>
+        <result property="socialUuid" column="social_uuid"/>
+        <result property="email" column="email"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <association property="user" javaType="SysUser" resultMap="userResult"/>
+    </resultMap>
+
+    <resultMap id="userResult" type="SysUser">
+        <id property="userId" column="userId"/>
+        <result property="deptId" column="deptId"/>
+        <result property="userName" column="userName"/>
+        <result property="phonenumber" column="phonenumber"/>
+    </resultMap>
+
+    <sql id="selectSysSocialUserBindVo">
+        SELECT
+            b.id,
+            b.user_id,
+            b.user_name,
+            b.nick_name,
+            b.social_type,
+            b.social_uuid,
+            b.email,
+            b.del_flag,
+            b.create_by,
+            b.create_time,
+            b.update_by,
+            b.update_time,
+            b.remark,
+            u.user_id as userId,
+            u.dept_id as deptId,
+            u.user_name as userName,
+            u.phonenumber
+        FROM
+            sys_social_user_bind AS b
+                LEFT JOIN
+            sys_user AS u
+            ON
+                b.user_id = u.user_id
+    </sql>
+
+    <select id="selectSysSocialUserBindList" parameterType="SysSocialUserBind" resultMap="SysSocialUserBindResult">
+        <include refid="selectSysSocialUserBindVo"/>
+        <where>
+            <if test="userName != null  and userName != ''"> and u.user_name
+                like concat('%', #{userName}, '%')
+            </if>
+            <if test="socialType != null "> and b.social_type =
+                #{socialType}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSysSocialUserBindById" parameterType="Long"
+            resultMap="SysSocialUserBindResult">
+        <include refid="selectSysSocialUserBindVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysSocialUserBind" parameterType="SysSocialUserBind"  useGeneratedKeys="true"
+            keyProperty="id" >
+        insert into sys_social_user_bind
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="nickName != null">
+                nick_name,
+            </if>
+            <if test="socialType != null">
+                social_type,
+            </if>
+            <if test="socialUuid != null and socialUuid != ''">
+                social_uuid,
+            </if>
+            <if test="email != null">
+                email,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="nickName != null">
+                #{nickName},
+            </if>
+            <if test="socialType != null">
+                #{socialType},
+            </if>
+            <if test="socialUuid != null and socialUuid != ''">
+                #{socialUuid},
+            </if>
+            <if test="email != null">
+                #{email},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSysSocialUserBind" parameterType="SysSocialUserBind">
+        update sys_social_user_bind
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName},
+            </if>
+            <if test="socialType != null">
+                social_type = #{socialType},
+            </if>
+            <if test="socialUuid != null and socialUuid != ''">
+                social_uuid = #{socialUuid},
+            </if>
+            <if test="email != null">
+                email = #{email},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysSocialUserBindById" parameterType="Long">
+        delete from sys_social_user_bind where id = #{id}
+    </delete>
+
+    <delete id="deleteSysSocialUserBindByIds" parameterType="String">
+        delete from sys_social_user_bind where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <resultMap type="SysUser" id="UserResult">
+        <id     property="userId"        column="user_id"         />
+        <result property="userName"     column="user_name"      />
+    </resultMap>
+
+    <select id="selectAuthUserByUuid" parameterType="String" resultMap="UserResult">
+        select b.user_id as user_id, b.user_name as user_name
+        from sys_social_user_bind a left join sys_user b on a.user_id = b.user_id
+        where a.social_uuid = #{uuid} and b.del_flag = '0'
+    </select>
+
+
+    <resultMap type="SocialUserVo" id="UserSocialAppResult">
+        <id     property="id"        column="id"         />
+        <result property="name"     column="name"      />
+        <result property="authId"      column="auth_id"        />
+        <result property="status"      column="status"        />
+    </resultMap>
+<!--    用户第三方绑定状态-->
+    <select id="findSocialUserBindByUserId" parameterType="Long" resultMap="UserSocialAppResult">
+        SELECT
+            sa.id,
+            sa.code as type,
+            sa.name,
+            sb.social_uuid as auth_id,
+            CASE WHEN sb.user_id IS NOT NULL THEN '1' ELSE '0' END AS status
+        FROM
+            sys_social_app sa
+                LEFT JOIN
+            sys_social_user_bind sb ON sa.code = sb.social_type AND sb.user_id = #{userId};
+    </select>
+
+    <delete id="deleteAuthUser" parameterType="String">
+        delete from sys_social_user_bind where social_uuid = #{authId}
+    </delete>
+
+</mapper>

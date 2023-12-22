@@ -1,23 +1,36 @@
-<p align="center">
-	<img alt="logo" src="https://oscimg.oschina.net/oscnet/up-d3d0a9303e11d522a06cd263f3079027715.png">
-</p>
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi v3.8.8</h1>
-<h4 align="center">基于SpringBoot+Vue前后端分离的Java脚手架</h4>
-<p align="center">
-	<a href="https://gitee.com/y_project/RuoYi-Vue/stargazers"><img src="https://gitee.com/y_project/RuoYi-Vue/badge/star.svg?theme=dark"></a>
-	<a href="https://gitee.com/y_project/RuoYi-Vue"><img src="https://img.shields.io/badge/RuoYi-v3.8.6-brightgreen.svg"></a>
-	<a href="https://gitee.com/y_project/RuoYi-Vue/blob/master/LICENSE"><img src="https://img.shields.io/github/license/mashape/apistatus.svg"></a>
-</p>
 
+<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi v3.8.6</h1>
+<h4 align="center">基于SpringBoot+Vue前后端分离的Java快速开发框架</h4>
+<h4 align="center">基于RuoYi v3.8.6版本修改</h4>
 ## 平台简介
 
-* 根据RuoYi-Vue的单应用版本创建。
+若依是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
+
+* 前端采用Vue、Element UI。
 * 后端采用Spring Boot、Spring Security、Redis & Jwt。
 * 权限认证使用Jwt，支持多终端认证系统。
 * 支持加载动态权限菜单，多方式轻松权限控制。
 * 高效率开发，使用代码生成器可以一键生成前后端代码。
-## 内置功能
+* 提供了技术栈（[Vue3](https://v3.cn.vuejs.org) [Element Plus](https://element-plus.org/zh-CN) [Vite](https://cn.vitejs.dev)）版本[RuoYi-Vue3]并使用setup语法。
 
+
+### 项目目录说明
+
+
+| 项目/模块              | 简介                              |
+|--------------------|---------------------------------|
+| [RuoYi-Vue-master] | 基于 Spring Boot 多模块架构            |
+| [ruoyi-admin]      | 项目主模块 web服务入口                   |
+| [ruoyi-common]      | 通用工具                            |
+| [ruoyi-framework]      | 核心模块                            |
+| [ruoyi-generator]      | 代码生成                            |
+| [ruoyi-quartz]      | 定时任务                            |
+| [ruoyi-system]      | 系统模块                            |
+| [ruoyi_web_electron]      | web端软件模块                        |
+| [ruoyi_web_h5]      | 基于 uni-app + uni-ui 实现的管理后台的h5端 |
+| [ruoyi_web_ui]      | web端主模块                         |
+
+## 内置功能
 1.  用户管理：用户是系统操作者，该功能主要完成系统用户配置。
 2.  部门管理：配置系统组织机构（公司、部门、小组），树结构展现支持数据权限。
 3.  岗位管理：配置系统用户所属担任职务。
@@ -37,8 +50,7 @@
 17. 在线构建器：拖动表单元素生成相应的HTML代码。
 18. 连接池监视：监视当前系统数据库连接池状态，可进行分析SQL找出系统性能瓶颈。
 
-##增加模块
-1. 微信模块
-
-
+## 新增业务/功能
+1. 第三方登录: 用户新增第三方社交账号登录功能
+2. 前端密码加密功能
 
