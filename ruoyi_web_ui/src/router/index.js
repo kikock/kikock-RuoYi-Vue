@@ -99,15 +99,13 @@ export const constantRoutes = [
         component: () => import('@/views/bpm/form/editor/index.vue'),
         name: 'BpmFormEditor',
         meta: {
-          noCache: true,
-          hidden: true,
-          canTo: true,
           title: '设计流程自定义表单',
           activeMenu: '/bpm/manager/form'
         }
       }
     ]
   },
+
 ]
 
 // 动态路由，基于用户权限动态去加载
@@ -182,6 +180,7 @@ export const dynamicRoutes = [
       }
     ]
   }
+
 ]
 
 const router = createRouter({
