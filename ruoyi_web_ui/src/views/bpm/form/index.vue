@@ -113,14 +113,14 @@ function resetQuery() {
 
 /** 新增按钮操作 */
 function handleAdd() {
-  router.push({path: "/bpm/manager/form"});
+  router.push({path: "/flowable/bpm/edit"});
 }
 
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
   const _id = row.id
-  router.push({path: "/bpm/manager/form", query: {id: _id}});
+  router.push({path: "/flowable/bpm/edit", query: {id: _id}});
 }
 
 /** 删除按钮操作 */
