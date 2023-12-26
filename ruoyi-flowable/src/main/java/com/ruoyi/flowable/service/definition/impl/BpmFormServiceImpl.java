@@ -1,5 +1,7 @@
 package com.ruoyi.flowable.service.definition.impl;
 
+import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.flowable.domain.definition.BpmForm;
 import com.ruoyi.flowable.mapper.definition.BpmFormMapper;
@@ -51,6 +53,10 @@ public class BpmFormServiceImpl implements IBpmFormService{
     @Override
     public int insertBpmForm(BpmForm bpmForm){
         bpmForm.setCreateTime(DateUtils.getNowDate());
+        List<String> fieldsArr = bpmForm.getFieldsArr();
+        if (CollectionUtil.isNotEmpty(fieldsArr)){
+            bpmForm.setFields(fieldsArr.toString());
+        }
         return bpmFormMapper.insertBpmForm(bpmForm);
     }
 

@@ -5,6 +5,9 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.validation.constraints.NotNull;
+import java.util.List;
+
 /**
  * 工作流的单定义对象 bpm_form
  *
@@ -35,14 +38,16 @@ public class BpmForm extends BaseEntity{
      * 表单的配置
      */
     @Excel(name = "表单的配置")
+    @NotNull(message = "表单的配置不能为空")
     private String conf;
 
     /**
      * 表单项的数组
      */
-    @Excel(name = "表单项的数组")
     private String fields;
 
+    @NotNull(message = "表单项的数组不能为空")
+    private List<String> fieldsArr;
     /**
      * 删除标志（0代表存在 2代表删除）
      */
@@ -94,6 +99,14 @@ public class BpmForm extends BaseEntity{
 
     public String getDelFlag(){
         return delFlag;
+    }
+
+    public List<String> getFieldsArr(){
+        return fieldsArr;
+    }
+
+    public void setFieldsArr(List<String> fieldsArr){
+        this.fieldsArr = fieldsArr;
     }
 
     @Override
