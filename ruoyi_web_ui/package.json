@@ -40,9 +40,12 @@
     "vue": "3.2.45",
     "vue-clipboard3": "^2.0.0",
     "vue-cropper": "1.0.3",
-    "vue-router": "4.1.4"
+    "vue-router": "4.1.4",
+    "@form-create/designer": "^3.1.3",
+    "@form-create/element-ui": "^3.1.24"
   },
   "devDependencies": {
+    "typescript": "5.2.2",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/compiler-sfc": "3.2.45",
     "crypto-js": "^4.2.0",

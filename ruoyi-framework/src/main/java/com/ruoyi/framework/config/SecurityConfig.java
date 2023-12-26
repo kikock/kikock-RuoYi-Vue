@@ -116,6 +116,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                 .antMatchers("/oauth/**","/oauthBack").permitAll()
                 //获取加密公钥允许匿名
                 .antMatchers("/getPublicKey").permitAll()
+                 // 任务回退接口
+                .antMatchers("/bpm/task/back").permitAll()
                 // 除上面外的所有请求全部需要鉴权认证
                 .anyRequest().authenticated()
                 .and()

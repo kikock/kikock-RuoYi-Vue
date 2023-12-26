@@ -35,6 +35,8 @@
         <alibaba-dingtalk-service-sdk>2.0.0</alibaba-dingtalk-service-sdk>
         <oauth.version>1.16.5</oauth.version>
         <guava.version>32.0.1-jre</guava.version>
+        <!-- Bpm 工作流相关 -->
+        <flowable.version>6.8.0</flowable.version>
     </properties>
 
     <!-- 依赖声明 -->
@@ -49,7 +51,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <!-- 阿里数据库连接池 -->
             <dependency>
                 <groupId>com.alibaba</groupId>
@@ -178,6 +179,26 @@
                 <artifactId>alibaba-dingtalk-service-sdk</artifactId>
                 <version>${alibaba-dingtalk-service-sdk}</version>
             </dependency>
+
+            <!-- 工作流相关 -->
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-process</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-actuator</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flowable</groupId>
+                <artifactId>flowable-spring-boot-starter-actuator</artifactId>
+                <version>${flowable.version}</version>
+            </dependency>
+
+
+            <!-- 工作流相关结束 -->
             <!-- ##########以下引入模块-->
 
             <!-- 定时任务-->
@@ -207,7 +228,12 @@
                 <artifactId>ruoyi-system</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
-
+            <!-- 工作流模块-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>ruoyi-flowable</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
             <!-- 通用工具-->
             <dependency>
                 <groupId>com.ruoyi</groupId>
@@ -224,6 +250,7 @@
         <module>ruoyi-quartz</module>
         <module>ruoyi-generator</module>
         <module>ruoyi-common</module>
+        <module>ruoyi-flowable</module>
     </modules>
     <packaging>pom</packaging>
 

@@ -88,7 +88,26 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
-  }
+  },
+  {
+    path: '/bpm',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/manager/form/edit',
+        component: () => import('@/views/bpm/form/editor/index.vue'),
+        name: 'BpmFormEditor',
+        meta: {
+          noCache: true,
+          hidden: true,
+          canTo: true,
+          title: '设计流程自定义表单',
+          activeMenu: '/bpm/manager/form'
+        }
+      }
+    ]
+  },
 ]
 
 // 动态路由，基于用户权限动态去加载
