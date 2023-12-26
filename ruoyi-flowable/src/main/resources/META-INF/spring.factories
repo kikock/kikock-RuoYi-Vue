@@ -1,0 +1,3 @@
+#org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+#  com.ruoyi.flowable.framework.config.MyFlowableConfiguration
+#

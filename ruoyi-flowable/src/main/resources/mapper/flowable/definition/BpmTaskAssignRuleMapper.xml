@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.flowable.mapper.definition.BpmTaskAssignRuleMapper">
+    <resultMap type="BpmTaskAssignRule" id="BpmTaskAssignRuleResult">
+        <result property="id" column="id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="processDefinitionId" column="process_definition_id"/>
+        <result property="taskDefinitionKey" column="task_definition_key"/>
+        <result property="type" column="type"/>
+        <result property="options" column="options"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectBpmTaskAssignRuleVo">
+        select id,
+               model_id,
+               process_definition_id,
+               task_definition_key,
+               type,
+               options,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from bpm_task_assign_rule
+    </sql>
+
+    <select id="selectBpmTaskAssignRuleList" parameterType="BpmTaskAssignRule" resultMap="BpmTaskAssignRuleResult">
+        <include refid="selectBpmTaskAssignRuleVo"/>
+        <where>
+            <if test="modelId != null  and modelId != ''">
+                and model_id =
+                #{modelId}
+            </if>
+            <if test="processDefinitionId != null  and processDefinitionId != ''">
+                and process_definition_id =
+                #{processDefinitionId}
+            </if>
+            <if test="taskDefinitionKey != null  and taskDefinitionKey != ''">
+                and task_definition_key =
+                #{taskDefinitionKey}
+            </if>
+            <if test="type != null">
+                and type =
+                #{type}
+            </if>
+            <if test="options != null  and options != ''">
+                and options =
+                #{options}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBpmTaskAssignRuleById" parameterType="Long"
+            resultMap="BpmTaskAssignRuleResult">
+        <include refid="selectBpmTaskAssignRuleVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBpmTaskAssignRule" parameterType="BpmTaskAssignRule" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bpm_task_assign_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modelId != null and modelId != ''">
+                model_id,
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id,
+            </if>
+            <if test="taskDefinitionKey != null and taskDefinitionKey != ''">
+                task_definition_key,
+            </if>
+            <if test="type != null">
+                type,
+            </if>
+            <if test="options != null and options != ''">
+                options,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modelId != null and modelId != ''">
+                #{modelId},
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                #{processDefinitionId},
+            </if>
+            <if test="taskDefinitionKey != null and taskDefinitionKey != ''">
+                #{taskDefinitionKey},
+            </if>
+            <if test="type != null">
+                #{type},
+            </if>
+            <if test="options != null and options != ''">
+                #{options},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBpmTaskAssignRule" parameterType="BpmTaskAssignRule">
+        update bpm_task_assign_rule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="modelId != null and modelId != ''">
+                model_id = #{modelId},
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id = #{processDefinitionId},
+            </if>
+            <if test="taskDefinitionKey != null and taskDefinitionKey != ''">
+                task_definition_key = #{taskDefinitionKey},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="options != null and options != ''">
+                options = #{options},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBpmTaskAssignRuleById" parameterType="Long">
+        delete from bpm_task_assign_rule where id = #{id}
+    </delete>
+
+    <delete id="deleteBpmTaskAssignRuleByIds" parameterType="String">
+        delete from bpm_task_assign_rule where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
