@@ -69,6 +69,10 @@ public class BpmFormServiceImpl implements IBpmFormService{
     @Override
     public int updateBpmForm(BpmForm bpmForm){
         bpmForm.setUpdateTime(DateUtils.getNowDate());
+        List<String> fieldsArr = bpmForm.getFieldsArr();
+        if (CollectionUtil.isNotEmpty(fieldsArr)){
+            bpmForm.setFields(fieldsArr.toString());
+        }
         return bpmFormMapper.updateBpmForm(bpmForm);
     }
 

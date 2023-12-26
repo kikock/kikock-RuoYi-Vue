@@ -29,9 +29,14 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="formList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="编号" align="center" prop="id"/>
+    <el-table v-loading="loading" :data="formList" >
+      <el-table-column
+          type="index"
+          label="序号"
+          align="center"
+          width="50"
+          :index="indexMethod">
+      </el-table-column>
       <el-table-column label="表单名" align="center" prop="name"/>
       <el-table-column label="开启状态" align="center" prop="status">
         <template #default="scope">
@@ -86,6 +91,10 @@ const data = reactive({
 });
 const {queryParams} = toRefs(data);
 
+/** 序号 */
+function indexMethod(index){
+  return ((queryParams.value.pageNum-1) * queryParams.value.pageSize + index +1)
+}
 
 /** 查询工作流的单定义列表 */
 function getList() {
@@ -113,7 +122,10 @@ function resetQuery() {
 
 /** 新增按钮操作 */
 function handleAdd() {
-  router.push({path: "/flowable/bpm/edit"});
+  proxy.$tab.openPage("/patrol/mission/index")
+  // router.push({path: "/flowable/bpm/edit"});
+  router.push({path: "/patrol/mission/index"});
+
 }
 
 

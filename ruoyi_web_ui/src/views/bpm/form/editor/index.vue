@@ -1,5 +1,5 @@
 <template>
-
+<div>
   <ElCard shadow="never">
     <template #header>
       <div class="flex items-center">
@@ -12,9 +12,13 @@
     <!-- 表单设计器 -->
     <FcDesigner ref="designer" height="800px">
       <template #handle>
-        <el-button round size="small" type="primary" @click="handleSave">
-          <Icon class="mr-5px" icon="ep:plus"/>
-          保存
+        <el-button
+            type="primary"
+            size="small"
+            round
+            icon="CircleCheck"
+            @click="handleSave"
+        >保存
         </el-button>
       </template>
     </FcDesigner>
@@ -23,21 +27,21 @@
   <el-dialog v-model="dialogVisible" title="保存表单" width="600" append-to-body>
     <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
       <el-form-item label="表单名称" prop="name">
-        <el-input v-model="formData.name" placeholder="请输入表单名"/>
+        <el-input v-model="form.name" placeholder="请输入表单名"/>
       </el-form-item>
       <el-form-item label="状态" prop="status">
-        <el-radio-group v-model="formData.status">
+        <el-radio-group v-model="form.status">
           <el-radio
               v-for="dict in sys_normal_disable"
               :key="dict.value"
-              :label="dict.value"
+              :label="parseInt(dict.value)"
           >
             {{ dict.label }}
           </el-radio>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="备注" prop="remark">
-        <el-input v-model="formData.remark" placeholder="请输入备注" type="textarea"/>
+        <el-input v-model="form.remark" placeholder="请输入备注" type="textarea"/>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -45,13 +49,14 @@
       <el-button @click="dialogVisible = false">取 消</el-button>
     </template>
   </el-dialog>
-
+</div>
 </template>
 <script setup name="BpmFromEditor">
 import FcDesigner from '@form-create/designer'
 import {getCurrentInstance} from 'vue'
 import {encodeConf, encodeFields, setConfAndFields} from '@/utils/formCreate'
-import {getForm} from '@/api/bpm/form'
+import {getForm,updateForm} from '@/api/bpm/form'
+import Day from '@/components/Crontab/day.vue'
 
 const route = useRoute();
 const {proxy} = getCurrentInstance();
@@ -116,16 +121,17 @@ function submitForm() {
   proxy.$refs["formRef"].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
+        data.fields='';
         updateForm(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
-          getList();
+          close();
         });
       } else {
         addForm(form.value).then(response => {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
-          getList();
+          close();
         });
       }
     }
@@ -135,7 +141,7 @@ function submitForm() {
 
 /** 关闭按钮 */
 function close() {
-  const obj = {path: "/bpm/bpmForm/processform"};
+  const obj = {path: "/flowable/bpm/processform"};
   proxy.$tab.closeOpenPage(obj);
 }
 
