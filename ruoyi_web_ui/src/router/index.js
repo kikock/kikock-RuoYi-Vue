@@ -162,6 +162,20 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  //  分配巡检工作
+  {
+    path: '/patrol/mission',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/bpm/form/editor/index.vue'),
+        name: 'patrol_mission',
+        meta: { title: '分配任务', activeMenu: '/ssosrasb/patrol/mission' }
+      }
+    ]
   }
 
 ]
@@ -171,7 +185,6 @@ const router = createRouter({
   routes: constantRoutes,
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
-      console.log("car",savedPosition);
       return savedPosition
     } else {
       return { top: 0 }
