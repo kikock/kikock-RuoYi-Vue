@@ -1,6 +1,7 @@
 package com.ruoyi.flowable.service.definition;
 
 import cn.hutool.db.PageResult;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.flowable.domain.definition.model.*;
 import org.flowable.bpmn.model.BpmnModel;
 
@@ -28,7 +29,7 @@ public interface IBpmModelService{
      * @param bpmnXml BPMN XML
      * @return 创建的流程模型的编号
      */
-    public int createModel(@Valid BpmModelCreateReqVO modelVO, String bpmnXml);
+    public AjaxResult createModel(@Valid BpmModelCreateReqVO modelVO, String bpmnXml);
 
     /**
      * 获得流程模块
