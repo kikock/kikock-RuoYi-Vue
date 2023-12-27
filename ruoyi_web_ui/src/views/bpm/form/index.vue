@@ -130,7 +130,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   const _id = row.id
-  router.push({path: "/bpm/from/editor/index", query: {id: _id}});
+  router.push({path: "/flowable/bpmfrom/index", query: {id: _id}});
 }
 
 /** 删除按钮操作 */

@@ -55,7 +55,7 @@
 import FcDesigner from '@form-create/designer'
 import {getCurrentInstance} from 'vue'
 import {encodeConf, encodeFields, setConfAndFields} from '@/utils/formCreate'
-import {getForm,updateForm} from '@/api/bpm/form'
+import {getForm,updateForm,addForm} from '@/api/bpm/form'
 import Day from '@/components/Crontab/day.vue'
 
 const route = useRoute();
