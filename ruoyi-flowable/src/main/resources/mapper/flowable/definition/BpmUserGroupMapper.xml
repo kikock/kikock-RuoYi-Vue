@@ -7,7 +7,7 @@
         <result property="id" column="id"/>
         <result property="name" column="name"/>
         <result property="description" column="description"/>
-        <result property="memberUserIds" column="member_user_ids"/>
+        <result property="memberUserIds" column="member_user_ids" />
         <result property="status" column="status"/>
         <result property="delFlag" column="del_flag"/>
         <result property="createBy" column="create_by"/>
@@ -44,8 +44,7 @@
                 #{description}
             </if>
             <if test="memberUserIds != null  and memberUserIds != ''">
-                and member_user_ids =
-                #{memberUserIds}
+                and member_user_ids ={memberUserIds}
             </if>
             <if test="status != null">
                 and status =
