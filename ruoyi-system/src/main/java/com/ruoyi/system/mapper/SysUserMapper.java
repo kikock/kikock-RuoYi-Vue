@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -126,4 +127,5 @@ public interface SysUserMapper{
     public SysUser checkEmailUnique(String email);
 
 
+    List<SysUserSimpleVo> selectUserSimpleVoList();
 }

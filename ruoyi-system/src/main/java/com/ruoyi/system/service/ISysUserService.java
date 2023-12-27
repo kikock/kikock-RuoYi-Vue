@@ -1,6 +1,7 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 
 import java.util.List;
 
@@ -203,5 +204,11 @@ public interface ISysUserService{
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
+
+    /**
+     * 查询用户分组的精简用户信息
+     * @return
+     */
+    List<SysUserSimpleVo> selectUserSimpleVoList();
 
 }

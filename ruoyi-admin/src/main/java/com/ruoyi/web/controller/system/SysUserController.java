@@ -8,6 +8,7 @@ import com.ruoyi.common.core.domain.MoreSelect;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -56,6 +57,12 @@ public class SysUserController extends BaseController{
     public TableDataInfo list(SysUser user){
         startPage();
         List<SysUser> list = userService.selectUserList(user);
+        return getDataTable(list);
+    }
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/listUserSimple")
+    public TableDataInfo listSimple(){
+        List<SysUserSimpleVo> list = userService.selectUserSimpleVoList();
         return getDataTable(list);
     }
 
