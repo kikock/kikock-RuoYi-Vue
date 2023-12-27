@@ -170,6 +170,8 @@
 import {delForm, listForm} from "@/api/bpm/form";
 import router from "@/router";
 import {getCurrentInstance, reactive, ref} from 'vue'
+import {createModel} from '@/api/bpm/model'
+import {addSocialApp} from '@/api/system/socialApp'
 const {proxy} = getCurrentInstance();
 const {bpm_model_category} = proxy.useDict('bpm_model_category');
 const formList = ref([]);
@@ -268,7 +270,13 @@ function handleAdd() {
 function submitForm() {
   proxy.$refs["bpmMpdelRef"].validate(valid => {
     if (valid) {
-      console.log(form.value);
+      createModel(form.value).then(response => {
+        console.log(response);
+        proxy.$modal.msgSuccess("新增成功");
+        open.value = false;
+        getList();
+      });
+
     }
   });
 }
