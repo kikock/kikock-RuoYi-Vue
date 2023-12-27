@@ -122,9 +122,7 @@ function resetQuery() {
 
 /** 新增按钮操作 */
 function handleAdd() {
-  proxy.$tab.openPage("/patrol/mission/index")
-  // router.push({path: "/flowable/bpm/edit"});
-  router.push({path: "/patrol/mission/index"});
+  router.push({path: "/flowable/bpmfrom/index"});
 
 }
 
@@ -132,7 +130,7 @@ function handleAdd() {
 /** 修改按钮操作 */
 function handleUpdate(row) {
   const _id = row.id
-  router.push({path: "/flowable/bpm/edit", query: {id: _id}});
+  router.push({path: "/bpm/from/editor/index", query: {id: _id}});
 }
 
 /** 删除按钮操作 */

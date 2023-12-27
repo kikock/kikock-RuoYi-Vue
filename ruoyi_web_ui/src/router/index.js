@@ -163,49 +163,35 @@ export const dynamicRoutes = [
       }
     ]
   },
-  //  分配巡检工作
   {
-    path: '/patrol/mission',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/bpm/form/editor/index.vue'),
-        name: 'patrol_mission',
-        meta: { title: '分配任务', activeMenu: '/ssosrasb/patrol/mission' }
-      }
-    ]
-  },
-  {
-    path: '/bpm/from/editor-add',
+    path: '/flowable',
     component: Layout,
     hidden: true,
     permissions: ['bpm:form:add'],
     children: [
       {
-        path: 'index',
+        path: 'bpmFrom/index',
         component: () => import('@/views/bpm/form/editor/index'),
-        name: 'BpmFromEditor',
-        meta: { title: '修改生成配置', activeMenu: '/bpm/bpmForm/processform' }
-      }
+        name: 'BpmFromIndex',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '自定义流程表单',
+          activeMenu: '/bpm/bpmForm/processform' }
+      },
+      {
+        path: '/bpmModel/editor',
+        component: () => import('@/views/bpm/model/editor/index.vue'),
+        name: 'BpmModelEditor',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '设计流程',
+          activeMenu: '/bpm/manager/model'
+        }
+      },
     ]
   },
-  {
-    path: '/bpm/from/editor',
-    component: Layout,
-    hidden: true,
-    permissions: ['tool:gen:edit'],
-    children: [
-      {
-        path: 'index/:tableId(\\d+)',
-        component: () => import('@/views/tool/gen/editTable'),
-        name: 'GenEdit',
-        meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
-      }
-    ]
-  }
-
 ]
 
 const router = createRouter({
