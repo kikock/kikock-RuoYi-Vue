@@ -1,62 +1,61 @@
 <template>
-<div>
-  <ElCard shadow="never">
-    <template #header>
-      <div class="flex items-center">
-        <span class="text-16px font-700">流程自定义表单</span>
-      </div>
-    </template>
-    <div>
-      <slot></slot>
-    </div>
-    <!-- 表单设计器 -->
-    <FcDesigner ref="designer" height="800px">
-      <template #handle>
-        <el-button
-            type="primary"
-            size="small"
-            round
-            icon="CircleCheck"
-            @click="handleSave"
-        >保存
-        </el-button>
+  <div>
+    <ElCard shadow="never">
+      <template #header>
+        <div class="flex items-center">
+          <span class="text-16px font-700">流程自定义表单</span>
+        </div>
       </template>
-    </FcDesigner>
-  </ElCard>
-  <!-- 表单保存的弹窗 -->
-  <el-dialog v-model="dialogVisible" title="保存表单" width="600" append-to-body>
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
-      <el-form-item label="表单名称" prop="name">
-        <el-input v-model="form.name" placeholder="请输入表单名"/>
-      </el-form-item>
-      <el-form-item label="状态" prop="status">
-        <el-radio-group v-model="form.status">
-          <el-radio
-              v-for="dict in sys_normal_disable"
-              :key="dict.value"
-              :label="parseInt(dict.value)"
-          >
-            {{ dict.label }}
-          </el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="备注" prop="remark">
-        <el-input v-model="form.remark" placeholder="请输入备注" type="textarea"/>
-      </el-form-item>
-    </el-form>
-    <template #footer>
-      <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
-      <el-button @click="dialogVisible = false">取 消</el-button>
-    </template>
-  </el-dialog>
-</div>
+      <div>
+        <slot></slot>
+      </div>
+      <!-- 表单设计器 -->
+      <FcDesigner ref="designer" height="800px">
+        <template #handle>
+          <el-button
+              icon="CircleCheck"
+              round
+              size="small"
+              type="primary"
+              @click="handleSave"
+          >保存
+          </el-button>
+        </template>
+      </FcDesigner>
+    </ElCard>
+    <!-- 表单保存的弹窗 -->
+    <el-dialog v-model="dialogVisible" append-to-body title="保存表单" width="600">
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="表单名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入表单名"/>
+        </el-form-item>
+        <el-form-item label="状态" prop="status">
+          <el-radio-group v-model="form.status">
+            <el-radio
+                v-for="dict in sys_normal_disable"
+                :key="dict.value"
+                :label="parseInt(dict.value)"
+            >
+              {{ dict.label }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="form.remark" placeholder="请输入备注" type="textarea"/>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button :disabled="formLoading" type="primary" @click="submitForm">确 定</el-button>
+        <el-button @click="dialogVisible = false">取 消</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
-<script setup name="BpmFromEditor">
+<script name="BpmFromEditor" setup>
 import FcDesigner from '@form-create/designer'
 import {getCurrentInstance} from 'vue'
 import {encodeConf, encodeFields, setConfAndFields} from '@/utils/formCreate'
-import {getForm,updateForm,addForm} from '@/api/bpm/form'
-import Day from '@/components/Crontab/day.vue'
+import {addForm, getForm, updateForm} from '@/api/bpm/form'
 
 const route = useRoute();
 const {proxy} = getCurrentInstance();
@@ -121,7 +120,7 @@ function submitForm() {
   proxy.$refs["formRef"].validate(valid => {
     if (valid) {
       if (form.value.id != null) {
-        data.fields='';
+        data.fields = '';
         updateForm(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;

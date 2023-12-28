@@ -22,9 +22,10 @@ export const encodeFields = (designerRef) => {
 // 解码表单 Fields
 export const decodeFields = (fields) => {
     const rule = []
-    console.log(fields);
-    fields.forEach((item) => {
-        rule.push(JSON.parse(item))
+    // var parse = JSON.parse(fields);
+    console.log(parse);
+    parse.forEach((item) => {
+        rule.push(JSON.parse(item));
     })
     return rule
 }
@@ -38,16 +39,12 @@ export const setConfAndFields = (designerRef, conf, fields) => {
 }
 
 // 设置表单的 Conf 和 Fields
-export const setConfAndFields2 = (
-    detailPreview,
-    conf,
-    fields,
-    value
-) => {
+export const setConfAndFields2 = (detailPreview,conf, fields,value) => {
     // @ts-ignore
     detailPreview.value.option = JSON.parse(conf)
     // @ts-ignore
-    detailPreview.value.rule = decodeFields(fields)
+    // detailPreview.value.rule = decodeFields(fields);
+    detailPreview.value.rule = JSON.parse(fields);
     if (value) {
         // @ts-ignore
         detailPreview.value.value = value

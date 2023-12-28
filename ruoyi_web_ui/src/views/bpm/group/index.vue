@@ -83,8 +83,7 @@
       </el-table-column>
       <el-table-column label="状态" align="center" >
         <template #default="scope">
-          <span v-if="scope.row.status==0">正常</span>
-          <span v-else>停用</span>
+          <dict-tag :options="sys_normal_disable" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="备注" align="center" prop="remark"/>
@@ -118,7 +117,7 @@
           <el-input v-model="form.description" placeholder="请输入描述"/>
         </el-form-item>
         <el-form-item label="成员" prop="memberUserIds">
-          <el-select v-model="form.memberUserIds" multiple placeholder="请选这成员">
+          <el-select v-model="form.memberUserIds" multiple placeholder="请选择成员">
             <el-option
                 v-for="user in userList"
                 :key="user.id"
@@ -151,8 +150,10 @@
 import {addGroup, delGroup, getGroup, listGroup, updateGroup} from "@/api/bpm/group";
 import {listUserSimple} from "@/api/system/user";
 import {getCurrentInstance, reactive, ref} from 'vue'
-
 const {proxy} = getCurrentInstance();
+const {sys_normal_disable} = proxy.useDict('sys_normal_disable');
+
+
 
 const groupList = ref([]);
 const open = ref(false);
