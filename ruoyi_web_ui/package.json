@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.0.10",
+    "@form-create/designer": "^3.1.3",
+    "@form-create/element-ui": "^3.1.26",
     "@vueup/vue-quill": "1.1.0",
     "@vueuse/core": "9.5.0",
     "@wangeditor/editor": "^5.1.23",
@@ -40,16 +42,14 @@
     "vue": "3.2.45",
     "vue-clipboard3": "^2.0.0",
     "vue-cropper": "1.0.3",
-    "vue-router": "4.1.4",
-    "@form-create/designer": "^3.1.3",
-    "@form-create/element-ui": "^3.1.24"
+    "vue-router": "4.1.4"
   },
   "devDependencies": {
-    "typescript": "5.2.2",
     "@vitejs/plugin-vue": "^4.0.0",
     "@vue/compiler-sfc": "3.2.45",
     "crypto-js": "^4.2.0",
     "sass": "1.56.1",
+    "typescript": "5.2.2",
     "unplugin-auto-import": "0.11.4",
     "vite": "^4.0.0",
     "vite-plugin-compression": "0.5.1",

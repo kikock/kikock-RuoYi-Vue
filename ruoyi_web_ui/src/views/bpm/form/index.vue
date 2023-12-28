@@ -54,8 +54,11 @@
           <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['bpm:form:edit']">
             修改
           </el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)"
-                     v-hasPermi="['bpm:form:remove']">删除
+          <el-button link type="primary" icon="View" @click="handleDetail(scope.row)" v-hasPermi="['bpm:form:query']">
+            详情
+          </el-button>
+          <el-button link type="danger" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['bpm:form:remove']">
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -68,13 +71,22 @@
         v-model:limit="queryParams.pageSize"
         @pagination="getList"
     />
+    <!-- 表单详情的弹窗 -->
+    <el-dialog  :title="title" v-model="detailVisible" title="表单详情" width="800">
+      <FormCreate :option="detailData.option" :rule="detailData.rule"  />
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="bpmForm">
-import {delForm, listForm} from "@/api/bpm/form";
+import {delForm, listForm,getForm} from "@/api/bpm/form";
+import {setConfAndFields2} from "@/utils/formCreate";
 import router from "@/router";
 import {getCurrentInstance, reactive, ref} from 'vue'
+//导入 form-create
+import formCreate from "@form-create/element-ui";
+//获取 formCreate 组件
+const FormCreate = formCreate.$form();
 const {proxy} = getCurrentInstance();
 const {sys_normal_disable} = proxy.useDict('sys_normal_disable');
 const formList = ref([]);
@@ -82,6 +94,7 @@ const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
 const total = ref(0);
+const title = ref("");
 const data = reactive({
   queryParams: {
     pageNum: 1,
@@ -89,6 +102,11 @@ const data = reactive({
     name: null,
   },
 });
+const detailVisible = ref(false)
+const detailData = ref({
+  rule: [],
+  option: {}
+})
 const {queryParams} = toRefs(data);
 
 /** 序号 */
@@ -126,13 +144,22 @@ function handleAdd() {
 
 }
 
-
 /** 修改按钮操作 */
 function handleUpdate(row) {
   const _id = row.id
   router.push({path: "/flowable/bpmfrom/index", query: {id: _id}});
 }
 
+/** 详情按钮*/
+function handleDetail(row) {
+  getForm(row.id).then(respose=>{
+    setConfAndFields2(detailData,respose.data.conf, respose.data.fields);
+    console.log(detailData.value)
+    title.value=respose.data.name;
+    // 弹窗打开
+    detailVisible.value = true
+  })
+}
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
