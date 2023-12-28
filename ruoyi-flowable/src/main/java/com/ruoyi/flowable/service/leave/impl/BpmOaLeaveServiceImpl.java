@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.service.leave.impl;
 
+import cn.hutool.core.date.LocalDateTimeUtil;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.flowable.domain.leave.BpmOaLeave;
 import com.ruoyi.flowable.mapper.leave.BpmOaLeaveMapper;
@@ -7,7 +8,14 @@ import com.ruoyi.flowable.service.leave.IBpmOaLeaveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * OA 请假申请Service业务层处理
@@ -19,6 +27,7 @@ import java.util.List;
 public class BpmOaLeaveServiceImpl implements IBpmOaLeaveService{
     @Autowired
     private BpmOaLeaveMapper bpmOaLeaveMapper;
+
 
     /**
      * 查询OA 请假申请
@@ -50,8 +59,28 @@ public class BpmOaLeaveServiceImpl implements IBpmOaLeaveService{
      */
     @Override
     public int insertBpmOaLeave(BpmOaLeave bpmOaLeave){
+        LocalDateTime startTime = bpmOaLeave.getStartTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime endTime = bpmOaLeave.getEndTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        // 插入 OA 请假单
+        long day = LocalDateTimeUtil.between( startTime, endTime).toDays();
+        bpmOaLeave.setDay((int) day);
+        bpmOaLeave.setResult(4);
         bpmOaLeave.setCreateTime(DateUtils.getNowDate());
         return bpmOaLeaveMapper.insertBpmOaLeave(bpmOaLeave);
+
+//        // 发起 BPM 流程
+//        Map<String, Object> processInstanceVariables = new HashMap<>();
+//        processInstanceVariables.put("day", day);
+//
+//        String processInstanceId = processInstanceApi.createProcessInstance(userId,
+//                new BpmProcessInstanceCreateReqDTO().setProcessDefinitionKey(PROCESS_KEY)
+//                        .setVariables(processInstanceVariables).setBusinessKey(String.valueOf(leave.getId())));
+//
+//        // 将工作流的编号，更新到 OA 请假单中
+//        leaveMapper.updateById(new BpmOALeaveDO().setId(leave.getId()).setProcessInstanceId(processInstanceId));
+
+
+//        return ;
     }
 
     /**
