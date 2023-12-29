@@ -5,7 +5,6 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
-import com.ruoyi.flowable.domain.definition.BpmForm;
 import com.ruoyi.flowable.domain.definition.BpmModel;
 import com.ruoyi.flowable.domain.definition.vo.BpmModelVo;
 import com.ruoyi.flowable.service.definition.IBpmModelService;
@@ -30,7 +29,7 @@ public class BpmModelController extends BaseController{
     /**
      * 查询流程模型列表
      */
-    @PreAuthorize("@ss.hasPermi('bpm:form:list')")
+    @PreAuthorize("@ss.hasPermi('bpm:model:list')")
     @GetMapping("/list")
     public TableDataInfo list(BpmModel bpmForm){
         List<BpmModel> list = modelService.selectBpmModelList(bpmForm);
@@ -40,10 +39,20 @@ public class BpmModelController extends BaseController{
     /**
      * 新增流程模型
      */
-    @PreAuthorize("@ss.hasPermi('bpm:form:add')")
+    @PreAuthorize("@ss.hasPermi('bpm:model:add')")
     @Log(title = "创建流程模型", businessType = BusinessType.INSERT)
     @PostMapping("/create")
     public AjaxResult add(@RequestBody BpmModelVo bpmModelVo){
         return modelService.createModel(bpmModelVo,null);
     }
+
+    /**
+     * 获取流程模型详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('bpm:model:query')")
+    @GetMapping(value = "/{id}")
+    public AjaxResult getInfo(@PathVariable("id") String id){
+        return success(modelService.selectBpmModelById(id));
+    }
+
 }

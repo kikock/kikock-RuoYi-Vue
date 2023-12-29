@@ -130,8 +130,28 @@ public class BpmModelServiceImpl implements IBpmModelService{
     }
 
     @Override
-    public BpmModel getModel(String id){
-        return null;
+    public BpmModel selectBpmModelById(String id){
+        BpmModel modelVO = new BpmModel();
+        Model model = repositoryService.getModel(id);
+        if (model == null) {
+            return modelVO;
+        }
+//        model 参数
+        modelVO.setId(model.getId());
+        modelVO.setCreateTime(model.getCreateTime());
+        modelVO.setName(model.getName());
+        modelVO.setKey(model.getKey());
+        modelVO.setCategory(model.getCategory());
+        BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
+        modelVO.setDescription( metaInfo.getDescription() );
+        modelVO.setFormType( metaInfo.getFormType() );
+        modelVO.setFormId( metaInfo.getFormId() );
+        modelVO.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
+        modelVO.setFormCustomViewPath( metaInfo.getFormCustomViewPath());
+        // 拼接 bpmn XML
+        byte[] bpmnBytes = repositoryService.getModelEditorSource(id);
+        modelVO.setBpmnXml(StrUtil.utf8Str(bpmnBytes));
+        return modelVO;
     }
 
     @Override

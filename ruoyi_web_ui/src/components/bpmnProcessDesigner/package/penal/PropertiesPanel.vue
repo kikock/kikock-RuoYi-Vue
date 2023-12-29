@@ -4,7 +4,7 @@
       <el-collapse-item name="base">
         <!-- class="panel-tab__title" -->
         <template #title>
-          <Icon icon="ep:info-filled" />
+          <i class="el-icon-menu"></i>
           常规</template
         >
         <ElementBaseInfo
