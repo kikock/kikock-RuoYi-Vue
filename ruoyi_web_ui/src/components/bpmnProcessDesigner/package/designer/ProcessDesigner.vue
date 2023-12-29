@@ -134,6 +134,23 @@
       <!-- <div id="js-properties-panel" class="panel"></div> -->
       <!-- <div class="my-process-designer__canvas" ref="bpmn-canvas"></div> -->
     </div>
+
+    <MyDialog
+        title="预览"
+        v-model="previewModelVisible"
+        width="80%"
+        :scroll="true"
+        max-height="600px"
+    >
+      <!-- append-to-body -->
+      <div v-highlight>
+        <code class="hljs">
+          <!-- 高亮代码块 -->
+          {{ previewResult }}
+        </code>
+      </div>
+    </MyDialog>
+
   </div>
 </template>
 
@@ -171,6 +188,7 @@ import flowableModdleExtension from './plugins/extension-moddle/flowable'
 // import xml2js from 'fast-xml-parser'
 import { XmlNode, XmlNodeType, parseXmlString } from 'steady-xml'
 import {XButton, XTextButton} from '@/components/XButton'
+import MyDialog from '@/components/MyDialog/MyDialog.vue'
 // 代码高亮插件
 // import hljs from 'highlight.js/lib/highlight'
 // import 'highlight.js/styles/github-gist.css'
@@ -565,11 +583,10 @@ const elementsAlign = (align) => {
 }
 /*-----------------------------    方法结束     ---------------------------------*/
 const previewProcessXML = () => {
-  console.log(bpmnModeler.saveXML, 'bpmnModeler')
   bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
-    // console.log(xml, 'xml111111')
     previewResult.value = xml
     previewType.value = 'xml'
+    console.log("浏览xml数据",xml);
     previewModelVisible.value = true
   })
 }
@@ -596,6 +613,7 @@ const previewProcessJson = () => {
     // previewResult.value = jObj
     // previewResult.value = convert.xml2json(xml,  {explicitArray : false},{ spaces: 2 })
     previewType.value = 'json'
+    console.log("浏览json数据",previewResult.value);
     previewModelVisible.value = true
   })
 }
