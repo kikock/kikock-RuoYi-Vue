@@ -134,6 +134,17 @@
       <!-- <div id="js-properties-panel" class="panel"></div> -->
       <!-- <div class="my-process-designer__canvas" ref="bpmn-canvas"></div> -->
     </div>
+
+
+    <el-dialog  title="预览" v-model="previewModelVisible"   width="80%">
+      <div>
+        <code class="hljs">
+          <!-- 高亮代码块 -->
+          {{ previewResult }}
+        </code>
+      </div>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -166,23 +177,12 @@ import flowableModdleDescriptor from './plugins/descriptor/flowableDescriptor.js
 import camundaModdleExtension from './plugins/extension-moddle/camunda'
 import activitiModdleExtension from './plugins/extension-moddle/activiti'
 import flowableModdleExtension from './plugins/extension-moddle/flowable'
-// 引入json转换与高亮
-// import xml2js from 'xml-js'
-// import xml2js from 'fast-xml-parser'
 import { XmlNode, XmlNodeType, parseXmlString } from 'steady-xml'
 import {XButton, XTextButton} from '@/components/XButton'
-// 代码高亮插件
-// import hljs from 'highlight.js/lib/highlight'
-// import 'highlight.js/styles/github-gist.css'
-// hljs.registerLanguage('xml', 'highlight.js/lib/languages/xml')
-// hljs.registerLanguage('json', 'highlight.js/lib/languages/json')
-// const eventName = reactive({
-//   name: ''
-// })
-
 
 const bpmnCanvas = ref()
 const refFile = ref()
+const bpmnData=ref()
 const emit = defineEmits([
   'destroy',
   'init-finished',
@@ -196,6 +196,7 @@ const emit = defineEmits([
 ])
 
 const props = defineProps({
+  modelValue: String,
   value: String, // xml 字符串
   // valueWatch: true, // xml 字符串的 watch 状态
   processId: String, // 流程 key 标识
@@ -411,7 +412,7 @@ const initModelListeners = () => {
   })
 }
 /* 创建新的流程图 */
-const createNewDiagram = async (xml) => {
+const createNewDiagram =  (xml) => {
   console.log("进入createNewDiagram方法");
   console.log(xml, 'xml')
   // 将字符串转换成图显示出来
@@ -419,9 +420,9 @@ const createNewDiagram = async (xml) => {
   let newName = props.processName || `业务流程_${new Date().getTime()}`
   let xmlString = xml || DefaultEmptyXML(newId, newName, props.prefix)
   try {
-    // console.log(xmlString, 'xmlString')
+    console.log(xmlString, 'xmlString111111111111')
     // console.log(this.bpmnModeler.importXML);
-    let { warnings } = await bpmnModeler.importXML(xmlString)
+    let { warnings } =  bpmnModeler.importXML(xmlString)
     console.log(warnings, 'warnings')
     if (warnings && warnings.length) {
       warnings.forEach((warn) => console.warn(warn))
@@ -565,11 +566,10 @@ const elementsAlign = (align) => {
 }
 /*-----------------------------    方法结束     ---------------------------------*/
 const previewProcessXML = () => {
-  console.log(bpmnModeler.saveXML, 'bpmnModeler')
   bpmnModeler.saveXML({ format: true }).then(({ xml }) => {
-    // console.log(xml, 'xml111111')
     previewResult.value = xml
     previewType.value = 'xml'
+    console.log("浏览xml数据",xml);
     previewModelVisible.value = true
   })
 }
@@ -596,6 +596,7 @@ const previewProcessJson = () => {
     // previewResult.value = jObj
     // previewResult.value = convert.xml2json(xml,  {explicitArray : false},{ spaces: 2 })
     previewType.value = 'json'
+    console.log("浏览json数据",previewResult.value);
     previewModelVisible.value = true
   })
 }
@@ -624,10 +625,13 @@ const processSave = async () => {
 // }
 onBeforeMount(() => {
   console.log(props, 'propspropspropsprops')
+  bpmnData.value = props;
 })
 onMounted(() => {
   initBpmnModeler()
-  createNewDiagram(props.value)
+  console.log(bpmnData.value.prefix, 'kkkkkkkkkkkkkkkkk');
+  console.log(bpmnData.value, 'kkkkkkkkkkkkkkkkk2');
+  createNewDiagram(bpmnData.value.modelValue)
 })
 onBeforeUnmount(() => {
   // this.$once('hook:beforeDestroy', () => {

@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmForm;
 import com.ruoyi.flowable.domain.definition.BpmModel;
@@ -137,26 +138,26 @@ public class BpmModelServiceImpl implements IBpmModelService{
             return modelVO;
         }
 //        model 参数
-        modelVO.setId(model.getId());
-        modelVO.setCreateTime(model.getCreateTime());
-        modelVO.setName(model.getName());
-        modelVO.setKey(model.getKey());
-        modelVO.setCategory(model.getCategory());
-        BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
-        modelVO.setDescription( metaInfo.getDescription() );
-        modelVO.setFormType( metaInfo.getFormType() );
-        modelVO.setFormId( metaInfo.getFormId() );
-        modelVO.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
-        modelVO.setFormCustomViewPath( metaInfo.getFormCustomViewPath());
-        // 拼接 bpmn XML
-        byte[] bpmnBytes = repositoryService.getModelEditorSource(id);
-        modelVO.setBpmnXml(StrUtil.utf8Str(bpmnBytes));
+        modelToBpmModel(model, modelVO,id);
         return modelVO;
     }
 
     @Override
-    public int updateModel(BpmModel updateReqVO){
-        return 0;
+    public AjaxResult updateFlowChart(BpmModel bpmModel){
+        AjaxResult result =AjaxResult.success();
+        // 校验流程模型存在
+        Model model = repositoryService.getModel(bpmModel.getId());
+        if (model == null) {
+            throw new ServiceException("流程模型不存在!", HttpStatus.ERROR);
+        }
+        //保存参数构建
+        bpmModelToModel(model,bpmModel);
+        // 更新模型
+        repositoryService.saveModel(model);
+        System.out.println(JSONUtil.toJsonStr(bpmModel));
+        // 更新 BPMN XML
+        saveModelBpmnXml(model, bpmModel.getBpmnXml());
+        return result;
     }
 
     @Override
@@ -279,4 +280,35 @@ public class BpmModelServiceImpl implements IBpmModelService{
         processDefinition.setVersion( bean.getVersion() );
         return processDefinition;
     }
+    /**
+     * flowable-model参数转 bpmModel 参数
+     */
+    private void modelToBpmModel(Model model, BpmModel modelVO,String id) {
+        modelVO.setId(model.getId());
+        modelVO.setCreateTime(model.getCreateTime());
+        modelVO.setName(model.getName());
+        modelVO.setKey(model.getKey());
+        modelVO.setCategory(model.getCategory());
+        BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
+        modelVO.setDescription( metaInfo.getDescription() );
+        modelVO.setFormType( metaInfo.getFormType() );
+        modelVO.setFormId( metaInfo.getFormId() );
+        modelVO.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
+        modelVO.setFormCustomViewPath( metaInfo.getFormCustomViewPath());
+        // 拼接 bpmn XML
+        byte[] bpmnBytes = repositoryService.getModelEditorSource(StringUtils.isNotEmpty(id) ? id : model.getId());
+        modelVO.setBpmnXml(StrUtil.utf8Str(bpmnBytes));
+    }
+    /**
+     * bpmModel参数转 flowable-model 参数
+     */
+    private void bpmModelToModel(Model model, BpmModel bpmModel) {
+        model.setName(bpmModel.getName());
+        model.setCategory(bpmModel.getCategory());
+        model.setMetaInfo(buildMetaInfoStr(JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class),
+                bpmModel.getDescription(), bpmModel.getFormType(), bpmModel.getFormId(),
+                bpmModel.getFormCustomCreatePath(), bpmModel.getFormCustomViewPath()));
+    }
+
+
 }

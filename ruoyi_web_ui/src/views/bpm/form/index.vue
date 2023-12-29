@@ -72,7 +72,7 @@
         @pagination="getList"
     />
     <!-- 表单详情的弹窗 -->
-    <el-dialog  :title="title" v-model="detailVisible" title="表单详情" width="800">
+    <el-dialog   v-model="detailVisible" title="表单详情" width="800">
       <FormCreate :option="detailData.option" :rule="detailData.rule"  />
     </el-dialog>
   </div>
