@@ -64,4 +64,16 @@ public interface BpmProcessDefinitionExtMapper{
      * @return 结果
      */
     public int deleteBpmProcessDefinitionExtByIds(Long[] ids);
+
+
+    /**
+     * 批量查询 流程定义的拓展信息
+     *
+     * @param ids 主键集合
+     * @return 结果
+     */
+    public  List<BpmProcessDefinitionExt> selectListByProcessDefinitionIds(List<String> ids);
+
+
+
 }

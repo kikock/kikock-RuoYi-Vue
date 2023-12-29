@@ -180,7 +180,7 @@ export const dynamicRoutes = [
           activeMenu: '/bpm/bpmForm/processform' }
       },
       {
-        path: '/bpmModel/editor',
+        path: 'bpmModel/editor',
         component: () => import('@/views/bpm/model/editor/index.vue'),
         name: 'BpmModelEditor',
         meta: {

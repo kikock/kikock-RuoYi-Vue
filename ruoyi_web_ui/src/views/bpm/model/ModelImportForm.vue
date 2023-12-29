@@ -49,10 +49,9 @@
 <!--    </template>-->
 <!--  </Dialog>-->
 <!--</template>-->
-<!--<script lang="ts" setup>-->
+<!--<script  setup>-->
 <!--import { getAccessToken, getTenantId } from '@/utils/auth'-->
 
-<!--defineOptions({ name: 'ModelImportForm' })-->
 
 <!--const message = useMessage() // 消息弹窗-->
 

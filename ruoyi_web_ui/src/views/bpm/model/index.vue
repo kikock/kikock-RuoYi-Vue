@@ -106,16 +106,16 @@
           <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['bpm:form:edit']">
             修改流程
           </el-button>
-          <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['bpm:form:edit']">
+          <el-button link type="primary"  @click="handleDesign(scope.row)" v-hasPermi="['bpm:form:edit']">
             设计流程
           </el-button>
-          <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['bpm:form:edit']">
+          <el-button link type="primary"  @click="handleAssignRule(scope.row)" v-hasPermi="['bpm:form:edit']">
             分配规则
           </el-button>
-          <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['bpm:form:edit']">
+          <el-button link type="primary"  @click="handleDeploy(scope.row)" v-hasPermi="['bpm:form:edit']">
             发布流程
           </el-button>
-          <el-button link type="primary"  @click="handleUpdate(scope.row)" v-hasPermi="['bpm:form:edit']">
+          <el-button link type="primary"  @click="handleDefinitionList(scope.row)" v-hasPermi="['bpm:form:edit']">
             流程定义
           </el-button>
           <el-button link type="primary"  @click="handleDelete(scope.row)"
@@ -133,7 +133,7 @@
         @pagination="getList"
     />
 
-    <!-- 添加流程  -->
+    <!-- 添加/修改流程  -->
     <el-dialog :title="title" v-model="open" width="600px" append-to-body>
       <el-form ref="bpmMpdelRef" :model="form" :rules="rules" label-width="120px">
         <el-form-item  prop="key">
@@ -146,7 +146,7 @@
             流程标识
           </template>
           <template #default>
-            <el-input v-model="form.key" placeholder="请输入流程标识" />
+            <el-input v-model="form.key" placeholder="请输入流程标识" :readonly="form.id" />
           </template>
         </el-form-item>
         <el-form-item label="流程名称" prop="name">
@@ -163,15 +163,14 @@
         </div>
       </template>
     </el-dialog>
+
   </div>
 </template>
 
 <script setup name="bpmForm">
-import {delForm, listForm} from "@/api/bpm/form";
 import router from "@/router";
 import {getCurrentInstance, reactive, ref} from 'vue'
-import {createModel} from '@/api/bpm/model'
-import {addSocialApp} from '@/api/system/socialApp'
+import {createModel,listModel} from '@/api/bpm/model'
 const {proxy} = getCurrentInstance();
 const {bpm_model_category} = proxy.useDict('bpm_model_category');
 const formList = ref([]);
@@ -221,11 +220,11 @@ function indexMethod(index){
   return ((queryParams.value.pageNum-1) * queryParams.value.pageSize + index +1)
 }
 
-/** 查询工作流的单定义列表 */
+/** 查询工作流的自定义表单列表 */
 function getList() {
   console.log("加载数据");
   loading.value = true;
-  listForm(queryParams.value).then(response => {
+  listModel(queryParams.value).then(response => {
     formList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -265,6 +264,46 @@ function handleAdd() {
   open.value = true;
   title.value = "新增流程";
 }
+/** 导入按钮操作 */
+function openImportForm() {
+  console.log("导入流程按钮");
+
+}
+
+/** 修改按钮操作 */
+function handleUpdate(row) {
+  console.log("修改按钮");
+}
+/** 设计流程操作 */
+function handleDesign(row) {
+  console.log("弹出设计流程页面");
+  router.push({path: "/flowable/bpmModel/editor", query: {modelId: row.id}});
+}
+/** 分配规则操作 */
+function handleAssignRule() {
+  console.log("弹出分配规则页面");
+}
+/** 发布流程操作 */
+function handleDeploy() {
+  console.log("发布流程操作操作");
+}
+/** 流程定义操作操作 */
+function handleDefinitionList() {
+  console.log("流程定义操作");
+}
+/** 删除按钮操作 */
+function handleDelete(row) {
+  const _ids = row.id
+  proxy.$modal.confirm('是否确认删除工作流自定义表单数据？').then(function () {
+    // return delForm(_ids);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess("删除成功");
+  }).catch(() => {
+  });
+}
+
+
 
 /** 提交按钮 */
 function submitForm() {
@@ -280,28 +319,10 @@ function submitForm() {
     }
   });
 }
-/** 导入按钮操作 */
-function openImportForm() {
-  console.log("导入流程按钮");
 
-}
-/** 修改按钮操作 */
-function handleUpdate(row) {
-  const _id = row.id
-  router.push({path: "/bpm/from/editor/index", query: {id: _id}});
-}
 
-/** 删除按钮操作 */
-function handleDelete(row) {
-  const _ids = row.id
-  proxy.$modal.confirm('是否确认删除工作流自定义表单数据？').then(function () {
-    return delForm(_ids);
-  }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {
-  });
-}
+
+
 
 /** 初始化 **/
 getList()

@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询工作流的单定义列表
+// 查询工作流的自定义表单列表
 export function listForm(query) {
     return request({
         url: '/bpm/form/list',
@@ -9,7 +9,7 @@ export function listForm(query) {
     })
 }
 
-// 查询工作流的单定义详细
+// 查询工作流的自定义表单详细
 export function getForm(id) {
     return request({
         url: '/bpm/form/' + id,
@@ -17,7 +17,7 @@ export function getForm(id) {
     })
 }
 
-// 新增工作流的单定义
+// 新增工作流的自定义表单
 export function addForm(data) {
     return request({
         url: '/bpm/form',
@@ -26,7 +26,7 @@ export function addForm(data) {
     })
 }
 
-// 修改工作流的单定义
+// 修改工作流的自定义表单
 export function updateForm(data) {
     return request({
         url: '/bpm/form',
@@ -35,7 +35,7 @@ export function updateForm(data) {
     })
 }
 
-// 删除工作流的单定义
+// 删除工作流的自定义表单
 export function delForm(id) {
     return request({
         url: '/bpm/form/' + id,
