@@ -18,8 +18,6 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "2.0.10",
-    "@form-create/designer": "^3.1.3",
-    "@form-create/element-ui": "^3.1.26",
     "@vueup/vue-quill": "1.1.0",
     "@vueuse/core": "9.5.0",
     "@wangeditor/editor": "^5.1.23",
@@ -42,7 +40,18 @@
     "vue": "3.2.45",
     "vue-clipboard3": "^2.0.0",
     "vue-cropper": "1.0.3",
-    "vue-router": "4.1.4"
+    "vue-router": "4.1.4",
+    "@form-create/designer": "^3.1.3",
+    "@form-create/element-ui": "^3.1.24",
+    "bpmn-js-token-simulation": "^0.10.0",
+    "camunda-bpmn-moddle": "^7.0.1",
+    "steady-xml": "^0.1.0",
+    "x2js": "^3.4.2",
+    "xml-js": "^1.6.11",
+    "xlsx": "^0.16.7",
+    "bpmn-js-sketchy": "^0.5.3",
+    "bpmn-js-task-resize": "^1.2.0",
+    "diagram-js-minimap": "^2.0.4",
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
@@ -54,6 +63,8 @@
     "vite": "^4.0.0",
     "vite-plugin-compression": "0.5.1",
     "vite-plugin-svg-icons": "2.0.1",
-    "vite-plugin-vue-setup-extend": "0.4.0"
+    "vite-plugin-vue-setup-extend": "0.4.0",
+    "bpmn-js": "8.9.0",
+    "bpmn-js-properties-panel": "0.46.0"
   }
 }

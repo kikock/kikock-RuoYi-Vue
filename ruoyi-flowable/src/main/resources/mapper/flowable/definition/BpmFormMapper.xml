@@ -176,4 +176,17 @@
             #{id}
         </foreach>
     </delete>
+
+
+
+    <select id="selectBatchIds" parameterType="String"
+            resultMap="BpmFormResult">
+        <include refid="selectBpmFormVo"/>
+        <where>
+            id in
+            <foreach item="id" collection="List" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
 </mapper>
