@@ -4,65 +4,113 @@
       <el-collapse-item name="base">
         <!-- class="panel-tab__title" -->
         <template #title>
-          <i class="el-icon-menu"></i>
-          常规</template
+          <el-icon class="mr5">
+            <InfoFilled/>
+          </el-icon>
+          常规
+        </template
         >
         <ElementBaseInfo
-          :id-edit-disabled="idEditDisabled"
-          :business-object="elementBusinessObject"
-          :type="elementType"
-          :model="model"
+            :id-edit-disabled="idEditDisabled"
+            :business-object="elementBusinessObject"
+            :type="elementType"
+            :model="model"
         />
       </el-collapse-item>
       <el-collapse-item name="condition" v-if="elementType === 'Process'" key="message">
-        <template #title><Icon icon="ep:comment" />消息与信号</template>
-        <signal-and-massage />
+        <template #title>
+          <el-icon class="mr5">
+            <Comment/>
+          </el-icon>
+          消息与信号
+        </template>
+        <signal-and-massage/>
       </el-collapse-item>
       <el-collapse-item name="condition" v-if="conditionFormVisible" key="condition">
-        <template #title><Icon icon="ep:promotion" />流转条件</template>
-        <flow-condition :business-object="elementBusinessObject" :type="elementType" />
+        <template #title>
+          <el-icon class="mr5">
+            <Promotion/>
+          </el-icon>
+          流转条件
+        </template>
+        <flow-condition :business-object="elementBusinessObject" :type="elementType"/>
       </el-collapse-item>
       <el-collapse-item name="condition" v-if="formVisible" key="form">
-        <template #title><Icon icon="ep:list" />表单</template>
-        <!-- <element-form :id="elementId" :type="elementType" /> -->
+        <template #title>
+          <el-icon class="mr5">
+            <Checked/>
+          </el-icon>
+          表单
+        </template>
         友情提示：使用
-        <router-link :to="{ path: '/bpm/manager/form' }"
-          ><el-link type="danger">流程表单</el-link>
+        <router-link :to="{ path: '/flowable/bpm/processform' }"
+        >
+          <el-link type="danger">流程表单</el-link>
         </router-link>
         替代，提供更好的表单设计功能
       </el-collapse-item>
       <el-collapse-item name="task" v-if="elementType.indexOf('Task') !== -1" key="task">
-        <template #title><Icon icon="ep:checked" />任务</template>
-        <element-task :id="elementId" :type="elementType" />
+        <template #title>
+          <el-icon class="mr5 ">
+            <Checked/>
+          </el-icon>
+          任务
+        </template>
+        <element-task :id="elementId" :type="elementType"/>
       </el-collapse-item>
       <el-collapse-item
-        name="multiInstance"
-        v-if="elementType.indexOf('Task') !== -1"
-        key="multiInstance"
+          name="multiInstance"
+          v-if="elementType.indexOf('Task') !== -1"
+          key="multiInstance"
       >
-        <template #title><Icon icon="ep:help-filled" />多实例</template>
-        <element-multi-instance :business-object="elementBusinessObject" :type="elementType" />
+        <template #title>
+          <el-icon class="mr5">
+            <HelpFilled/>
+          </el-icon>
+          多实例
+        </template>
+        <element-multi-instance :business-object="elementBusinessObject" :type="elementType"/>
       </el-collapse-item>
       <el-collapse-item name="listeners" key="listeners">
-        <template #title><Icon icon="ep:bell-filled" />执行监听器</template>
-        <element-listeners :id="elementId" :type="elementType" />
+        <template #title>
+          <el-icon class="mr5">
+            <BellFilled/>
+          </el-icon>
+          执行监听器
+        </template>
+        <element-listeners :id="elementId" :type="elementType"/>
       </el-collapse-item>
       <el-collapse-item name="taskListeners" v-if="elementType === 'UserTask'" key="taskListeners">
-        <template #title><Icon icon="ep:bell-filled" />任务监听器</template>
-        <user-task-listeners :id="elementId" :type="elementType" />
+        <template #title>
+          <el-icon class="mr5">
+            <BellFilled/>
+          </el-icon>
+          任务监听器
+        </template>
+        <user-task-listeners :id="elementId" :type="elementType"/>
       </el-collapse-item>
       <el-collapse-item name="extensions" key="extensions">
-        <template #title><Icon icon="ep:circle-plus-filled" />扩展属性</template>
-        <element-properties :id="elementId" :type="elementType" />
+        <template #title>
+          <el-icon class="mr5">
+            <CirclePlusFilled/>
+          </el-icon>
+          扩展属性
+        </template>
+        <element-properties :id="elementId" :type="elementType"/>
       </el-collapse-item>
       <el-collapse-item name="other" key="other">
-        <template #title><Icon icon="ep:promotion" />其他</template>
-        <element-other-config :id="elementId" />
+        <template #title>
+          <el-icon class="mr5">
+            <Promotion/>
+          </el-icon>
+          其他
+        </template>
+        <element-other-config :id="elementId"/>
       </el-collapse-item>
     </el-collapse>
   </div>
 </template>
-<script  setup name="MyPropertiesPanel">
+<script setup name="MyPropertiesPanel">
 import ElementBaseInfo from './base/ElementBaseInfo.vue'
 import ElementOtherConfig from './other/ElementOtherConfig.vue'
 import ElementTask from './task/ElementTask.vue'
@@ -71,8 +119,8 @@ import FlowCondition from './flow-condition/FlowCondition.vue'
 import SignalAndMassage from './signal-message/SignalAndMessage.vue'
 import ElementListeners from './listeners/ElementListeners.vue'
 import ElementProperties from './properties/ElementProperties.vue'
-// import ElementForm from './form/ElementForm.vue'
 import UserTaskListeners from './listeners/UserTaskListeners.vue'
+
 /**
  * 侧边栏
  * @Author MiyueFE
@@ -82,7 +130,8 @@ import UserTaskListeners from './listeners/UserTaskListeners.vue'
 const props = defineProps({
   bpmnModeler: {
     type: Object,
-    default: () => {}
+    default: () => {
+    }
   },
   prefix: {
     type: String,
@@ -113,35 +162,35 @@ const bpmnInstances = () => (window)?.bpmnInstances
 
 // 监听 props.bpmnModeler 然后 initModels
 const unwatchBpmn = watch(
-  () => props.bpmnModeler,
-  () => {
-    // 避免加载时 流程图 并未加载完成
-    if (!props.bpmnModeler) {
-      console.log('缺少props.bpmnModeler')
-      return
-    }
+    () => props.bpmnModeler,
+    () => {
+      // 避免加载时 流程图 并未加载完成
+      if (!props.bpmnModeler) {
+        console.log('缺少props.bpmnModeler')
+        return
+      }
 
-    console.log('props.bpmnModeler 有值了！！！')
-    const w = window
-    w.bpmnInstances = {
-      modeler: props.bpmnModeler,
-      modeling: props.bpmnModeler.get('modeling'),
-      moddle: props.bpmnModeler.get('moddle'),
-      eventBus: props.bpmnModeler.get('eventBus'),
-      bpmnFactory: props.bpmnModeler.get('bpmnFactory'),
-      elementFactory: props.bpmnModeler.get('elementFactory'),
-      elementRegistry: props.bpmnModeler.get('elementRegistry'),
-      replace: props.bpmnModeler.get('replace'),
-      selection: props.bpmnModeler.get('selection')
-    }
+      console.log('props.bpmnModeler 有值了！！！')
+      const w = window
+      w.bpmnInstances = {
+        modeler: props.bpmnModeler,
+        modeling: props.bpmnModeler.get('modeling'),
+        moddle: props.bpmnModeler.get('moddle'),
+        eventBus: props.bpmnModeler.get('eventBus'),
+        bpmnFactory: props.bpmnModeler.get('bpmnFactory'),
+        elementFactory: props.bpmnModeler.get('elementFactory'),
+        elementRegistry: props.bpmnModeler.get('elementRegistry'),
+        replace: props.bpmnModeler.get('replace'),
+        selection: props.bpmnModeler.get('selection')
+      }
 
-    console.log(bpmnInstances(), 'window.bpmnInstances')
-    getActiveElement()
-    unwatchBpmn()
-  },
-  {
-    immediate: true
-  }
+      console.log(bpmnInstances(), 'window.bpmnInstances')
+      getActiveElement()
+      unwatchBpmn()
+    },
+    {
+      immediate: true
+    }
 )
 
 const getActiveElement = () => {
@@ -152,10 +201,10 @@ const getActiveElement = () => {
     initFormOnChanged(null)
   })
   // 监听选择事件，修改当前激活的元素以及表单
-  props.bpmnModeler.on('selection.changed', ({ newSelection }) => {
+  props.bpmnModeler.on('selection.changed', ({newSelection}) => {
     initFormOnChanged(newSelection[0] || null)
   })
-  props.bpmnModeler.on('element.changed', ({ element }) => {
+  props.bpmnModeler.on('element.changed', ({element}) => {
     // 保证 修改 "默认流转路径" 类似需要修改多个元素的事件发生的时候，更新表单的元素与原选中元素不一致。
     if (element && element.id === elementId.value) {
       initFormOnChanged(element)
@@ -167,8 +216,8 @@ const initFormOnChanged = (element) => {
   let activatedElement = element
   if (!activatedElement) {
     activatedElement =
-      bpmnInstances().elementRegistry.find((el) => el.type === 'bpmn:Process') ??
-      bpmnInstances().elementRegistry.find((el) => el.type === 'bpmn:Collaboration')
+        bpmnInstances().elementRegistry.find((el) => el.type === 'bpmn:Process') ??
+        bpmnInstances().elementRegistry.find((el) => el.type === 'bpmn:Collaboration')
   }
   if (!activatedElement) return
   console.log(`
@@ -185,9 +234,9 @@ const initFormOnChanged = (element) => {
   elementType.value = activatedElement.type.split(':')[1] || ''
   elementBusinessObject.value = JSON.parse(JSON.stringify(activatedElement.businessObject))
   conditionFormVisible.value = !!(
-    elementType.value === 'SequenceFlow' &&
-    activatedElement.source &&
-    activatedElement.source.type.indexOf('StartEvent') === -1
+      elementType.value === 'SequenceFlow' &&
+      activatedElement.source &&
+      activatedElement.source.type.indexOf('StartEvent') === -1
   )
   formVisible.value = elementType.value === 'UserTask' || elementType.value === 'StartEvent'
 }
@@ -200,9 +249,9 @@ onBeforeUnmount(() => {
 })
 
 watch(
-  () => elementId.value,
-  () => {
-    activeTab.value = 'base'
-  }
+    () => elementId.value,
+    () => {
+      activeTab.value = 'base'
+    }
 )
 </script>

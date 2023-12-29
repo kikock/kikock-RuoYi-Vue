@@ -29,7 +29,7 @@
       <el-input v-model="userTaskForm.priority" clearable @change="updateElementTask('priority')" />
     </el-form-item>
     友情提示：任务的分配规则，使用
-    <router-link target="_blank" :to="{ path: '/bpm/manager/model' }"
+    <router-link target="_blank" :to="{ path: '/flowable/bpm/model' }"
       ><el-link type="danger">流程模型</el-link>
     </router-link>
     下的【分配规则】替代，提供指定角色、部门负责人、部门成员、岗位、工作组、自定义脚本等 7

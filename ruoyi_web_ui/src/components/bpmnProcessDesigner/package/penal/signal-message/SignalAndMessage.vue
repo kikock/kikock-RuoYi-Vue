@@ -1,8 +1,8 @@
 <template>
   <div class="panel-tab__content">
     <div class="panel-tab__content--title">
-      <span><Icon icon="ep:menu" style="margin-right: 8px; color: #555" />消息列表</span>
-      <XButton type="primary" title="创建新消息" preIcon="ep:plus" @click="openModel('message')" />
+      <span> <el-icon class="mr5"><Menu /></el-icon>消息列表</span>
+      <XButton type="primary" title="创建新消息" preIcon="add" @click="openModel('message')" />
     </div>
     <el-table :data="messageList" border>
       <el-table-column type="index" label="序号" width="60px" />
@@ -13,8 +13,8 @@
       class="panel-tab__content--title"
       style="padding-top: 8px; margin-top: 8px; border-top: 1px solid #eee"
     >
-      <span><Icon icon="ep:menu" style="margin-right: 8px; color: #555" />信号列表</span>
-      <XButton type="primary" title="创建新信号" preIcon="ep:plus" @click="openModel('signal')" />
+      <span><el-icon  class="mr5" ><Menu /></el-icon>信号列表</span>
+      <XButton type="primary" title="创建新信号" preIcon="add" @click="openModel('signal')" />
     </div>
     <el-table :data="signalList" border>
       <el-table-column type="index" label="序号" width="60px" />
@@ -47,6 +47,7 @@
 </template>
 <script  setup name="SignalAndMassage" >
 import {getCurrentInstance} from 'vue'
+import {XButton} from '@/components/XButton'
 const {proxy} = getCurrentInstance();
 const signalList = ref([])
 const messageList = ref([])
