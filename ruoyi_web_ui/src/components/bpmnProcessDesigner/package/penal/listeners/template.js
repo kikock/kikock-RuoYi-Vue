@@ -14,7 +14,7 @@ export const template = (isTaskListener) => {
       </el-table-column>
     </el-table>
     <div class="element-drawer__button">
-      <el-button size="small" type="primary" icon="el-icon-plus" @click="openListenerForm(null)">添加监听器</el-button>
+   <el-button small type="primary" icon="Plus" @click="openListenerForm(null)">添加监听器ck</el-button>
     </div>
 
     <!-- 监听器 编辑/创建 部分 -->
