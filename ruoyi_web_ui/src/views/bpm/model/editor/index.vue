@@ -14,14 +14,13 @@
     />
 
     <!-- 流程属性器，负责编辑每个流程节点的属性 -->
-    <!-- 流程属性器，负责编辑每个流程节点的属性 -->
-<!--    <MyPropertiesPanel-->
-<!--        key="penal"-->
-<!--        :bpmnModeler="modeler"-->
-<!--        :prefix="controlForm.prefix"-->
-<!--        class="process-panel"-->
-<!--        :model="model"-->
-<!--    />-->
+    <MyPropertiesPanel
+        key="penal"
+        :bpmnModeler="modeler"
+        :prefix="controlForm.prefix"
+        class="process-panel"
+        :model="model"
+    />
   </div>
 </template>
 
@@ -32,6 +31,7 @@ import CustomContentPadProvider from '@/components/bpmnProcessDesigner/package/d
 import CustomPaletteProvider from '@/components/bpmnProcessDesigner/package/designer/plugins/palette'
 import MyProcessDesigner from '@/components/bpmnProcessDesigner/package/designer/ProcessDesigner.vue'
 import {getCurrentInstance} from 'vue'
+import {getModel, listModel} from '@/api/bpm/model'
 const route = useRoute();// 路由的查询
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -62,6 +62,7 @@ const save = async (bpmnXml) => {
     ...model.value,
     bpmnXml: bpmnXml // bpmnXml 只是初始化流程图，后续修改无法通过它获得
   }
+  console.log("保存数据:",data);
   // 提交
   if (data.id) {
     // await ModelApi.updateModel(data)
@@ -71,7 +72,7 @@ const save = async (bpmnXml) => {
     // message.success('新增成功')
   }
   // 跳转回去
-  close()
+  // close()
 }
 
 /** 关闭按钮 */
@@ -87,16 +88,17 @@ const getFromData =  () => {
     close()
     return
   }
-  // xmlString.value = data.bpmnXml
-  // model.value = {
-  //   ...data,
-  //   bpmnXml: undefined // 清空 bpmnXml 属性
-  // }
 
+  getModel(modelId).then(response => {
+    xmlString.value = response.data.bpmnXml
+    model.value = {
+      ...response.data,
+      bpmnXml: undefined // 清空 bpmnXml 属性
+    }
+    loading.value = false;
+  });
 }
 getFromData()
-
-
 </script>
 <style lang="scss">
 .process-panel__container {

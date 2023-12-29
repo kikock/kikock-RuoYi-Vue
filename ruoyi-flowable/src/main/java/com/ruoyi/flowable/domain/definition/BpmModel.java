@@ -63,6 +63,10 @@ public class BpmModel extends BaseEntity{
      * 最新部署的流程定义
      */
     private ProcessDefinition processDefinition;
+    /**
+     * bpmnXml
+     */
+    private String bpmnXml;
 
     @Data
     public static class ProcessDefinition {
@@ -84,4 +88,7 @@ public class BpmModel extends BaseEntity{
         private Integer suspensionState;
 
     }
+
+
+
 }

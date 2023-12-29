@@ -12,7 +12,7 @@ export function listModel(query) {
 
 export function getModel(id) {
   return request({
-    url: '/bpm/model/get?id=' + id,
+    url: '/bpm/model/' + id,
     method: 'get'
   })
 }

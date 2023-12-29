@@ -37,7 +37,7 @@ public interface IBpmModelService{
      * @param id 编号
      * @return 流程模型
      */
-    public BpmModel getModel(String id);
+    public BpmModel selectBpmModelById(String id);
 
     /**
      * 修改流程模型
