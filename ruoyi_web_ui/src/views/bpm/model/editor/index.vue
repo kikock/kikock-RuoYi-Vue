@@ -65,9 +65,11 @@ const save = async (bpmnXml) => {
   console.log("保存数据:",data);
   // 提交
   if (data.id) {
+    console.log("修改数据");
     // await ModelApi.updateModel(data)
     // message.success('修改成功')
   } else {
+    console.log("新增数据");
     // await ModelApi.createModel(data)
     // message.success('新增成功')
   }
