@@ -640,4 +640,12 @@ onBeforeUnmount(() => {
   emit('destroy', bpmnModeler)
   bpmnModeler = null
 })
+
+watch(() => props.modelValue, val => {
+  if (val) {
+    createNewDiagram(val)
+  }
+},{ deep: true, immediate: true });
+
+
 </script>
