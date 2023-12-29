@@ -15,7 +15,7 @@
         show-overflow-tooltip
         :formatter="(row) => listenerTypeObject[row.listenerType]"
       />
-      <el-table-column label="操作" width="90px">
+      <el-table-column label="操作" width="100px">
         <template #default="scope">
           <el-button size="small" link @click="openListenerForm(scope.row, scope.$index)"
             >编辑</el-button
@@ -33,9 +33,8 @@
     </el-table>
     <div class="element-drawer__button">
       <XButton
-        size="small"
         type="primary"
-        preIcon="ep:plus"
+        preIcon="add"
         title="添加监听器"
         @click="openListenerForm(null)"
       />
@@ -49,7 +48,7 @@
       append-to-body
       destroy-on-close
     >
-      <el-form size="small" :model="listenerForm" label-width="96px" ref="listenerFormRef">
+      <el-form  :model="listenerForm" label-width="96px" ref="listenerFormRef">
         <el-form-item
           label="事件类型"
           prop="event"
@@ -175,14 +174,11 @@
 
       <el-divider />
       <p class="listener-filed__title">
-        <span><Icon icon="ep:menu" />注入字段：</span>
-        <el-button size="small" type="primary" @click="openListenerFieldForm(null)"
-          >添加字段</el-button
-        >
+        <span><el-icon class="mr5" ><Menu /></el-icon>注入字段：</span>
+        <XButton style="width: 80px" type="primary" @click="openListenerFieldForm(null)" title="添加字段" />
       </p>
       <el-table
         :data="fieldsListOfListener"
-        size="small"
         max-height="240"
         fit
         border
@@ -198,7 +194,7 @@
         />
         <el-table-column
           label="字段值/表达式"
-          min-width="100px"
+          min-width="120px"
           show-overflow-tooltip
           :formatter="(row) => row.string || row.expression"
         />
@@ -220,8 +216,8 @@
       </el-table>
 
       <div class="element-drawer__button">
-        <el-button size="small" @click="listenerFormModelVisible = false">取 消</el-button>
-        <el-button size="small" type="primary" @click="saveListenerConfig">保 存</el-button>
+        <el-button  @click="listenerFormModelVisible = false">取 消</el-button>
+        <el-button  type="primary" @click="saveListenerConfig">保 存</el-button>
       </div>
     </el-drawer>
 
@@ -235,7 +231,6 @@
     >
       <el-form
         :model="listenerFieldForm"
-        size="small"
         label-width="96px"
         ref="listenerFieldFormRef"
         style="height: 136px"
@@ -281,8 +276,8 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button size="small" @click="listenerFieldFormModelVisible = false">取 消</el-button>
-        <el-button size="small" type="primary" @click="saveListenerFiled">确 定</el-button>
+        <el-button  @click="listenerFieldFormModelVisible = false">取 消</el-button>
+        <el-button  type="primary" @click="saveListenerFiled">确 定</el-button>
       </template>
     </el-dialog>
   </div>
@@ -291,6 +286,7 @@
 import { ElMessageBox } from 'element-plus'
 import { createListenerObject, updateElementExtensions } from '../../utils'
 import { initListenerForm, initListenerType, eventType, listenerType, fieldType } from './utilSelf'
+import {XButton} from '@/components/XButton'
 
 
 const props = defineProps({

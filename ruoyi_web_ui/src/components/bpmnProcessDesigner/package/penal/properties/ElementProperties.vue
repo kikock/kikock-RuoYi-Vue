@@ -24,7 +24,7 @@
     <div class="element-drawer__button">
       <XButton
         type="primary"
-        preIcon="ep:plus"
+        pre-icon="add"
         title="添加属性"
         @click="openAttributesForm(null, -1)"
       />
@@ -55,6 +55,7 @@
 
 <script  setup>
 import { ElMessageBox } from 'element-plus'
+import {XButton} from '@/components/XButton'
 const props = defineProps({
   id: String,
   type: String

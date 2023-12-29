@@ -33,9 +33,9 @@ const getBindValue = computed(() => {
 <template>
   <el-button v-bind="getBindValue" @click="onClick">
     <!-- 按钮图标 -->
-    <svg-icon v-if="preIcon"  :icon-class="preIcon" class="mr10" />
+    <svg-icon v-if="preIcon"  :icon-class="preIcon" class="mr5" />
     {{ title ? title : '' }}
-    <svg-icon v-if="postIcon"  :icon-class="postIcon" class="mr10" />
+    <svg-icon v-if="postIcon"  :icon-class="postIcon" class="mr5" />
   </el-button>
 </template>
 <style lang="scss" scoped>

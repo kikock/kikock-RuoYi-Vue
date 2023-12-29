@@ -103,7 +103,7 @@ getFromData()
 <style lang="scss">
 .process-panel__container {
   position: absolute;
-  top: 90px;
-  right: 60px;
+  top: 10px;
+  right: 50px;
 }
 </style>

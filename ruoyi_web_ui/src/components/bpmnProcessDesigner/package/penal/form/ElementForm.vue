@@ -49,7 +49,7 @@
       </el-table>
     </div>
     <div class="element-drawer__button">
-      <XButton type="primary" proIcon="ep:plus" title="添加字段" @click="openFieldForm(null, -1)" />
+      <XButton type="primary" proIcon="add" title="添加字段" @click="openFieldForm(null, -1)" />
     </div>
 
     <!--字段配置侧边栏-->

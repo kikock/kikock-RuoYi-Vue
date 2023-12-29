@@ -19,7 +19,7 @@
         </el-select>
         <XButton
           type="primary"
-          preIcon="ep:plus"
+          preIcon="add"
           style="margin-left: 8px"
           @click="openMessageModel"
         />
