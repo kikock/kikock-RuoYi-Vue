@@ -11,6 +11,7 @@
         @init-finished="initModeler"
         :additionalModel="controlForm.additionalModel"
         @save="save"
+        @backModel="backModel"
     />
 
     <!-- 流程属性器，负责编辑每个流程节点的属性 -->
@@ -55,7 +56,10 @@ const initModeler = (item) => {
     console.log("initModeler",item);
   }, 10)
 }
-
+/** 返回 */
+const backModel = () => {
+  close()
+}
 /** 添加/修改模型 */
 const save = async (bpmnXml) => {
   const data = {
@@ -109,7 +113,7 @@ getFromData()
 <style lang="scss">
 .process-panel__container {
   position: absolute;
-  top: 10px;
-  right: 50px;
+  top: 50px;
+  right: 15px;
 }
 </style>

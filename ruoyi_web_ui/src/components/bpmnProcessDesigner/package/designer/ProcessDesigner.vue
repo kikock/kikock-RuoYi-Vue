@@ -113,6 +113,12 @@
             :type="props.headerButtonType"
             :disabled="simulationStatus"
         />
+        <XButton
+            pre-icon="back2"
+            title="返回"
+            @click="backModel"
+            :type="props.headerButtonType"
+        />
       </template>
       <!-- 用于打开本地文件-->
       <input
@@ -600,7 +606,7 @@ const previewProcessJson = () => {
     previewModelVisible.value = true
   })
 }
-/* ------------------------------------------------ 芋道源码 methods ------------------------------------------------------ */
+/* ------------------------------------------------  methods ------------------------------------------------------ */
 const processSave = async () => {
   console.log(bpmnModeler, 'bpmnModelerbpmnModelerbpmnModelerbpmnModeler')
   const { err, xml } = await bpmnModeler.saveXML()
@@ -615,6 +621,12 @@ const processSave = async () => {
   // 触发 save 事件
   emit('save', xml)
 }
+//返回
+const backModel = () => {
+  emit('backModel')
+}
+
+
 /** 高亮显示 */
 // const highlightedCode = (previewType, previewResult) => {
 //   console.log(previewType, 'previewType, previewResult')
