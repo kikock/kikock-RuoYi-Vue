@@ -17,10 +17,10 @@ export function getModel(id) {
   })
 }
 
-export function updateModel(data) {
+export function updateModelFlowChart(data) {
   return request({
-    url: '/bpm/model/update',
-    method: 'PUT',
+    url: '/bpm/model/flowChart/update',
+    method: 'POST',
     data: data
   })
 }
