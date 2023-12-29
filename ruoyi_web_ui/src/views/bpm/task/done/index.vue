@@ -27,68 +27,11 @@
             class="!w-240px"
         />
       </el-form-item>
-<!--      <el-form-item label="结果" prop="result">-->
-<!--        <el-select-->
-<!--            v-model="queryParams.result"-->
-<!--            placeholder="请输入请假结果"-->
-<!--            clearable-->
-<!--            class="!w-240px"-->
-<!--        >-->
-<!--          <el-option-->
-<!--              v-for="dict in bpm_process_instance_status"-->
-<!--              :key="dict.value"-->
-<!--              :label="dict.label"-->
-<!--              :value="dict.value"-->
-<!--          />-->
-<!--        </el-select>-->
-<!--      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
-
-<!--    <el-row :gutter="10" class="mb8">-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="primary"-->
-<!--            plain-->
-<!--            icon="Plus"-->
-<!--            @click="handleAdd"-->
-<!--            v-hasPermi="['system:leave:add']"-->
-<!--        >新增</el-button>-->
-<!--      </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="success"-->
-      <!--          plain-->
-      <!--          icon="Edit"-->
-      <!--          :disabled="single"-->
-      <!--          @click="handleUpdate"-->
-      <!--          v-hasPermi="['system:leave:edit']"-->
-      <!--        >修改</el-button>-->
-      <!--      </el-col>-->
-      <!--      <el-col :span="1.5">-->
-      <!--        <el-button-->
-      <!--          type="danger"-->
-      <!--          plain-->
-      <!--          icon="Delete"-->
-      <!--          :disabled="multiple"-->
-      <!--          @click="handleDelete"-->
-      <!--          v-hasPermi="['system:leave:remove']"-->
-      <!--        >删除</el-button>-->
-      <!--      </el-col>-->
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="warning"-->
-<!--            plain-->
-<!--            icon="Download"-->
-<!--            @click="handleExport"-->
-<!--            v-hasPermi="['system:leave:export']"-->
-<!--        >导出</el-button>-->
-<!--      </el-col>-->
-<!--      <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>-->
-<!--    </el-row>-->
 
     <el-table v-loading="loading" :data="leaveList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
