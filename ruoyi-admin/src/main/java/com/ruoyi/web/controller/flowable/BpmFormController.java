@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
- * 工作流的单定义Controller
+ * 工作流的自定义表单Controller
  *
  * @author kikock
  * @date 2023-12-26
@@ -28,7 +28,7 @@ public class BpmFormController extends BaseController{
     private IBpmFormService bpmFormService;
 
     /**
-     * 查询工作流的单定义列表
+     * 查询工作流的自定义表单列表
      */
     @PreAuthorize("@ss.hasPermi('bpm:form:list')")
     @GetMapping("/list")
@@ -39,19 +39,19 @@ public class BpmFormController extends BaseController{
     }
 
     /**
-     * 导出工作流的单定义列表
+     * 导出工作流的自定义表单列表
      */
     @PreAuthorize("@ss.hasPermi('bpm:form:export')")
-    @Log(title = "工作流的单定义", businessType = BusinessType.EXPORT)
+    @Log(title = "工作流的自定义表单", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, BpmForm bpmForm){
         List<BpmForm> list = bpmFormService.selectBpmFormList(bpmForm);
         ExcelUtil<BpmForm> util = new ExcelUtil<BpmForm>(BpmForm.class);
-        util.exportExcel(response, list, "工作流的单定义数据");
+        util.exportExcel(response, list, "工作流的自定义表单数据");
     }
 
     /**
-     * 获取工作流的单定义详细信息
+     * 获取工作流的自定义表单详细信息
      */
     @PreAuthorize("@ss.hasPermi('bpm:form:query')")
     @GetMapping(value = "/{id}")
@@ -60,30 +60,30 @@ public class BpmFormController extends BaseController{
     }
 
     /**
-     * 新增工作流的单定义
+     * 新增工作流的自定义表单
      */
     @PreAuthorize("@ss.hasPermi('bpm:form:add')")
-    @Log(title = "工作流的单定义", businessType = BusinessType.INSERT)
+    @Log(title = "工作流的自定义表单", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody BpmForm bpmForm){
         return toAjax(bpmFormService.insertBpmForm(bpmForm));
     }
 
     /**
-     * 修改工作流的单定义
+     * 修改工作流的自定义表单
      */
     @PreAuthorize("@ss.hasPermi('bpm:form:edit')")
-    @Log(title = "工作流的单定义", businessType = BusinessType.UPDATE)
+    @Log(title = "工作流的自定义表单", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody BpmForm bpmForm){
         return toAjax(bpmFormService.updateBpmForm(bpmForm));
     }
 
     /**
-     * 删除工作流的单定义
+     * 删除工作流的自定义表单
      */
     @PreAuthorize("@ss.hasPermi('bpm:form:remove')")
-    @Log(title = "工作流的单定义", businessType = BusinessType.DELETE)
+    @Log(title = "工作流的自定义表单", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids){
         return toAjax(bpmFormService.deleteBpmFormByIds(ids));

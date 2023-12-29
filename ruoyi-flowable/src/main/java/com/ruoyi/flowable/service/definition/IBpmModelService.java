@@ -1,8 +1,8 @@
 package com.ruoyi.flowable.service.definition;
 
-import cn.hutool.db.PageResult;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.flowable.domain.definition.model.*;
+import com.ruoyi.flowable.domain.definition.BpmModel;
+import com.ruoyi.flowable.domain.definition.vo.BpmModelVo;
 import org.flowable.bpmn.model.BpmnModel;
 
 import javax.validation.Valid;
@@ -20,7 +20,7 @@ public interface IBpmModelService{
      * @param pageVO 分页查询
      * @return 流程模型分页
      */
-    public List<BpmModelPageItemRespVO> getModelPage(BpmModelPageReqVO pageVO);
+    public List<BpmModel> selectBpmModelList(BpmModel pageVO);
 
     /**
      * 创建流程模型
@@ -29,7 +29,7 @@ public interface IBpmModelService{
      * @param bpmnXml BPMN XML
      * @return 创建的流程模型的编号
      */
-    public AjaxResult createModel(@Valid BpmModelCreateReqVO modelVO, String bpmnXml);
+    public AjaxResult createModel(@Valid BpmModelVo modelVO, String bpmnXml);
 
     /**
      * 获得流程模块
@@ -37,14 +37,14 @@ public interface IBpmModelService{
      * @param id 编号
      * @return 流程模型
      */
-    public BpmModelRespVO getModel(String id);
+    public BpmModel getModel(String id);
 
     /**
      * 修改流程模型
      *
      * @param updateReqVO 更新信息
      */
-    public  int updateModel(@Valid BpmModelUpdateReqVO updateReqVO);
+    public int updateModel(@Valid BpmModel updateReqVO);
 
     /**
      * 将流程模型，部署成一个流程定义
@@ -63,7 +63,7 @@ public interface IBpmModelService{
     /**
      * 修改模型的状态，实际更新的部署的流程定义的状态
      *
-     * @param id 编号
+     * @param id    编号
      * @param state 状态
      */
     public void updateModelState(String id, Integer state);

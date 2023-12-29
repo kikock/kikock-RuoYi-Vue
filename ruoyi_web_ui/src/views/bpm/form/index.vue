@@ -114,7 +114,7 @@ function indexMethod(index){
   return ((queryParams.value.pageNum-1) * queryParams.value.pageSize + index +1)
 }
 
-/** 查询工作流的单定义列表 */
+/** 查询工作流的自定义表单列表 */
 function getList() {
   console.log("加载数据");
   loading.value = true;

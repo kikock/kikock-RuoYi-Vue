@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * 工作流的单定义对象 bpm_form
+ * 工作流的自定义表单对象 bpm_form
  *
  * @author kikock
  * @date 2023-12-25
@@ -46,12 +46,12 @@ public class BpmForm extends BaseEntity{
      */
     private String fields;
 
-    @NotNull(message = "表单项的数组不能为空")
-    private List<String> fieldsArr;
     /**
      * 删除标志（0代表存在 2代表删除）
      */
     private String delFlag;
+    @NotNull(message = "表单项的数组不能为空")
+    private List<String> fieldsArr;
 
     public void setId(Long id){
         this.id = id;

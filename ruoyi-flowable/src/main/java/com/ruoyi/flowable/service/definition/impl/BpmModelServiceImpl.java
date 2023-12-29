@@ -1,27 +1,39 @@
 package com.ruoyi.flowable.service.definition.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.PageResult;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.page.PageDomain;
+import com.ruoyi.common.core.page.TableSupport;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.flowable.domain.definition.model.*;
+import com.ruoyi.common.utils.collection.CollectionUtils;
+import com.ruoyi.flowable.domain.definition.BpmForm;
+import com.ruoyi.flowable.domain.definition.BpmModel;
 import com.ruoyi.flowable.domain.definition.vo.BpmModelMetaInfoVo;
+import com.ruoyi.flowable.domain.definition.vo.BpmModelVo;
 import com.ruoyi.flowable.service.definition.IBpmFormService;
 import com.ruoyi.flowable.service.definition.IBpmModelService;
+import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceExtService;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.model.BpmnModel;
+import org.flowable.common.engine.impl.db.SuspensionState;
 import org.flowable.engine.RepositoryService;
+import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.Model;
 import org.flowable.engine.repository.ModelQuery;
+import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 
 /**
@@ -36,47 +48,50 @@ public class BpmModelServiceImpl implements IBpmModelService{
     @Resource
     private RepositoryService repositoryService;
     @Resource
-    private IBpmProcessInstanceExtService processDefinitionService;
+    private IBpmProcessInstanceExtService processInstanceExtService;
+    @Resource
+    private IBpmProcessDefinitionService processDefinitionService;
     @Resource
     private IBpmFormService bpmFormService;
     @Resource
     private IBpmTaskAssignRuleService taskAssignRuleService;
 
     @Override
-    public List<BpmModelPageItemRespVO> getModelPage(BpmModelPageReqVO pageVO){
+    public List<BpmModel> selectBpmModelList(BpmModel bpmModel){
+        List<BpmModel> list = new ArrayList<>();
+        PageDomain pageDomain = TableSupport.buildPageRequest();
+        Integer pageNum = pageDomain.getPageNum();
+        Integer pageSize = pageDomain.getPageSize();
         ModelQuery modelQuery = repositoryService.createModelQuery();
-        if (StrUtil.isNotBlank(pageVO.getKey())) {
-            modelQuery.modelKey(pageVO.getKey());
+        if (StrUtil.isNotBlank(bpmModel.getKey())) {
+            modelQuery.modelKey(bpmModel.getKey());
         }
-        if (StrUtil.isNotBlank(pageVO.getName())) {
-            modelQuery.modelNameLike("%" + pageVO.getName() + "%"); // 模糊匹配
+        if (StrUtil.isNotBlank(bpmModel.getName())) {
+            modelQuery.modelNameLike("%" + bpmModel.getName() + "%"); // 模糊匹配
         }
-        if (StrUtil.isNotBlank(pageVO.getCategory())) {
-            modelQuery.modelCategory(pageVO.getCategory());
+        if (StrUtil.isNotBlank(bpmModel.getCategory())) {
+            modelQuery.modelCategory(bpmModel.getCategory());
         }
         // 执行查询
-//        List<Model> models = modelQuery.orderByCreateTime().desc()
-//                .listPage(PageUtils.getStart(pageVO), pageVO.getPageSize());
-//
-//        // 获得 Form Map
-//        Set<Long> formIds = CollectionUtils.convertSet(models, model -> {
-//            BpmModelMetaInfoRespDTO metaInfo = JsonUtils.parseObject(model.getMetaInfo(), BpmModelMetaInfoRespDTO.class);
-//            return metaInfo != null ? metaInfo.getFormId() : null;
-//        });
-//        Map<Long, BpmFormDO> formMap = bpmFormService.getFormMap(formIds);
-//
+        List<Model> models = modelQuery.orderByCreateTime().desc()
+                .listPage(pageNum - 1, pageSize);
+       // 获得表单id集合
+        Set<Long> formIds = CollectionUtils.convertSet(models, model -> {
+            BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
+            return metaInfo != null ? metaInfo.getFormId() : null;
+        });
+        // 获得流程表单参数
+        Map<Long,BpmForm> formMap = bpmFormService.getFormMap(formIds);
 //        // 获得 Deployment Map
-//        Set<String> deploymentIds = new HashSet<>();
-//        models.forEach(model -> CollectionUtils.addIfNotNull(deploymentIds, model.getDeploymentId()));
-//        Map<String, Deployment> deploymentMap = processDefinitionService.getDeploymentMap(deploymentIds);
-//        // 获得 ProcessDefinition Map
-//        List<ProcessDefinition> processDefinitions = processDefinitionService.getProcessDefinitionListByDeploymentIds(deploymentIds);
-//        Map<String, ProcessDefinition> processDefinitionMap = convertMap(processDefinitions, ProcessDefinition::getDeploymentId);
+        Set<String> deploymentIds = new HashSet<>();
+        models.forEach(model -> CollectionUtils.addIfNotNull(deploymentIds, model.getDeploymentId()));
+        Map<String,Deployment> deploymentMap = processDefinitionService.getDeploymentMap(deploymentIds);
+//        // 获得 ProcessDefinition Map 流程定义数据
+        List<ProcessDefinition> processDefinitions = processDefinitionService.getProcessDefinitionListByDeploymentIds(deploymentIds);
+        Map<String, ProcessDefinition> processDefinitionMap = convertMap(processDefinitions, ProcessDefinition::getDeploymentId);
 //
 //        // 拼接结果
-//        long modelCount = modelQuery.count();
-//        return new PageResult<>(BpmModelConvert.INSTANCE.convertList(models, formMap, deploymentMap, processDefinitionMap), modelCount);
-        return null;
+        return convertList(models, formMap, deploymentMap, processDefinitionMap);
     }
 
     /**
@@ -87,7 +102,7 @@ public class BpmModelServiceImpl implements IBpmModelService{
      * @return 创建的流程模型的编号
      */
     @Override
-    public AjaxResult createModel(BpmModelCreateReqVO modelVO, String bpmnXml){
+    public AjaxResult createModel(BpmModelVo modelVO, String bpmnXml){
         //校验流程标识正则
         String regex = "^[a-zA-Z_][a-zA-Z0-9\\-_.]*$";
         if (!modelVO.getKey().matches(regex)) {
@@ -115,12 +130,12 @@ public class BpmModelServiceImpl implements IBpmModelService{
     }
 
     @Override
-    public BpmModelRespVO getModel(String id){
+    public BpmModel getModel(String id){
         return null;
     }
 
     @Override
-    public int updateModel(BpmModelUpdateReqVO updateReqVO){
+    public int updateModel(BpmModel updateReqVO){
         return 0;
     }
 
@@ -191,5 +206,57 @@ public class BpmModelServiceImpl implements IBpmModelService{
             metaInfo.setFormCustomViewPath(formCustomViewPath);
         }
         return JSONUtil.toJsonStr(metaInfo);
+    }
+
+     List<BpmModel> convertList(List<Model> list, Map<Long, BpmForm> formMap,
+                                                     Map<String, Deployment> deploymentMap,
+                                                     Map<String, ProcessDefinition> processDefinitionMap) {
+        return CollectionUtils.convertList(list, model -> {
+            BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
+            BpmForm form = metaInfo != null ? formMap.get(metaInfo.getFormId()) : null;
+            Deployment deployment = model.getDeploymentId() != null ? deploymentMap.get(model.getDeploymentId()) : null;
+            ProcessDefinition processDefinition = model.getDeploymentId() != null ? processDefinitionMap.get(model.getDeploymentId()) : null;
+            return convert(model, form, deployment, processDefinition);
+        });
+     }
+
+    BpmModel convert(Model model, BpmForm form, Deployment deployment, ProcessDefinition processDefinition) {
+        BpmModel modelVO = new BpmModel();
+//        model 参数
+        modelVO.setId(model.getId());
+        modelVO.setCreateTime(model.getCreateTime());
+        modelVO.setName(model.getName());
+        modelVO.setKey(model.getKey());
+        modelVO.setCategory(model.getCategory());
+        BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
+        modelVO.setDescription( metaInfo.getDescription() );
+        modelVO.setFormType( metaInfo.getFormType() );
+        modelVO.setFormId( metaInfo.getFormId() );
+        modelVO.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
+        modelVO.setFormCustomViewPath( metaInfo.getFormCustomViewPath() );
+
+        // Form 参数
+        if (form != null) {
+            modelVO.setFormId(Long.valueOf(form.getId()));
+            modelVO.setFormName(form.getName());
+        }
+        modelVO.setProcessDefinition(convertToBpmModelProcessDefinition(processDefinition));
+        if (modelVO.getProcessDefinition() != null) {
+            modelVO.getProcessDefinition().setSuspensionState(processDefinition.isSuspended() ?
+                    SuspensionState.SUSPENDED.getStateCode() : SuspensionState.ACTIVE.getStateCode());
+            modelVO.getProcessDefinition().setDeploymentTime(DateUtil.toLocalDateTime(deployment.getDeploymentTime()));
+        }
+        return modelVO;
+    }
+
+
+    public BpmModel.ProcessDefinition convertToBpmModelProcessDefinition(ProcessDefinition bean) {
+        if ( bean == null ) {
+            return null;
+        }
+        BpmModel.ProcessDefinition processDefinition = new BpmModel.ProcessDefinition();
+        processDefinition.setId( bean.getId() );
+        processDefinition.setVersion( bean.getVersion() );
+        return processDefinition;
     }
 }

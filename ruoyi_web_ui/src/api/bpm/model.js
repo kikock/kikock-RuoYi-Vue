@@ -1,8 +1,10 @@
 import request from '@/utils/request'
 
-export function getModelPage(query) {
+
+// 查询流程模板
+export function listModel(query) {
   return request({
-    url: '/bpm/model/page',
+    url: '/bpm/model/list',
     method: 'get',
     params: query
   })

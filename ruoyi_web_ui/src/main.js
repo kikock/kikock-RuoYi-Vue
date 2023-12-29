@@ -55,6 +55,16 @@ app.config.globalProperties.addDateRange = addDateRange
 app.config.globalProperties.selectDictLabel = selectDictLabel
 app.config.globalProperties.selectDictLabels = selectDictLabels
 
+// 流程页面组件
+import ProcessDesigner from '@/components/bpmnProcessDesigner/package/designer/ProcessDesigner.vue'
+import PropertiesPanel from '@/components/bpmnProcessDesigner/package/penal/PropertiesPanel.vue'
+import ProcessPalette from '@/components/bpmnProcessDesigner/package/palette/ProcessPalette.vue'
+import ProcessViewer from '@/components/bpmnProcessDesigner/package/designer/ProcessViewer.vue'
+
+app.component('MyProcessDesigner', ProcessDesigner)
+app.component('MyPropertiesPanel', PropertiesPanel)
+app.component('MyProcessPalette', ProcessPalette)
+app.component('MyProcessViewer', ProcessPalette)
 // 全局组件挂载
 app.component('DictTag', DictTag)
 app.component('Pagination', Pagination)
@@ -64,7 +74,6 @@ app.component('ImageUpload', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('RightToolbar', RightToolbar)
 app.component('Editor', Editor)
-console.log("路由",router);
 app.use(router)
 app.use(store)
 app.use(plugins)
@@ -72,7 +81,6 @@ app.use(elementIcons)
 app.component('svg-icon', SvgIcon)
 
 directive(app)
-
 // 使用element-plus 并且设置全局的大小
 app.use(ElementPlus, {
   locale: locale,

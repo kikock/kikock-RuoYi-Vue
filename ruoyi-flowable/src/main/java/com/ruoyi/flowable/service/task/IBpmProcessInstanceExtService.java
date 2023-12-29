@@ -1,8 +1,12 @@
 package com.ruoyi.flowable.service.task;
 
+import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.task.BpmProcessInstanceExt;
+import org.flowable.engine.repository.Deployment;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 工作流的流程实例的拓展Service接口
@@ -58,4 +62,6 @@ public interface IBpmProcessInstanceExtService{
      * @return 结果
      */
     public int deleteBpmProcessInstanceExtById(Long id);
+
+    Map<String,Deployment> getDeploymentMap(Set<String> deploymentIds);
 }

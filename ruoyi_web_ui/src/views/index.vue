@@ -4,6 +4,7 @@
     <panel-group @handleSetLineChartData="handleSetLineChartData" />
 
     <el-row style="background:#fff;padding:16px 16px 0;margin-bottom:32px;">
+
 <!--      <line-chart :chart-data="lineChartData" />-->
     </el-row>
 
