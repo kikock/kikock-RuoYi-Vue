@@ -44,7 +44,7 @@ public interface IBpmModelService{
      *
      * @param updateReqVO 更新信息
      */
-    public int updateModel(@Valid BpmModel updateReqVO);
+    public AjaxResult updateFlowChart(BpmModel updateReqVO);
 
     /**
      * 将流程模型，部署成一个流程定义

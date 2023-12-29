@@ -5,6 +5,7 @@ import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.flowable.domain.definition.BpmForm;
 import com.ruoyi.flowable.domain.definition.BpmModel;
 import com.ruoyi.flowable.domain.definition.vo.BpmModelVo;
 import com.ruoyi.flowable.service.definition.IBpmModelService;
@@ -55,4 +56,14 @@ public class BpmModelController extends BaseController{
         return success(modelService.selectBpmModelById(id));
     }
 
+
+    /**
+     * 更新工作流流程图信息
+     */
+    @PreAuthorize("@ss.hasPermi('bpm:form:add')")
+    @Log(title = "更新工作流流程图信息", businessType = BusinessType.UPDATE)
+    @PostMapping("/flowChart/update")
+    public AjaxResult updateFlowChart(@RequestBody BpmModel bpmModel){
+        return modelService.updateFlowChart(bpmModel);
+    }
 }

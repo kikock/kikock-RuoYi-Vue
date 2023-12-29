@@ -120,11 +120,9 @@ const updateBaseInfo = (key) => {
   //   id: elementBaseInfo.value[key]
   //   // di: { id: `${elementBaseInfo.value[key]}_di` }
   // }
-  console.log(elementBaseInfo, 'elementBaseInfo11111111111')
   needProps.value = { ...elementBaseInfo.value, ...needProps.value }
 
   if (key === 'id') {
-    console.log('jinru')
     console.log(window, 'window')
     console.log(bpmnElement.value, 'bpmnElement')
     console.log(toRaw(bpmnElement.value), 'bpmnElement')

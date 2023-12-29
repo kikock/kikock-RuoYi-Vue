@@ -31,7 +31,7 @@ import CustomContentPadProvider from '@/components/bpmnProcessDesigner/package/d
 import CustomPaletteProvider from '@/components/bpmnProcessDesigner/package/designer/plugins/palette'
 import MyProcessDesigner from '@/components/bpmnProcessDesigner/package/designer/ProcessDesigner.vue'
 import {getCurrentInstance} from 'vue'
-import {getModel, listModel} from '@/api/bpm/model'
+import {createModel, getModel, updateModelFlowChart} from '@/api/bpm/model'
 const route = useRoute();// 路由的查询
 const router = useRouter();
 const {proxy} = getCurrentInstance();
@@ -66,12 +66,16 @@ const save = async (bpmnXml) => {
   // 提交
   if (data.id) {
     console.log("修改数据");
-    // await ModelApi.updateModel(data)
-    // message.success('修改成功')
+    updateModelFlowChart(data).then(response => {
+      proxy.$modal.msgSuccess("保存成功");
+      close()
+    });
+
   } else {
-    console.log("新增数据");
-    // await ModelApi.createModel(data)
-    // message.success('新增成功')
+    createModel(data).then(response => {
+      proxy.$modal.msgSuccess("保存成功");
+      close()
+    });
   }
   // 跳转回去
   // close()
