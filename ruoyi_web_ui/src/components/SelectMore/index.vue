@@ -48,7 +48,7 @@
   </el-form>
 </template>
 
-<script setup>
+<script setup name="moreSelect">
 import {useDirectivesEffect, useListEffect, useTextEffect} from './js/index'
 
 const props = defineProps({

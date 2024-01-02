@@ -1,9 +1,11 @@
 package com.ruoyi.flowable.mapper.definition;
 
 import com.ruoyi.flowable.domain.definition.BpmForm;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 工作流的自定义表单Mapper接口
@@ -62,8 +64,15 @@ public interface BpmFormMapper{
     /**
      * 批量查询工作流的自定义表单
      *
-     * @param ids 需要删除的数据主键集合
+     * @param list 需要删除的数据主键集合
      * @return 结果
      */
-    public List<BpmForm> selectBatchIds(Collection<Long> ids);
+    public List<BpmForm> selectBatchIds(@Param("list") List<Long> list);
+    /**
+     * 名称筛选下拉数据
+     *
+     * @param  keywords 筛选名称
+     * @return 可用表单
+     */
+    public List<BpmForm> flowFormDatas(String keywords);
 }

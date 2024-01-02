@@ -7,10 +7,11 @@ import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmForm;
 import com.ruoyi.flowable.mapper.definition.BpmFormMapper;
 import com.ruoyi.flowable.service.definition.IBpmFormService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 工作流的自定义表单Service业务层处理
@@ -20,7 +21,8 @@ import java.util.*;
  */
 @Service
 public class BpmFormServiceImpl implements IBpmFormService{
-    @Autowired
+
+    @Resource
     private BpmFormMapper bpmFormMapper;
 
     /**
@@ -55,7 +57,7 @@ public class BpmFormServiceImpl implements IBpmFormService{
     public int insertBpmForm(BpmForm bpmForm){
         bpmForm.setCreateTime(DateUtils.getNowDate());
         List<String> fieldsArr = bpmForm.getFieldsArr();
-        if (CollectionUtil.isNotEmpty(fieldsArr)){
+        if (CollectionUtil.isNotEmpty(fieldsArr)) {
             bpmForm.setFields(fieldsArr.toString());
         }
         return bpmFormMapper.insertBpmForm(bpmForm);
@@ -71,7 +73,7 @@ public class BpmFormServiceImpl implements IBpmFormService{
     public int updateBpmForm(BpmForm bpmForm){
         bpmForm.setUpdateTime(DateUtils.getNowDate());
         List<String> fieldsArr = bpmForm.getFieldsArr();
-        if (CollectionUtil.isNotEmpty(fieldsArr)){
+        if (CollectionUtil.isNotEmpty(fieldsArr)) {
             bpmForm.setFields(fieldsArr.toString());
         }
         return bpmFormMapper.updateBpmForm(bpmForm);
@@ -98,10 +100,12 @@ public class BpmFormServiceImpl implements IBpmFormService{
     public int deleteBpmFormById(Long id){
         return bpmFormMapper.deleteBpmFormById(id);
     }
+
     @Override
-    public List<BpmForm> getFormList(Collection<Long> ids) {
+    public List<BpmForm> getFormList(List<Long> ids){
         return bpmFormMapper.selectBatchIds(ids);
     }
+
     /**
      * 获得动态表单 Map
      *
@@ -109,10 +113,15 @@ public class BpmFormServiceImpl implements IBpmFormService{
      * @return 动态表单 Map
      */
     @Override
-    public Map<Long,BpmForm> getFormMap(Set<Long> formIds){
+    public Map<Long,BpmForm> getFormMap(List<Long> formIds){
         if (CollUtil.isEmpty(formIds)) {
             return Collections.emptyMap();
         }
         return CollectionUtils.convertMap(getFormList(formIds), BpmForm::getId);
+    }
+
+    @Override
+    public List<BpmForm> flowFormDatas(String keywords){
+        return bpmFormMapper.flowFormDatas(keywords);
     }
 }
