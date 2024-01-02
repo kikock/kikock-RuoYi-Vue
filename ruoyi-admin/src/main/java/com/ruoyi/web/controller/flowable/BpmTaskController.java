@@ -25,6 +25,6 @@ public class BpmTaskController {
     @GetMapping("todo-page")
     @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public TableDataInfo  todoList(){
-    return null;
+        return null;
     }
 }

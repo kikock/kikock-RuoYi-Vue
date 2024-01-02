@@ -374,6 +374,7 @@ const initBpmnModeler = () => {
   console.log(bpmnModeler, 'bpmnModeler111111')
   emit('init-finished', bpmnModeler)
   initModelListeners()
+
 }
 
 const initModelListeners = () => {
@@ -625,9 +626,10 @@ const processSave = async () => {
 // }
 onBeforeMount(() => {
   console.log(props, 'propspropspropsprops')
-  bpmnData.value = props;
+
 })
 onMounted(() => {
+  bpmnData.value = props;
   initBpmnModeler()
   console.log(bpmnData.value.prefix, 'kkkkkkkkkkkkkkkkk');
   console.log(bpmnData.value, 'kkkkkkkkkkkkkkkkk2');

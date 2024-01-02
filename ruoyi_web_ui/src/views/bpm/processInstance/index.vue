@@ -86,26 +86,26 @@
     <el-table v-loading="loading" :data="leaveList" @selection-change="handleSelectionChange">
       <el-table-column label="流程编号" align="center" prop="id" width="300px" />
       <el-table-column label="流程名称" align="center" prop="name" />
-      <el-table-column label="流程分类" align="center" prop="category">
+      <el-table-column label="流程分类" align="center">
         <template #default="scope">
-          <dict-tag :type="bpm_model_category" :value="scope.row.category" />
+          <dict-tag :options="bpm_model_category" :value="scope.row.category" />
         </template>
       </el-table-column>
-      <el-table-column label="当前审批任务" align="center" prop="tasks">
+      <el-table-column label="当前审批任务" align="center" >
         <template #default="scope">
           <el-button type="primary" v-for="task in scope.row.tasks" :key="task.id" link>
             <span>{{ task.name }}</span>
           </el-button>
         </template>
       </el-table-column>
-      <el-table-column label="状态" prop="status">
+      <el-table-column label="状态" align="center">
         <template #default="scope">
-          <dict-tag :type="bpm_process_instance_status" :value="scope.row.status" />
+          <dict-tag :options="bpm_process_instance_status" :value="scope.row.status" />
         </template>
       </el-table-column>
-      <el-table-column label="结果" prop="result">
+      <el-table-column label="结果" align="center">
         <template #default="scope">
-          <dict-tag :type="bpm_process_instance_result" :value="scope.row.result" />
+          <dict-tag :options="bpm_process_instance_result" :value="scope.row.result" />
         </template>
       </el-table-column>
       <el-table-column label="提交时间" align="center" prop="createTime" width="180">
@@ -182,7 +182,7 @@ const data = reactive({
     status: '',
     createTime: '',
     // day: null,
-    // result: null,
+    result: null,
     // processInstanceId: null,
   },
   rules: {

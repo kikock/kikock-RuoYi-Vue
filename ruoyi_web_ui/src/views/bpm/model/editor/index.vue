@@ -52,7 +52,7 @@ const model = ref() // 流程模型的信息
 const initModeler = (item) => {
   setTimeout(() => {
     modeler.value = item
-    console.log("initModeler",item);
+    // console.log("initModeler",item);
   }, 10)
 }
 
@@ -62,7 +62,7 @@ const save = async (bpmnXml) => {
     ...model.value,
     bpmnXml: bpmnXml // bpmnXml 只是初始化流程图，后续修改无法通过它获得
   }
-  console.log("保存数据:",data);
+  // console.log("保存数据:",data);
   // 提交
   if (data.id) {
     console.log("修改数据");
