@@ -263,7 +263,7 @@ function handleQuery() {
 }
 /** 发起按钮操作 */
 function handleCreate() {
-  router.push({name: 'BpmProcessInstanceCreate'})
+  router.push({path: "/task/bpmprocessInstance/create"})
 }
 
 /** 重置按钮操作 */
@@ -279,12 +279,14 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
+
 /**
  * 流程详情
  * @param row
  */
-function handleDetail  (row) {
-  router.push({name: 'BpmProcessInstanceDetail', query: {id: row.id}})
+function handleDetail(row) {
+  const _id = row.id
+  router.push({path: "/task/bpmprocessInstance/detail", query: {id: _id}});
 }
 
 /**
