@@ -1,80 +1,74 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryRef" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="任务名称" prop="type">
-        <el-select
-            v-model="queryParams.type"
-            placeholder="请选输入任务名称"
-            clearable
+    <el-form v-show="showSearch" ref="queryRef" :inline="true" :model="queryParams" label-width="68px">
+      <el-form-item label="任务名称" prop="name">
+        <el-input
+            v-model="queryParams.name"
             class="!w-240px"
-        >
-          <el-option
-              v-for="dict in bpm_oa_leave_type"
-              :key="dict.value"
-              :label="dict.label"
-              :value="dict.value"
-          />
-        </el-select>
+            clearable
+            placeholder="请输入任务名称"
+            @keyup.enter="handleQuery"
+        />
       </el-form-item>
-      <el-form-item label="申请时间" prop="createTime">
+      <el-form-item label="创建时间" prop="createTime">
         <el-date-picker
             v-model="queryParams.createTime"
-            value-format="YYYY-MM-DD HH:mm:ss"
-            type="daterange"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
             :default-time="[new Date('1 00:00:00'), new Date('1 23:59:59')]"
             class="!w-240px"
+            end-placeholder="结束日期"
+            start-placeholder="开始日期"
+            type="daterange"
+            value-format="YYYY-MM-DD HH:mm:ss"
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" icon="Search" @click="handleQuery">搜索</el-button>
+        <el-button icon="Search" type="primary" @click="handleQuery">搜索</el-button>
         <el-button icon="Refresh" @click="resetQuery">重置</el-button>
       </el-form-item>
     </el-form>
 
     <el-table v-loading="loading" :data="leaveList" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="任务编号" align="center" prop="id" />
-      <el-table-column label="任务名称" align="center" prop="type"/>
-      <el-table-column label="所属流程" align="center" prop="type"/>
-      <el-table-column label="流程申请人" align="center" prop="type"/>
-      <el-table-column label="原因" align="center" prop="reason" />
-      <el-table-column label="申请时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="状态" align="center" >
+      <el-table-column align="center" type="selection" width="55"/>
+      <el-table-column align="center" label="任务编号" prop="id" width="300px" />
+      <el-table-column align="center" label="任务名称" prop="name" />
+      <el-table-column align="center" label="所属流程" prop="processInstance.name" />
+      <el-table-column align="center" label="流程发起人" prop="processInstance.startUserNickname" />
+      <el-table-column align="center" label="原因" prop="reason"/>
+      <el-table-column align="center" label="创建时间" prop="createTime" width="180"/>
+      <el-table-column align="center" label="状态">
         <template #default="scope">
           <dict-tag :options="bpm_process_instance_result" :value="scope.row.result"/>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column align="center" class-name="small-padding fixed-width" label="操作">
         <template #default="scope">
-          <el-button link type="primary" icon="Edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:leave:query']">详情</el-button>
-          <el-button link type="primary" icon="Delete" @click="handleDelete(scope.row)" v-hasPermi="['system:leave:remove']">删除</el-button>
+          <el-button v-hasPermi="['system:leave:query']" icon="Edit" link type="primary"
+                     @click="openDetail(scope.row)">详情
+          </el-button>
+          <el-button v-hasPermi="['system:leave:remove']" icon="Delete" link type="primary"
+                     @click="handleAudit(scope.row)">流程
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
 
     <pagination
         v-show="total>0"
-        :total="total"
-        v-model:page="queryParams.pageNum"
         v-model:limit="queryParams.pageSize"
+        v-model:page="queryParams.pageNum"
+        :total="total"
         @pagination="getList"
     />
 
     <!-- 添加OA 请假申请对话框 -->
-    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+    <el-dialog v-model="open" :title="title" append-to-body width="500px">
       <el-form ref="leaveRef" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="请假类型" prop="type">
           <el-select
               v-model="form.type"
-              placeholder="请选择请假类型"
-              clearable
               class="!w-240px"
+              clearable
+              placeholder="请选择请假类型"
           >
             <el-option
                 v-for="dict in bpm_oa_leave_type"
@@ -85,23 +79,23 @@
           </el-select>
         </el-form-item>
         <el-form-item label="开始时间" prop="startTime">
-          <el-date-picker clearable
-                          v-model="form.startTime"
+          <el-date-picker v-model="form.startTime"
+                          clearable
+                          placeholder="请选择开始时间"
                           type="date"
-                          value-format="YYYY-MM-DD"
-                          placeholder="请选择开始时间">
+                          value-format="YYYY-MM-DD">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker clearable
-                          v-model="form.endTime"
+          <el-date-picker v-model="form.endTime"
+                          clearable
+                          placeholder="请选择结束时间"
                           type="date"
-                          value-format="YYYY-MM-DD"
-                          placeholder="请选择结束时间">
+                          value-format="YYYY-MM-DD">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="请假原因" prop="reason">
-          <el-input v-model="form.reason" placeholder="请输入请假原因" />
+          <el-input v-model="form.reason" placeholder="请输入请假原因"/>
         </el-form-item>
         <!--        <el-form-item label="请假天数" prop="day">-->
         <!--          <el-input v-model="form.day" placeholder="请输入请假天数" />-->
@@ -129,16 +123,16 @@
   </div>
 </template>
 
-<script setup name="Leave">
-import { listLeave, getLeave, delLeave, addLeave, updateLeave } from "@/api/bpm/leave";
-import {getCurrentInstance, reactive, ref} from 'vue'
-const { proxy } = getCurrentInstance();
+<script name="BpmTodoTask" setup>
+import {addLeave, delLeave, listLeave, updateLeave} from "@/api/bpm/leave";
+import {getCurrentInstance, reactive, ref,toRefs} from 'vue';
+
+const {proxy} = getCurrentInstance();
 const {bpm_oa_leave_type} = proxy.useDict("bpm_oa_leave_type");
 const {bpm_process_instance_result} = proxy.useDict("bpm_process_instance_result");
 const {bpm_process_instance_status} = proxy.useDict("bpm_process_instance_status");
 const leaveList = ref([]);
 const open = ref(false);
-const openTwo = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
 const ids = ref([]);
@@ -152,47 +146,17 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    userId: null,
-    type: null,
-    reason: null,
-    startTime: null,
-    endTime: null,
-    day: null,
-    result: null,
-    processInstanceId: null,
-  },
-  rules: {
-    userId: [
-      { required: true, message: "申请人的用户编号不能为空", trigger: "blur" }
-    ],
-    type: [
-      { required: true, message: "请假类型不能为空", trigger: "change" }
-    ],
-    reason: [
-      { required: true, message: "请假原因不能为空", trigger: "blur" }
-    ],
-    startTime: [
-      { required: true, message: "开始时间不能为空", trigger: "blur" }
-    ],
-    endTime: [
-      { required: true, message: "结束时间不能为空", trigger: "blur" }
-    ],
-    day: [
-      { required: true, message: "请假天数不能为空", trigger: "blur" }
-    ],
-    result: [
-      { required: true, message: "请假结果不能为空", trigger: "blur" }
-    ],
-    createTime: [
-      { required: true, message: "创建时间不能为空", trigger: "blur" }
-    ],
-    updateTime: [
-      { required: true, message: "更新时间不能为空", trigger: "blur" }
-    ],
+    name: '',
+    createTime: []
   }
 });
 
-const { queryParams, form, rules } = toRefs(data);
+const {queryParams, form} = toRefs(data);
+/** 详情操作 */
+const detailRef = ref()
+const openDetail = (row) => {
+  detailRef.value.open(row.id)
+}
 
 /** 查询OA 请假申请列表 */
 function getList() {
@@ -293,12 +257,13 @@ function submitForm() {
 /** 删除按钮操作 */
 function handleDelete(row) {
   const _ids = row.id || ids.value;
-  proxy.$modal.confirm('是否确认删除OA 请假申请编号为"' + _ids + '"的数据项？').then(function() {
+  proxy.$modal.confirm('是否确认删除OA 请假申请编号为"' + _ids + '"的数据项？').then(function () {
     return delLeave(_ids);
   }).then(() => {
     getList();
     proxy.$modal.msgSuccess("删除成功");
-  }).catch(() => {});
+  }).catch(() => {
+  });
 }
 
 /** 导出按钮操作 */
