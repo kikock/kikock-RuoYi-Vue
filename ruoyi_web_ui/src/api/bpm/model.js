@@ -45,6 +45,15 @@ export function createModel(data) {
   })
 }
 
+export function updateModel(data) {
+  return request({
+    url: '/bpm/model/update',
+    method: 'POST',
+    data: data
+  })
+}
+
+
 export function deleteModel(id) {
   return request({
     url: '/bpm/model/delete?id=' + id,

@@ -97,7 +97,7 @@
         </el-table-column>
         <el-table-column label="部署时间" align="center" prop="deploymentTime" width="180">
           <template #default="scope">
-    部署时间
+               部署时间
           </template>
         </el-table-column>
       </el-table-column>
@@ -136,25 +136,104 @@
     <!-- 添加/修改流程  -->
     <el-dialog :title="title" v-model="open" width="600px" append-to-body>
       <el-form ref="bpmMpdelRef" :model="form" :rules="rules" label-width="120px">
-        <el-form-item  prop="key">
-          <template #label>
-            <el-popover placement="top" :width="300" trigger="hover" content="流程标识填写格式:以字母或下划线开头，后接任意字母、数字、中划线、下划线或句点">
-              <template #reference>
-                <el-icon><Warning/></el-icon>
-              </template>
-            </el-popover>
-            流程标识
-          </template>
-          <template #default>
-            <el-input v-model="form.key" placeholder="请输入流程标识" :readonly="form.id" />
-          </template>
-        </el-form-item>
+              <el-form-item label="流程标识" prop="key">
+                <el-input
+                  v-model="form.key"
+                  :disabled="fromReadOnly"
+                  placeholder="请输入流标标识"
+                  style="width: 95%"
+                />
+                <el-tooltip
+                  v-if="fromReadOnly"
+                  class="item"
+                  content="新建后，流程标识不可修改！流程标识填写格式:以字母或下划线开头，后接任意字母、数字、中划线、下划线或句点"
+                  effect="light"
+                  placement="top"
+                >
+                  <el-icon  style="margin-left: 5px" ><WarningFilled /></el-icon>
+                </el-tooltip>
+                <el-tooltip v-else class="item" content="流程标识不可修改！流程标识填写格式:以字母或下划线开头，后接任意字母、数字、中划线、下划线或句点" effect="light" placement="top">
+                  <el-icon  style="margin-left: 5px" ><WarningFilled /></el-icon>
+                </el-tooltip>
+              </el-form-item>
+
         <el-form-item label="流程名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入流程名称" />
+          <el-input v-model="form.name" placeholder="请输入流程名称"  style="width: 95%"  :disabled="fromReadOnly" />
+        </el-form-item>
+        <el-form-item v-if="fromReadOnly" label="流程分类" prop="category">
+          <el-select
+              v-model="form.category"
+              clearable
+              placeholder="请选择流程分类"
+              style="width: 95%"
+          >
+            <el-option
+                v-for="dict in bpm_model_category"
+                :key="dict.value"
+                :label="dict.label"
+                :value="dict.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="流程描述" prop="description">
-          <el-input type="textarea" :rows="3" v-model="form.description"></el-input>
+          <el-input type="textarea" :rows="3" v-model="form.description"  style="width: 95%" ></el-input>
         </el-form-item>
+              <div v-if="fromReadOnly">
+                <el-form-item label="表单类型" prop="formType">
+                  <el-radio-group v-model="form.formType">
+                    <el-radio
+                      v-for="dict in bpm_model_form_type"
+                      :key="dict.value"
+                      :label="parseInt(dict.value)"
+                    >
+                      {{ dict.label }}
+                    </el-radio>
+                  </el-radio-group>
+                </el-form-item>
+                <el-form-item v-if="form.formType === 10" label="流程表单" prop="formId">
+                  <select-more v-model="flowFormData" url="/bpm/form/flowFormDatas" @change="setFlowFormId"
+                               label="name" searchText="请选择流程关联表单" :otherParams="flowParams"
+                               searchPldText="请输入流程表单名称模糊查询" ></select-more>
+                </el-form-item>
+                <el-form-item
+                  v-if="form.formType === 20"
+                  label="表单提交路由"
+                  prop="formCustomCreatePath"
+                >
+                  <el-input
+                    v-model="form.formCustomCreatePath"
+                    placeholder="请输入表单提交路由"
+                    style="width: 95%"
+                  />
+                  <el-tooltip
+                    class="item"
+                    content="自定义表单的提交路径，使用 Vue 的路由地址，例如说：bpm/oa/leave/create"
+                    effect="light"
+                    placement="top"
+                  >
+                    <el-icon  style="margin-left: 5px" ><WarningFilled /></el-icon>
+                  </el-tooltip>
+                </el-form-item>
+                <el-form-item
+                  v-if="form.formType === 20"
+                  label="表单查看路由"
+                  prop="formCustomViewPath"
+                >
+                  <el-input
+                    v-model="form.formCustomViewPath"
+                    placeholder="请输入表单查看路由"
+                    style="width: 95%"
+                  />
+                  <el-tooltip
+                    class="item"
+                    content="自定义表单的查看路径，使用 Vue 的路由地址，例如说：bpm/oa/leave/view"
+                    effect="light"
+                    placement="top"
+                  >
+                    <el-icon  style="margin-left: 5px" ><WarningFilled /></el-icon>
+                  </el-tooltip>
+                </el-form-item>
+              </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
@@ -170,11 +249,22 @@
 <script setup name="bpmForm">
 import router from "@/router";
 import {getCurrentInstance, reactive, ref} from 'vue'
-import {createModel,listModel} from '@/api/bpm/model'
+import {createModel, getModel, listModel, updateModel} from '@/api/bpm/model'
+import SelectMore from '@/components/SelectMore/index.vue'
+import {addSocialApp, updateSocialApp} from '@/api/system/socialApp'
 const {proxy} = getCurrentInstance();
-const {bpm_model_category} = proxy.useDict('bpm_model_category');
+const {bpm_model_category,bpm_model_form_type
+} = proxy.useDict('bpm_model_category','bpm_model_form_type');
+//流程表单数据
+const flowFormData = ref(null);
+//流程表单参数
+const flowParams = ref({
+  "params": 0
+});
 const formList = ref([]);
 const loading = ref(true);
+// 新增,修改只读显示状态
+const fromReadOnly=ref(false)
 const showSearch = ref(true);
 const total = ref(0);
 //流程弹出
@@ -210,7 +300,22 @@ const data = reactive({
         }
       },
       trigger: 'blur'
-    }]
+    }],
+    category: [
+      { required: true, message: "流程分类不能为空", trigger: "blur" }
+    ],
+    formType: [
+      { required: true, message: "表单类型不能为空", trigger: "blur" }
+    ],
+    formId: [
+      { required: true, message: "请选择流程表单Id", trigger: "blur" }
+    ],
+    formCustomCreatePath: [
+      { required: true, message: "请选择流程表单提交路由", trigger: "blur" }
+    ],
+    formCustomViewPath: [
+      { required: true, message: "请选择流程表单查看路由", trigger: "blur" }
+    ],
   }
 });
 const {queryParams,form,rules} = toRefs(data);
@@ -245,6 +350,8 @@ function resetQuery() {
 
 // 表单重置
 function reset() {
+  fromReadOnly.value=false
+  flowFormData.value=null
   form.value = {
     name: null,
     key: null,
@@ -264,27 +371,43 @@ function handleAdd() {
   open.value = true;
   title.value = "新增流程";
 }
+/** 修改按钮操作 */
+function handleUpdate(row) {
+  reset();
+  open.value = true;
+  title.value = "修改流程";
+  const modelId = row.id
+  if (!modelId) {
+    proxy.$modal.msgSuccess("错误缺少模型 modelId 编号");
+    return
+  }
+  getModel(modelId).then(response => {
+    form.value = response.data;
+    open.value = true;
+    flowFormData.value=response.data.formName
+    fromReadOnly.value=true
+    title.value = "修改流程";
+    console.log(form.value);
+  });
+}
 /** 导入按钮操作 */
 function openImportForm() {
   console.log("导入流程按钮");
 
 }
 
-/** 修改按钮操作 */
-function handleUpdate(row) {
-  console.log("修改按钮");
-}
 /** 设计流程操作 */
 function handleDesign(row) {
   console.log("弹出设计流程页面");
   router.push({path: "/flowable/bpmModel/editor", query: {modelId: row.id}});
 }
 /** 分配规则操作 */
-function handleAssignRule() {
+function handleAssignRule(row) {
   console.log("弹出分配规则页面");
+  router.push({path: "/flowable/bpmModel/taskAssignRule", query: {modelId: row.id}});
 }
 /** 发布流程操作 */
-function handleDeploy() {
+function handleDeploy(row) {
   console.log("发布流程操作操作");
 }
 /** 流程定义操作操作 */
@@ -302,20 +425,32 @@ function handleDelete(row) {
   }).catch(() => {
   });
 }
-
+/** 表单参数设置 */
+function setFlowFormId(row) {
+  console.log("设置表单",row.name);
+  form.value.formId=row.id
+  flowFormData.value=row.name
+}
 
 
 /** 提交按钮 */
 function submitForm() {
+  console.log("提交表单",form.value);
   proxy.$refs["bpmMpdelRef"].validate(valid => {
     if (valid) {
-      createModel(form.value).then(response => {
-        console.log(response);
-        proxy.$modal.msgSuccess("新增成功");
-        open.value = false;
-        getList();
-      });
-
+      if (form.value.id != null) {
+        updateModel(form.value).then(response => {
+          proxy.$modal.msgSuccess("修改成功");
+          open.value = false;
+          getList();
+        });
+      } else {
+        createModel(form.value).then(response => {
+          proxy.$modal.msgSuccess("新增成功");
+          open.value = false;
+          getList();
+        });
+      }
     }
   });
 }

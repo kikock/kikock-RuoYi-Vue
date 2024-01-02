@@ -48,6 +48,16 @@ public class BpmModelController extends BaseController{
     }
 
     /**
+     * 新增流程模型
+     */
+    @PreAuthorize("@ss.hasPermi('bpm:model:add')")
+    @Log(title = "创建流程模型", businessType = BusinessType.INSERT)
+    @PostMapping("/update")
+    public AjaxResult updateModel(@RequestBody BpmModelVo bpmModelVo){
+        return modelService.updateModel(bpmModelVo);
+    }
+
+    /**
      * 获取流程模型详细信息
      */
     @PreAuthorize("@ss.hasPermi('bpm:model:query')")

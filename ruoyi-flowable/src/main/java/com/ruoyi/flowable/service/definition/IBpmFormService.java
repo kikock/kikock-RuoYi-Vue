@@ -63,10 +63,10 @@ public interface IBpmFormService{
     /**
      * 获取工作流表单列表
      *
-     * @param id 工作流的自定义表单主键
+     * @param ids 工作流的自定义表单主键
      * @return 结果
      */
-    List<BpmForm> getFormList(Collection<Long> ids);
+    List<BpmForm> getFormList(List<Long> ids);
 
     /**
      * 获得动态自定义表单 Map
@@ -74,6 +74,12 @@ public interface IBpmFormService{
      * @param formIds 编号集合
      * @return 动态表单 Map
      */
-    public Map<Long,BpmForm> getFormMap(Set<Long> formIds);
-
+    public Map<Long,BpmForm> getFormMap(List<Long> formIds);
+    /**
+     * 名称筛选下拉数据
+     *
+     * @param  keywords 筛选名称
+     * @return 可用表单
+     */
+   public List<BpmForm> flowFormDatas(String keywords);
 }

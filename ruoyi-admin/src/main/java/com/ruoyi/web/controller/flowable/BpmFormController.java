@@ -1,8 +1,10 @@
 package com.ruoyi.web.controller.flowable;
 
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.vo.SelectMoreRequest;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -88,4 +90,17 @@ public class BpmFormController extends BaseController{
     public AjaxResult remove(@PathVariable Long[] ids){
         return toAjax(bpmFormService.deleteBpmFormByIds(ids));
     }
+
+    /**
+     * 分页获取组件下拉数据
+     */
+    @PostMapping("/flowFormDatas")
+    public TableDataInfo flowFormDatas(@RequestBody SelectMoreRequest request){
+        PageHelper.startPage(request.getPageNum(), request.getPageSize());
+        List<BpmForm> list = bpmFormService.flowFormDatas(request.getKeywords());
+        return getDataTable(list);
+
+
+    }
+
 }
