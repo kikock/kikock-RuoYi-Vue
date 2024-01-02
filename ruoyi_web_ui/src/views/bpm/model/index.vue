@@ -402,11 +402,12 @@ function handleDesign(row) {
   router.push({path: "/flowable/bpmModel/editor", query: {modelId: row.id}});
 }
 /** 分配规则操作 */
-function handleAssignRule() {
+function handleAssignRule(row) {
   console.log("弹出分配规则页面");
+  router.push({path: "/flowable/bpmModel/taskAssignRule", query: {modelId: row.id}});
 }
 /** 发布流程操作 */
-function handleDeploy() {
+function handleDeploy(row) {
   console.log("发布流程操作操作");
 }
 /** 流程定义操作操作 */

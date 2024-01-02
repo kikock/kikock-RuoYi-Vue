@@ -87,7 +87,8 @@ const save = async (bpmnXml) => {
 
 /** 关闭按钮 */
 const close = () => {
-  router.push({ path: '/flowable/bpm/model' })
+  const obj = {path: "/flowable/bpm/model"};
+  proxy.$tab.closeOpenPage(obj);
 }
 /** 初始化数据 */
 const getFromData =  () => {

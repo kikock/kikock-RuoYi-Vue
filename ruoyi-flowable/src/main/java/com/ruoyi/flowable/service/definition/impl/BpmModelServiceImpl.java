@@ -1,6 +1,7 @@
 package com.ruoyi.flowable.service.definition.impl;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.PageResult;
 import cn.hutool.json.JSONUtil;
@@ -21,8 +22,10 @@ import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceExtService;
 import lombok.extern.slf4j.Slf4j;
+import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.impl.db.SuspensionState;
+import org.flowable.common.engine.impl.util.io.BytesStreamSource;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.Model;
@@ -205,7 +208,12 @@ public class BpmModelServiceImpl implements IBpmModelService{
 
     @Override
     public BpmnModel getBpmnModel(String id){
-        return null;
+        byte[] bpmnBytes = repositoryService.getModelEditorSource(id);
+        if (ArrayUtil.isEmpty(bpmnBytes)) {
+            return null;
+        }
+        BpmnXMLConverter converter = new BpmnXMLConverter();
+        return converter.convertToBpmnModel(new BytesStreamSource(bpmnBytes), true, true);
     }
 
     @Override

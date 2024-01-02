@@ -190,6 +190,17 @@ export const dynamicRoutes = [
           activeMenu: '/bpm/manager/model'
         }
       },
+      {
+        path: 'bpmModel/taskAssignRule',
+        component: () => import('@/views/bpm/model/taskAssignRule/index.vue'),
+        name: 'BpmModelTaskAssignRule',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '分配规则',
+          activeMenu: '/bpm/manager/model'
+        }
+      },
     ]
   },
 ]

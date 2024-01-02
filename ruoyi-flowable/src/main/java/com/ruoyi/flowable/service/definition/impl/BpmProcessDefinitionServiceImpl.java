@@ -153,7 +153,7 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
 
     @Override
     public BpmnModel getBpmnModel(String processDefinitionId){
-        return null;
+        return repositoryService.getBpmnModel(processDefinitionId);
     }
 
 

@@ -5,6 +5,8 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import java.util.Set;
+
 /**
  * Bpm 任务规则对象 bpm_task_assign_rule
  *
@@ -37,6 +39,7 @@ public class BpmTaskAssignRule extends BaseEntity{
     @Excel(name = "流程任务定义的 key")
     private String taskDefinitionKey;
 
+    private String taskDefinitionName;
     /**
      * 规则类型
      */
@@ -48,6 +51,15 @@ public class BpmTaskAssignRule extends BaseEntity{
      */
     @Excel(name = "规则值，JSON 数组")
     private String options;
+
+    /**
+     * 规则值数组，一般关联指定表的编号
+     * 根据 type 不同，对应的值是不同的：
+     *
+     */
+    private Set<Long> optionIds;
+
+
 
     /**
      * 删除标志（0代表存在 2代表删除）
@@ -108,6 +120,22 @@ public class BpmTaskAssignRule extends BaseEntity{
 
     public String getDelFlag(){
         return delFlag;
+    }
+
+    public Set<Long> getOptionIds(){
+        return optionIds;
+    }
+
+    public String getTaskDefinitionName(){
+        return taskDefinitionName;
+    }
+
+    public void setTaskDefinitionName(String taskDefinitionName){
+        this.taskDefinitionName = taskDefinitionName;
+    }
+
+    public void setOptionIds(Set<Long> optionIds){
+        this.optionIds = optionIds;
     }
 
     @Override
