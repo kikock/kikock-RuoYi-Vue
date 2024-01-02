@@ -10,7 +10,10 @@ import java.time.LocalDateTime;
  */
 @Data
 public class BpmModelVo{
-
+    /**
+     * 流程id
+     */
+    private String id;
     /**
      * 流程标识
      */
@@ -49,5 +52,9 @@ public class BpmModelVo{
      * 自定义表单的查看路径
      */
     private String formCustomViewPath;
+    /**
+     * bpmnXml
+     */
+    private String bpmnXml;
 
 }

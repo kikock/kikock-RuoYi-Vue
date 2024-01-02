@@ -30,7 +30,13 @@ public interface IBpmModelService{
      * @return 创建的流程模型的编号
      */
     public AjaxResult createModel(@Valid BpmModelVo modelVO, String bpmnXml);
-
+    /**
+     * 修改流程模型
+     *
+     * @param modelVO 修改信息
+     * @return 创建的流程模型的编号
+     */
+    public AjaxResult updateModel(@Valid BpmModelVo modelVO);
     /**
      * 获得流程模块
      *

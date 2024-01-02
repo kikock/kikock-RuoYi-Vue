@@ -29,10 +29,12 @@ import org.flowable.engine.repository.Model;
 import org.flowable.engine.repository.ModelQuery;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
@@ -82,7 +84,8 @@ public class BpmModelServiceImpl implements IBpmModelService{
             return metaInfo != null ? metaInfo.getFormId() : null;
         });
         // 获得流程表单参数
-        Map<Long,BpmForm> formMap = bpmFormService.getFormMap(formIds);
+        List<Long> formIdsList =  formIds.stream().collect(Collectors.toList());
+        Map<Long,BpmForm> formMap = bpmFormService.getFormMap(formIdsList);
 //        // 获得 Deployment Map
         Set<String> deploymentIds = new HashSet<>();
         models.forEach(model -> CollectionUtils.addIfNotNull(deploymentIds, model.getDeploymentId()));
@@ -103,6 +106,7 @@ public class BpmModelServiceImpl implements IBpmModelService{
      * @return 创建的流程模型的编号
      */
     @Override
+    @Transactional(rollbackFor = Exception.class) // 因为进行多个操作，所以开启事务
     public AjaxResult createModel(BpmModelVo modelVO, String bpmnXml){
         //校验流程标识正则
         String regex = "^[a-zA-Z_][a-zA-Z0-9\\-_.]*$";
@@ -127,6 +131,30 @@ public class BpmModelServiceImpl implements IBpmModelService{
         // 保存 BPMN XML
         saveModelBpmnXml(model, bpmnXml);
         //成功返回模板id
+        return AjaxResult.success().put("id", model.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class) // 因为进行多个操作，所以开启事务
+    public AjaxResult updateModel(BpmModelVo modelVO){
+        // 校验流程模型存在
+        Model model = repositoryService.getModel(modelVO.getId());
+        if (model == null) {
+            throw new ServiceException("该流程模型不存在", HttpStatus.ERROR);
+        }
+        model.setCategory(modelVO.getCategory());
+        //            将BpmModelVo 转换成 Model
+        if(modelVO.getFormType()==10){
+            model.setMetaInfo(buildMetaInfoStr(null, modelVO.getDescription(), modelVO.getFormType(), modelVO.getFormId(),
+                    null, null));
+        }else {
+            model.setMetaInfo(buildMetaInfoStr(null, modelVO.getDescription(), modelVO.getFormType(), null,
+                    modelVO.getFormCustomCreatePath(), modelVO.getFormCustomViewPath()));
+        }
+//        // 更新模型
+        repositoryService.saveModel(model);
+//        // 更新 BPMN XML
+        saveModelBpmnXml(model, modelVO.getBpmnXml());
         return AjaxResult.success().put("id", model.getId());
     }
 
@@ -293,6 +321,11 @@ public class BpmModelServiceImpl implements IBpmModelService{
         modelVO.setDescription( metaInfo.getDescription() );
         modelVO.setFormType( metaInfo.getFormType() );
         modelVO.setFormId( metaInfo.getFormId() );
+        //
+        if( Objects.nonNull(metaInfo.getFormId())) {
+            BpmForm bpmForm = bpmFormService.selectBpmFormById(metaInfo.getFormId());
+            modelVO.setFormName(bpmForm.getName());
+        }
         modelVO.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
         modelVO.setFormCustomViewPath( metaInfo.getFormCustomViewPath());
         // 拼接 bpmn XML

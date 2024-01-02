@@ -42,7 +42,8 @@ import ImagePreview from "@/components/ImagePreview"
 import TreeSelect from '@/components/TreeSelect'
 // 字典标签组件
 import DictTag from '@/components/DictTag'
-
+// 下拉框组件
+import SelectMore from '@/components/SelectMore';
 const app = createApp(App)
 
 // 全局方法挂载
@@ -68,6 +69,7 @@ app.component('MyProcessViewer', ProcessPalette)
 // 全局组件挂载
 app.component('DictTag', DictTag)
 app.component('Pagination', Pagination)
+app.component('SelectMore', SelectMore)
 app.component('TreeSelect', TreeSelect)
 app.component('FileUpload', FileUpload)
 app.component('ImageUpload', ImageUpload)

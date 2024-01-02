@@ -179,14 +179,22 @@
 
 
 
-    <select id="selectBatchIds" parameterType="String"
-            resultMap="BpmFormResult">
+    <select id="selectBatchIds"  resultMap="BpmFormResult">
         <include refid="selectBpmFormVo"/>
         <where>
             id in
-            <foreach item="id" collection="List" open="(" separator="," close=")">
+            <foreach item="id" collection="list" open="(" separator="," close=")">
                 #{id}
             </foreach>
+        </where>
+    </select>
+    <select id="flowFormDatas" parameterType="String"
+            resultMap="BpmFormResult">
+        <include refid="selectBpmFormVo"/>
+        <where>
+            status = '0'
+            <if test="keywords != null and keywords != ''"> and  ( name like concat('%', #{keywords}, '%'))</if>
+            order by create_time desc
         </where>
     </select>
 </mapper>
