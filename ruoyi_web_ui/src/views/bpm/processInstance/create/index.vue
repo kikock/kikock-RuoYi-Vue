@@ -36,35 +36,27 @@
           </el-button>
         </div>
         <el-col :span="16" :offset="6" style="margin-top: 20px">
-          <form-create
-              :rule="detailForm.rule"
-              v-model:api="fApi"
-              :option="detailForm.option"
-              @submit="submitForm"
-          />
+          <FormCreate :rule="detailForm.rule" v-model:api="fApi" :option="detailForm.option" @submit="submitForm"/>
         </el-col>
       </el-card>
       <!-- 流程图预览 -->
-<!--      <ProcessInstanceBpmnViewer :bpmn-xml="bpmnXML as any"/>-->
+      <ProcessInstanceBpmnViewer :bpmn-xml="bpmnXML"/>
     </div>
   </div>
 </template>
 <script setup name="BpmProcessInstanceCreate">
-import { listLeave, getLeave, delLeave, addLeave, updateLeave } from "@/api/bpm/leave";
 import * as DefinitionApi from '@/api/bpm/definition'
 import * as ProcessInstanceApi from '@/api/bpm/processInstance'
 import {setConfAndFields2} from '@/utils/formCreate';
-import {addLeave, delLeave, listLeave, updateLeave} from "@/api/bpm/leave";
 //导入 form-create
 import formCreate from "@form-create/element-ui";
 import ProcessInstanceBpmnViewer from '../detail/ProcessInstanceBpmnViewer.vue'
 import {getCurrentInstance, reactive, ref} from 'vue'
 import router from "@/router";
 import {ElNotification} from "element-plus";
-import {listLeave} from "@/api/bpm/leave";
 //获取 formCreate 组件
 const FormCreate = formCreate.$form();
-import {ApiAttrs} from '@form-create/element-ui/types/config'
+// import {ApiAttrs} from '@form-create/element-ui/types/config'
 
 const {proxy} = getCurrentInstance();
 const {bpm_model_category} = proxy.useDict("bpm_model_category");
@@ -78,20 +70,16 @@ const queryParams = reactive({
 
 /** 查询列表 */
 function getList () {
-    loading.value = true;
-    listLeave(queryParams.value)
-        .then(response => {
-      leaveList.value = response.rows;
-      total.value = response.total;
+  DefinitionApi.getProcessDefinitionList(queryParams.value).then(response => {
       loading.value = false;
+      list.value = response.data;
     })
-        .finally(error=>{loading.value = false;});
   }
 
 
 // ========== 表单相关 ==========
 const bpmnXML = ref(null) // BPMN 数据
-const fApi = ref < > ()
+const fApi = ref ();
 const detailForm = ref({
   // 流程表单详情
   rule: [],
@@ -141,7 +129,6 @@ function submitForm(formData) {
   }).finally(error => {
     fApi.value.btn.loading(false)
   })
-
 }
 
 /** 初始化 */

@@ -104,6 +104,7 @@
   </ContentWrap>
 </template>
 <script setup name="BpmProcessInstanceDetail">
+import {getCurrentInstance, reactive, ref} from 'vue'
 import { useUserStore } from '@/store/modules/user'
 import { setConfAndFields2 } from '@/utils/formCreate'
 // import type { ApiAttrs } from '@form-create/element-ui/types/config'
@@ -116,13 +117,13 @@ import ProcessInstanceTaskList from './ProcessInstanceTaskList.vue'
 import TaskReturnDialog from './TaskReturnDialogForm.vue'
 import TaskDelegateForm from './TaskDelegateForm.vue'
 import TaskAddSignDialogForm from './TaskAddSignDialogForm.vue'
-import { registerComponent } from '@/utils/routerHelper'
-import { isEmpty } from '@/utils/is'
+// import { registerComponent } from '@/utils/routerHelper'
+// import { isEmpty } from '@/utils/is'
 
 
 const { query } = useRoute() // 查询参数
 const message = useMessage() // 消息弹窗
-const { proxy } = getCurrentInstance() as any
+const { proxy } = getCurrentInstance()
 
 const userId = useUserStore().getUser.id // 当前登录的编号
 const id = query.id as unknown as number // 流程实例的编号
@@ -130,10 +131,10 @@ const processInstanceLoading = ref(false) // 流程实例的加载中
 const processInstance = ref<any>({}) // 流程实例
 const bpmnXML = ref('') // BPMN XML
 const tasksLoad = ref(true) // 任务的加载中
-const tasks = ref<any[]>([]) // 任务列表
+const tasks = ref([]) // 任务列表
 // ========== 审批信息 ==========
-const runningTasks = ref<any[]>([]) // 运行中的任务
-const auditForms = ref<any[]>([]) // 审批任务的表单
+const runningTasks = ref([]) // 运行中的任务
+const auditForms = ref([]) // 审批任务的表单
 const auditRule = reactive({
   reason: [{ required: true, message: '审批建议不能为空', trigger: 'blur' }]
 })

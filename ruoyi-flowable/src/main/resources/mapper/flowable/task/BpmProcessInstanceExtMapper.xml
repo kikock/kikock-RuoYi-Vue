@@ -85,10 +85,37 @@
         </where>
     </select>
 
-    <select id="selectBpmProcessInstanceExtById" parameterType="Long"
-            resultMap="BpmProcessInstanceExtResult">
+    <select id="selectBpmProcessInstanceExtById" parameterType="Long" resultMap="BpmProcessInstanceExtResult">
         <include refid="selectBpmProcessInstanceExtVo"/>
         where id = #{id}
+    </select>
+
+    <select id="selectPage"  resultMap="BpmProcessInstanceExtResult">
+        <include refid="selectBpmProcessInstanceExtVo"/>
+        <where>
+            <if test="userId != null">
+                and start_user_id =#{userId}
+            </if>
+            <if test="name != null  and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="processDefinitionId != null  and processDefinitionId != ''">
+                and process_definition_id =#{processDefinitionId}
+            </if>
+            <if test="category != null  and category != ''">
+                and category = #{category}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="result != null">
+                and result =#{result}
+            </if>
+            <if test="createTime != null">
+                and create_time between #{starTime} and #{endTime}
+            </if>
+        </where>
+        order by id desc
     </select>
 
     <insert id="insertBpmProcessInstanceExt" parameterType="BpmProcessInstanceExt" useGeneratedKeys="true"
