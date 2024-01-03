@@ -15,6 +15,7 @@ import com.sun.corba.se.spi.ior.ObjectKey;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.UserTask;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -30,10 +31,12 @@ import java.util.*;
 public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
     @Resource
     private BpmTaskAssignRuleMapper bpmTaskAssignRuleMapper;
-    @Autowired
+    @Resource
+    @Lazy // 解决循环依赖
     private IBpmModelService bpmModelService;
 
-    @Autowired
+    @Resource
+    @Lazy // 解决循环依赖
     private IBpmProcessDefinitionService bpmProcessDefinitionService;
 
 
