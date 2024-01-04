@@ -86,11 +86,11 @@ export const useListEffect = (props, emit, selectMoreRef) => {
       [props.pageSizeName]: pageSize,
       [props.keyName]: keywords.value
     })
-    const result = await request({
-        url: props.url,
-        method: 'post',
-        data: params
-  })
+
+    const result = await request.post(props.url, params, {
+      signal: controller.signal
+    })
+
     if (result.code === 'ERR_CANCELED') { // 已取消不再往下执行
       return false
     }
@@ -112,6 +112,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
       return props.modelValue
     },
     set: async function (val) {
+      console.log("select框的值", val);
       emit('update:modelValue', val)
       let row =null;
       list.value.forEach(item => {
@@ -119,6 +120,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
           row =item;
         }
       })
+      console.log("单选择内容", row);
       emit('change', row)
     }
   })
@@ -138,7 +140,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
     // 重置请求状态
     searchSet.pageNum = 1
     searchSet.loading = false
-    searchSet.hasMore = false
+    searchSet.isFinish = false
     list.value = []
 
     // 请求数据
@@ -154,10 +156,8 @@ export const useListEffect = (props, emit, selectMoreRef) => {
     }
   }
 
-
   // 搜索
   watch(keywords, debounce(resetList, 300))
-
 
   // 监听传参改变，需要把已选值置空，当再次展开时，重新请求接口
   watch(() => props.otherParams, () => {
@@ -185,18 +185,14 @@ export const useListEffect = (props, emit, selectMoreRef) => {
 
 // 页面配置文字
 export const useTextEffect = (props) => {
-  const optionText = (text, label) => {
-  // 【君诚食品】13600000000
-    if (text){
-      return `【${label}】${text}`
-    }
-    return `${label}`
+
+  const optionText = (id, name) => {
+    return props.showId ? `【${id}】${name}` : name
   }
 
-
-  const searchText2 = props.searchText ? props.searchText  : '请选择'
   const searchPlaceholder = computed(() => props.searchPldText ? props.searchPldText : (props.showId ? '模糊搜索ID或名称' : '模糊搜索名称'))
-  const selectPlaceholder = computed(() => props.hasAll ? '全部' : searchText2)
+
+  const selectPlaceholder = computed(() => props.selectPldText ? props.selectPldText : '请选择')
 
   return { optionText, searchPlaceholder, selectPlaceholder }
 }

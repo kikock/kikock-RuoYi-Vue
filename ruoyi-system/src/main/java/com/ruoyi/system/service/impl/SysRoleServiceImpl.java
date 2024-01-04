@@ -1,6 +1,8 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -8,6 +10,7 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
+import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysRoleDept;
 import com.ruoyi.system.domain.SysRoleMenu;
 import com.ruoyi.system.domain.SysUserRole;
@@ -21,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 角色 业务层处理
@@ -378,4 +383,34 @@ public class SysRoleServiceImpl implements ISysRoleService{
         }
         return userRoleMapper.batchUserRole(list);
     }
+
+    @Override
+    public List<SysRole> getSimpleList(String keywords){
+        return roleMapper.getSimpleList(keywords);
+    }
+
+    @Override
+    public List<SysRole> selectBatchIds(List<Long> ids){
+        return roleMapper.selectBatchIds(ids);
+    }
+    @Override
+    public void validateRoleList(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        // 获得角色信息
+        List<SysRole> roles = selectBatchIds(ids);
+        Map<Long, SysRole> roleMap = convertMap(roles, SysRole::getRoleId);
+        // 校验
+        ids.forEach(id -> {
+            SysRole role = roleMap.get(id);
+            if (role == null) {
+                throw new ServiceException(String.format("id为【%s】的角色不存在",id), HttpStatus.ERROR);
+            }
+            if (!"0".equals(role.getStatus())) {
+                throw new ServiceException(String.format("名字为【%s】的角色已被禁用",role.getRoleName()), HttpStatus.ERROR);
+            }
+        });
+    }
+
 }

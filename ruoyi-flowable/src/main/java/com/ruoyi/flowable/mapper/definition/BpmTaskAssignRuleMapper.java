@@ -2,6 +2,7 @@ package com.ruoyi.flowable.mapper.definition;
 
 
 import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -59,4 +60,6 @@ public interface BpmTaskAssignRuleMapper{
      * @return 结果
      */
     public int deleteBpmTaskAssignRuleByIds(Long[] ids);
+
+    public BpmTaskAssignRule selectListByModelIdAndTaskDefinitionKey(@Param("modelId") String modelId,@Param("taskDefinitionKey") String taskDefinitionKey);
 }

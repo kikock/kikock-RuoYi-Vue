@@ -5,6 +5,9 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -25,6 +28,7 @@ public class BpmTaskAssignRule extends BaseEntity{
      * 流程模型的编号
      */
     @Excel(name = "流程模型的编号")
+    @NotEmpty(message = "流程模型的编号不能为空")
     private String modelId;
 
     /**
@@ -32,7 +36,6 @@ public class BpmTaskAssignRule extends BaseEntity{
      */
     @Excel(name = "流程定义的编号")
     private String processDefinitionId;
-
     /**
      * 流程任务定义的 key
      */
@@ -44,6 +47,7 @@ public class BpmTaskAssignRule extends BaseEntity{
      * 规则类型
      */
     @Excel(name = "规则类型")
+    @NotNull(message = "规则类型不能为空")
     private Integer type;
 
     /**
@@ -57,10 +61,8 @@ public class BpmTaskAssignRule extends BaseEntity{
      * 根据 type 不同，对应的值是不同的：
      *
      */
-    private Set<Long> optionIds;
-
-
-
+    private List<Long> optionIds;
+    private String optionName;
     /**
      * 删除标志（0代表存在 2代表删除）
      */
@@ -122,8 +124,12 @@ public class BpmTaskAssignRule extends BaseEntity{
         return delFlag;
     }
 
-    public Set<Long> getOptionIds(){
-        return optionIds;
+    public String getOptionName(){
+        return optionName;
+    }
+
+    public void setOptionName(String optionName){
+        this.optionName = optionName;
     }
 
     public String getTaskDefinitionName(){
@@ -134,7 +140,11 @@ public class BpmTaskAssignRule extends BaseEntity{
         this.taskDefinitionName = taskDefinitionName;
     }
 
-    public void setOptionIds(Set<Long> optionIds){
+    public List<Long> getOptionIds(){
+        return optionIds;
+    }
+
+    public void setOptionIds(List<Long> optionIds){
         this.optionIds = optionIds;
     }
 

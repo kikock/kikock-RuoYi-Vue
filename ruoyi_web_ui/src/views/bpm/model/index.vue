@@ -191,9 +191,9 @@
                   </el-radio-group>
                 </el-form-item>
                 <el-form-item v-if="form.formType === 10" label="流程表单" prop="formId">
-                  <select-more v-model="flowFormData" url="/bpm/form/flowFormDatas" @change="setFlowFormId"
-                               label="name" searchText="请选择流程关联表单" :otherParams="flowParams"
-                               searchPldText="请输入流程表单名称模糊查询" ></select-more>
+                  <div style="width: 95%" >
+                  <select-more v-model="form.selectMoreName"  value="id" label="name"  url="/bpm/form/simpleList" @change="setFlowFormId" ></select-more>
+                  </div>
                 </el-form-item>
                 <el-form-item
                   v-if="form.formType === 20"
@@ -255,12 +255,6 @@ import {addSocialApp, updateSocialApp} from '@/api/system/socialApp'
 const {proxy} = getCurrentInstance();
 const {bpm_model_category,bpm_model_form_type
 } = proxy.useDict('bpm_model_category','bpm_model_form_type');
-//流程表单数据
-const flowFormData = ref(null);
-//流程表单参数
-const flowParams = ref({
-  "params": 0
-});
 const formList = ref([]);
 const loading = ref(true);
 // 新增,修改只读显示状态
@@ -351,7 +345,6 @@ function resetQuery() {
 // 表单重置
 function reset() {
   fromReadOnly.value=false
-  flowFormData.value=null
   form.value = {
     name: null,
     key: null,
@@ -384,7 +377,7 @@ function handleUpdate(row) {
   getModel(modelId).then(response => {
     form.value = response.data;
     open.value = true;
-    flowFormData.value=response.data.formName
+    form.value.selectMoreName=`【${response.data.formId}】${response.data.formName}`
     fromReadOnly.value=true
     title.value = "修改流程";
     console.log(form.value);
@@ -427,9 +420,14 @@ function handleDelete(row) {
 }
 /** 表单参数设置 */
 function setFlowFormId(row) {
-  console.log("设置表单",row.name);
-  form.value.formId=row.id
-  flowFormData.value=row.name
+  form.value.formId=""
+  form.value.formName=""
+  if(row){
+    console.log("设置表单",row.name);
+    form.value.formId=row.id
+    form.value.formName=row.name
+  }
+
 }
 
 
@@ -462,3 +460,9 @@ function submitForm() {
 /** 初始化 **/
 getList()
 </script>
+<style>
+.selectMoreCss {
+  width: 95%;
+}
+
+</style>

@@ -324,4 +324,25 @@
             #{userId}
         </foreach>
     </delete>
+    <select id="getSimpleList" parameterType="SysUserSimpleVo" resultType="SysUserSimpleVo">
+        select user_id id,nick_name name from sys_user u
+        <where>
+            u.status = 0
+            <if test="keywords != null and keywords != ''">
+                AND u.user_name like concat('%', #{keywords}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBatchIds"  resultType="SysUserSimpleVo">
+        select user_id id,nick_name name ,`status` from sys_user u
+        <where>
+            u.user_id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
 </mapper>

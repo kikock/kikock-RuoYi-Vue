@@ -1,5 +1,6 @@
 package com.ruoyi.system.mapper;
 
+import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.system.domain.SysUserRole;
 import org.apache.ibatis.annotations.Param;
 

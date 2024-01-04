@@ -53,10 +53,6 @@
                 and type =
                 #{type}
             </if>
-            <if test="options != null  and options != ''">
-                and options =
-                #{options}
-            </if>
         </where>
     </select>
 
@@ -191,4 +187,13 @@
             #{id}
         </foreach>
     </delete>
+
+
+    <select id="selectListByModelIdAndTaskDefinitionKey"
+            resultMap="BpmTaskAssignRuleResult">
+        <include refid="selectBpmTaskAssignRuleVo"/>
+        where model_id = #{modelId} and
+              task_definition_key = #{taskDefinitionKey}
+    </select>
+
 </mapper>

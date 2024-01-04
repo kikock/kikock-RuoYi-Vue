@@ -1,13 +1,19 @@
 package com.ruoyi.flowable.service.definition.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.flowable.domain.definition.BpmUserGroup;
 import com.ruoyi.flowable.mapper.definition.BpmUserGroupMapper;
 import com.ruoyi.flowable.service.definition.IBpmUserGroupService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 用户组Service业务层处理
@@ -17,7 +23,7 @@ import java.util.List;
  */
 @Service
 public class BpmUserGroupServiceImpl implements IBpmUserGroupService{
-    @Autowired
+    @Resource
     private BpmUserGroupMapper bpmUserGroupMapper;
 
     /**
@@ -86,5 +92,33 @@ public class BpmUserGroupServiceImpl implements IBpmUserGroupService{
     @Override
     public int deleteBpmUserGroupById(Long id){
         return bpmUserGroupMapper.deleteBpmUserGroupById(id);
+    }
+
+    @Override
+    public List<BpmUserGroup> getSimpleList(String keywords){
+        return bpmUserGroupMapper.getSimpleList(keywords);
+    }
+    @Override
+    public List<BpmUserGroup> selectBatchIds(List<Long> ids){
+        return bpmUserGroupMapper.selectBatchIds(ids);
+    }
+    @Override
+    public void validUserGroups(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        // 获得角色信息
+        List<BpmUserGroup> bpmUserGroups = selectBatchIds(ids);
+        Map<Long, BpmUserGroup> userGroupMap = convertMap(bpmUserGroups, BpmUserGroup::getId);
+        // 校验
+        ids.forEach(id -> {
+            BpmUserGroup userGroup = userGroupMap.get(id);
+            if (userGroup == null) {
+                throw new ServiceException(String.format("id为【%s】的用户组不存在",id), HttpStatus.ERROR);
+            }
+            if (!"0".equals(userGroup.getStatus().toString())) {
+                throw new ServiceException(String.format("名字为【%s】的用户组已被禁用",userGroup.getName()), HttpStatus.ERROR);
+            }
+        });
     }
 }

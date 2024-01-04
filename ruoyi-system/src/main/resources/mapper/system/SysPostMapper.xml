@@ -164,4 +164,25 @@
             #{postId}
         </foreach>
     </delete>
+
+    <select id="getSimpleList"  parameterType="String" resultMap="SysPostResult">
+        <include refid="selectPostVo"/>
+        <where>
+            status = '0'
+            <if test="keywords != null and keywords != ''">
+                AND post_name like concat('%', #{keywords}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBatchIds"  resultMap="SysPostResult">
+        <include refid="selectPostVo"/>
+        <where>
+            post_id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
 </mapper>

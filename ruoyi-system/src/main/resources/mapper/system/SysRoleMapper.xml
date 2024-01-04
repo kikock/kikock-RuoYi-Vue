@@ -216,4 +216,26 @@
             #{roleId}
         </foreach>
     </delete>
+
+    <select id="getSimpleList" parameterType="String" resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        <where>
+            r.del_flag = '0'
+            <if test="keywords != null and keywords != ''">
+                AND r.role_name like concat('%', #{keywords}, '%')
+            </if>
+        </where>
+
+    </select>
+    <select id="selectBatchIds"  resultMap="SysRoleResult">
+        <include refid="selectRoleVo"/>
+        <where>
+            r.role_id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
 </mapper>
