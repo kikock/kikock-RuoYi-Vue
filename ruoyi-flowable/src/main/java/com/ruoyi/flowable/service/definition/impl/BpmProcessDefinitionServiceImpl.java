@@ -52,6 +52,11 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
 
 
     @Override
+    public List<BpmProcessDefinitionVo> getProcessDefinitionPage(BpmProcessDefinitionVo pageReqVO) {
+        return null;
+    }
+
+    @Override
     public List<BpmProcessDefinitionVo> getProcessDefinitionList(BpmProcessDefinitionVo listReqVO){
         // 拼接查询条件
         ProcessDefinitionQuery definitionQuery = repositoryService.createProcessDefinitionQuery();
