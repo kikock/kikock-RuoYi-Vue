@@ -83,7 +83,7 @@
         </el-button>
       </el-form-item>
     </el-form>
-    <el-table v-loading="loading" :data="leaveList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
       <el-table-column label="流程编号" align="center" prop="id" width="300px" />
       <el-table-column label="流程名称" align="center" prop="name" />
       <el-table-column label="流程分类" align="center">
@@ -108,16 +108,8 @@
           <dict-tag :options="bpm_process_instance_result" :value="scope.row.result" />
         </template>
       </el-table-column>
-      <el-table-column label="提交时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.createTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="结束时间" align="center" prop="createTime" width="180">
-        <template #default="scope">
-          <span>{{ parseTime(scope.row.endTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="提交时间" align="center" prop="createTime" width="180"/>
+      <el-table-column label="结束时间" align="center" prop="endTime" width="180"/>
       <el-table-column label="操作" align="center">
         <template #default="scope">
           <el-button
@@ -152,15 +144,15 @@
 </template>
 
 <script setup name="BpmProcessInstance">
-import {addLeave, delLeave, listLeave, updateLeave} from "@/api/bpm/leave";
 import {getCurrentInstance, reactive, ref,toRefs} from 'vue'
 import router from "@/router";
+import {getMyProcessInstancePage} from "@/api/bpm/processInstance";
 const {proxy} = getCurrentInstance();
 const {bpm_oa_leave_type} = proxy.useDict("bpm_oa_leave_type");
 const {bpm_process_instance_result} = proxy.useDict("bpm_process_instance_result");
 const {bpm_process_instance_status} = proxy.useDict("bpm_process_instance_status");
 const {bpm_model_category} = proxy.useDict("bpm_model_category");
-const leaveList = ref([]);
+const list = ref([]);
 const open = ref(false);
 const loading = ref(true);
 const showSearch = ref(true);
@@ -175,15 +167,12 @@ const data = reactive({
   queryParams: {
     pageNum: 1,
     pageSize: 10,
-    // id: null,
     name: '',
     processDefinitionId: '',
     category: '',
     status: '',
     createTime: '',
-    // day: null,
     result: null,
-    // processInstanceId: null,
   },
   rules: {
     userId: [
@@ -220,9 +209,9 @@ const {queryParams, form, rules} = toRefs(data);
 
 /** 查询OA 请假申请列表 */
 function getList() {
-  loading.value = true;
-  listLeave(queryParams.value).then(response => {
-    leaveList.value = response.rows;
+  console.log(queryParams.value)
+  getMyProcessInstancePage(queryParams.value).then(response => {
+    list.value = response.rows;
     total.value = response.total;
     loading.value = false;
   });
@@ -263,7 +252,7 @@ function handleQuery() {
 }
 /** 发起按钮操作 */
 function handleCreate() {
-  router.push({name: 'BpmProcessInstanceCreate'})
+  router.push({path: "/task/bpmprocessInstance/create"})
 }
 
 /** 重置按钮操作 */
@@ -279,12 +268,14 @@ function handleSelectionChange(selection) {
   multiple.value = !selection.length;
 }
 
+
 /**
  * 流程详情
  * @param row
  */
-function handleDetail  (row) {
-  router.push({name: 'BpmProcessInstanceDetail', query: {id: row.id}})
+function handleDetail(row) {
+  const _id = row.id
+  router.push({path: "/task/bpmprocessInstance/detail", query: {id: _id}});
 }
 
 /**

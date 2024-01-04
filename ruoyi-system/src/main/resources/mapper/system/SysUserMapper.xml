@@ -114,9 +114,11 @@
         <!-- 数据范围过滤 -->
         ${params.dataScope}
     </select>
-    <select id="selectUserSimpleVoList" parameterType="SysUserSimpleVo" resultType="SysUserSimpleVo">
+
+    <select id="selectUserSimpleVoList" parameterType="SysUserSimpleVo" resultType="com.ruoyi.common.core.domain.vo.SysUserSimpleVo">
         select user_id id,nick_name name from sys_user where status=0;
     </select>
+
     <select id="selectAllocatedList" parameterType="SysUser" resultMap="SysUserResult">
         select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time
         from sys_user u
@@ -161,6 +163,14 @@
     <select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
         <include refid="selectUserVo"/>
         where u.user_id = #{userId}
+    </select>
+
+    <select id="getUserList" resultMap="SysUserResult">
+        <include refid="selectUserVo"/>
+        where u.user_id in
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id}
+            </foreach>
     </select>
 
     <select id="checkUserNameUnique" parameterType="String" resultMap="SysUserResult">

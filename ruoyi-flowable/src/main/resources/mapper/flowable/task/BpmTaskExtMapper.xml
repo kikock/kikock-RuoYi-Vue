@@ -83,6 +83,13 @@
         <include refid="selectBpmTaskExtVo"/>
         where id = #{id}
     </select>
+    <select id="selectListByTaskIds" resultMap="BpmTaskExtResult">
+        <include refid="selectBpmTaskExtVo"/>
+        WHERE task_id IN
+        <foreach collection="ids" item="taskId" open="(" close=")" separator=",">
+            #{taskId}
+        </foreach>
+    </select>
 
     <insert id="insertBpmTaskExt" parameterType="BpmTaskExt" useGeneratedKeys="true"
             keyProperty="id">

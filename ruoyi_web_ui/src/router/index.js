@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
 
@@ -201,10 +201,40 @@ export const dynamicRoutes = [
           activeMenu: '/bpm/manager/model'
         }
       },
+
     ]
   },
+  {
+    path: '/task',
+    component: Layout,
+    hidden: true,
+    permissions: ['bpm:process:query'],
+    children: [
+      {
+        path: 'bpmprocessInstance/create',
+        component: () => import('@/views/bpm/processInstance/create/index.vue'),
+        name: 'BpmProcessInstanceCreate',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '发起流程',
+          activeMenu: '/bpm/task/processform'
+        }
+      },
+      {
+        path: 'bpmprocessInstance/detail',
+        component: () => import('@/views/bpm/processInstance/detail/index.vue'),
+        name: 'BpmProcessInstanceDetail',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '流程详情',
+          activeMenu: '/bpm/task/processform'
+        }
+      }
+    ]
+  }
 ]
-
 const router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes,

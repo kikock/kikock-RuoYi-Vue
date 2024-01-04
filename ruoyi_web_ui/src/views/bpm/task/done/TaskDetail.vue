@@ -14,24 +14,20 @@
         {{ detailData.processInstance.startUserNickname }}
       </el-descriptions-item>
       <el-descriptions-item label="状态">
-        <dict-tag :type="bpm_process_instance_result" :value="detailData.result" />
+        <dict-tag :options="bpm_process_instance_result" :value="detailData.result"/>
       </el-descriptions-item>
       <el-descriptions-item label="原因">
         {{ detailData.reason }}
       </el-descriptions-item>
       <el-descriptions-item label="创建时间">
-        {{detailData.createTime}}
+        {{ detailData.createTime }}
       </el-descriptions-item>
     </el-descriptions>
   </el-dialog>
 </template>
-<script  setup name="BpmTaskDetail">
-import { DICT_TYPE } from '@/utils/dict'
-// import { formatDate } from '@/utils/formatTime'
+<script name="BpmTaskDetail" setup>
+import {getCurrentInstance, ref} from 'vue'
 
-import * as TaskApi from '@/api/bpm/task'
-import {getCurrentInstance, reactive, ref} from 'vue'
-import router from "@/router";
 const {proxy} = getCurrentInstance();
 const {bpm_oa_leave_type} = proxy.useDict("bpm_oa_leave_type");
 const {bpm_process_instance_result} = proxy.useDict("bpm_process_instance_result");
@@ -42,15 +38,15 @@ const detailLoading = ref(false) // 表单的加载中
 const detailData = ref() // 详情数据
 
 /** 打开弹窗 */
-// const open = async (data: TaskApi.TaskVO) => {
-//   dialogVisible.value = true
-//   // 设置数据
-//   detailLoading.value = true
-//   try {
-//     detailData.value = data
-//   } finally {
-//     detailLoading.value = false
-//   }
-// }
-// defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+const open = async (data) => {
+  dialogVisible.value = true
+  // 设置数据
+  detailLoading.value = true
+  try {
+    detailData.value = data
+  } finally {
+    detailLoading.value = false
+  }
+}
+defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 </script>

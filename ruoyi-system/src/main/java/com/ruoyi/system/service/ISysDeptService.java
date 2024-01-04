@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysDept;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 部门管理 服务层
@@ -57,7 +58,7 @@ public interface ISysDeptService{
      * @param deptId 部门ID
      * @return 部门信息
      */
-    public SysDept selectDeptById(Long deptId);
+    public SysDept selectDeptByIds(Long deptId);
 
     /**
      * 根据ID查询所有子部门（正常状态）

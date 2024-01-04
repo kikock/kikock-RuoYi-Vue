@@ -1,6 +1,6 @@
-import MyProcessDesigner from './designer'
-import MyProcessPenal from './penal'
-import MyProcessViewer from './designer/index2'
+import MyProcessDesigner from './designer/ProcessDesigner.vue'
+import MyProcessPenal from './penal/PropertiesPanel.vue'
+import MyProcessViewer from './designer/ProcessViewer.vue'
 
 import './theme/index.scss'
 import 'bpmn-js/dist/assets/diagram-js.css'

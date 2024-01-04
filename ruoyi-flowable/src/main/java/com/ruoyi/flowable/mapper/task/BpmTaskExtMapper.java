@@ -4,6 +4,7 @@ package com.ruoyi.flowable.mapper.task;
 import com.ruoyi.flowable.domain.task.BpmTaskExt;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 工作流的流程任务的拓展Mapper接口
@@ -59,4 +60,12 @@ public interface BpmTaskExtMapper{
      * @return 结果
      */
     public int deleteBpmTaskExtByIds(Long[] ids);
+
+    /**
+     * 根据ids查询工作流的流程任务的拓展
+     *
+     * @param ids 工作流的流程任务的拓展主键
+     * @return 工作流的流程任务的拓展
+     */
+    List<BpmTaskExt> selectListByTaskIds(Set<String> ids);
 }

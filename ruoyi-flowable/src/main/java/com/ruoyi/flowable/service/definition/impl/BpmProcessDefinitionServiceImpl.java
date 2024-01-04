@@ -9,6 +9,7 @@ import com.ruoyi.flowable.mapper.definition.BpmProcessDefinitionExtMapper;
 import com.ruoyi.flowable.service.definition.IBpmFormService;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import lombok.extern.slf4j.Slf4j;
+import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.common.engine.impl.db.SuspensionState;
 import org.flowable.engine.RepositoryService;
@@ -51,6 +52,11 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
 
 
     @Override
+    public List<BpmProcessDefinitionVo> getProcessDefinitionPage(BpmProcessDefinitionVo pageReqVO) {
+        return null;
+    }
+
+    @Override
     public List<BpmProcessDefinitionVo> getProcessDefinitionList(BpmProcessDefinitionVo listReqVO){
         // 拼接查询条件
         ProcessDefinitionQuery definitionQuery = repositoryService.createProcessDefinitionQuery();
@@ -88,7 +94,12 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
 
     @Override
     public String getProcessDefinitionBpmnXML(String id){
-        return null;
+        BpmnModel bpmnModel = repositoryService.getBpmnModel(id);
+        if (bpmnModel == null) {
+            return null;
+        }
+        BpmnXMLConverter converter = new BpmnXMLConverter();
+        return StrUtil.utf8Str(converter.convertToXML(bpmnModel));
     }
 
     @Override
