@@ -114,7 +114,7 @@
         <!-- 数据范围过滤 -->
         ${params.dataScope}
     </select>
-    <select id="selectUserSimpleVoList" parameterType="SysUserSimpleVo" resultType="SysUserSimpleVo">
+    <select id="selectUserSimpleVoList" parameterType="SysUserSimpleVo" resultType="com.ruoyi.common.core.domain.vo.SysUserSimpleVo">
         select user_id id,nick_name name from sys_user where status=0;
     </select>
     <select id="selectAllocatedList" parameterType="SysUser" resultMap="SysUserResult">

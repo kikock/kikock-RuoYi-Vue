@@ -1,8 +1,6 @@
 package com.ruoyi.system.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.annotation.DataScope;
-import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -28,10 +26,7 @@ import org.springframework.util.CollectionUtils;
 import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 用户 业务层处理
@@ -497,34 +492,8 @@ public class SysUserServiceImpl implements ISysUserService{
     }
 
     @Override
-    public List<SysUserSimpleVo> getSimpleList(String keywords){
-        return userMapper.getSimpleList(keywords);
-    }
-
-    @Override
-    public List<SysUserSimpleVo> selectBatchIds(List<Long> ids){
-        return userMapper.selectBatchIds(ids);
-    }
-
-
-    @Override
-    public void validateUserList(List<Long> ids) {
-        if (CollUtil.isEmpty(ids)) {
-            return;
-        }
-        // 获得角色信息
-        List<SysUserSimpleVo> users = selectBatchIds(ids);
-        Map<Long, SysUserSimpleVo> userMap = convertMap(users, SysUserSimpleVo::getId);
-        // 校验
-        ids.forEach(id -> {
-            SysUserSimpleVo user = userMap.get(id);
-            if (user == null) {
-                throw new ServiceException(String.format("id为【%s】的用户不存在",id), HttpStatus.ERROR);
-            }
-            if (!"0".equals(user.getStatus())) {
-                throw new ServiceException(String.format("名字为【%s】的用户已被禁用",user.getName()), HttpStatus.ERROR);
-            }
-        });
+    public List<SysUser> getUserList(List<String> ids) {
+        return null;
     }
 
 

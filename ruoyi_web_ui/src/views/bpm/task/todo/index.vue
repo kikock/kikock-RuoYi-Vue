@@ -56,7 +56,7 @@
 </template>
 
 <script setup name="BpmDoneTask">
-import {addLeave, delLeave, listLeave, updateLeave} from "@/api/bpm/leave";
+import * as TaskApi from '@/api/bpm/task'
 import {getCurrentInstance, reactive, ref, toRefs} from 'vue'
 import Router from "@/router";
 
@@ -88,7 +88,7 @@ const {queryParams, form} = toRefs(data);
 /** 查询OA 请假申请列表 */
 function getList() {
   loading.value = true;
-  listLeave(queryParams.value).then(response => {
+  TaskApi.getTodoTaskPage(queryParams.value).then(response => {
     leaveList.value = response.rows;
     total.value = response.total;
     loading.value = false;

@@ -8,7 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface IBpmTaskService {
-    List<T> getToDotask(Long userId, BpmTaskPageReqVO pageReqVO);
+    List<?> getToDotask(Long userId, BpmTaskPageReqVO pageReqVO);
 
-    Map<String, List<Task>> getTaskMapByProcessInstanceIds(List<String> processInstanceIds);
+    List<?> getDoentask(Long userId, BpmTaskPageReqVO pageReqVO);
+
 }

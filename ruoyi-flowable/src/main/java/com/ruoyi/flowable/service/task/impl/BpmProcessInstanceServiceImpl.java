@@ -8,8 +8,10 @@ import com.ruoyi.flowable.domain.task.vo.BpmTaskPageReqVO;
 import com.ruoyi.flowable.mapper.task.BpmProcessInstanceExtMapper;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
+import org.flowable.engine.HistoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
+import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.repository.ProcessDefinition;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.Task;
@@ -21,6 +23,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -35,6 +38,8 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
 //    @Resource
 //    @Lazy // 解决循环依赖
 //    private IBpmTaskService taskService;
+    @Resource
+    private HistoryService historyService;
     @Resource
     @Lazy // 解决循环依赖
     private TaskService taskService;
@@ -78,6 +83,16 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionId());
         // 发起流程
         return createProcessInstance0(userId, definition, createReqVO.getVariables(), null);
+    }
+
+    @Override
+    public List<ProcessInstance> getProcessInstances(Set<String> ids) {
+        return runtimeService.createProcessInstanceQuery().processInstanceIds(ids).list();
+    }
+
+    @Override
+    public List<HistoricProcessInstance> getHistoricProcessInstances(Set<String> ids) {
+        return historyService.createHistoricProcessInstanceQuery().processInstanceIds(ids).list();
     }
 
     private static List<BpmProcessInstancePageItemRespVO.Task> getTask(List<Task> tasks) {

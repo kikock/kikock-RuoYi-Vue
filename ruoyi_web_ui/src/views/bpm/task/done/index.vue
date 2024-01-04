@@ -59,74 +59,13 @@
         :total="total"
         @pagination="getList"
     />
-
-    <!-- 添加OA 请假申请对话框 -->
-    <el-dialog v-model="open" :title="title" append-to-body width="500px">
-      <el-form ref="leaveRef" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="请假类型" prop="type">
-          <el-select
-              v-model="form.type"
-              class="!w-240px"
-              clearable
-              placeholder="请选择请假类型"
-          >
-            <el-option
-                v-for="dict in bpm_oa_leave_type"
-                :key="dict.value"
-                :label="dict.label"
-                :value="dict.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="开始时间" prop="startTime">
-          <el-date-picker v-model="form.startTime"
-                          clearable
-                          placeholder="请选择开始时间"
-                          type="date"
-                          value-format="YYYY-MM-DD">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间" prop="endTime">
-          <el-date-picker v-model="form.endTime"
-                          clearable
-                          placeholder="请选择结束时间"
-                          type="date"
-                          value-format="YYYY-MM-DD">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="请假原因" prop="reason">
-          <el-input v-model="form.reason" placeholder="请输入请假原因"/>
-        </el-form-item>
-        <!--        <el-form-item label="请假天数" prop="day">-->
-        <!--          <el-input v-model="form.day" placeholder="请输入请假天数" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="请假结果" prop="result">-->
-        <!--          <el-input v-model="form.result" placeholder="请输入请假结果" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="流程实例的编号" prop="processInstanceId">-->
-        <!--          <el-input v-model="form.processInstanceId" placeholder="请输入流程实例的编号" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="删除标志" prop="delFlag">-->
-        <!--          <el-input v-model="form.delFlag" placeholder="请输入删除标志" />-->
-        <!--        </el-form-item>-->
-        <!--        <el-form-item label="备注" prop="remark">-->
-        <!--          <el-input v-model="form.remark" type="textarea" placeholder="请输入内容" />-->
-        <!--        </el-form-item>-->
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
 </template>
 
 <script name="BpmTodoTask" setup>
 import {addLeave, delLeave, listLeave, updateLeave} from "@/api/bpm/leave";
+import * as TaskApi from '@/api/bpm/task'
 import {getCurrentInstance, reactive, ref,toRefs} from 'vue';
-
 const {proxy} = getCurrentInstance();
 const {bpm_oa_leave_type} = proxy.useDict("bpm_oa_leave_type");
 const {bpm_process_instance_result} = proxy.useDict("bpm_process_instance_result");
@@ -161,7 +100,7 @@ const openDetail = (row) => {
 /** 查询OA 请假申请列表 */
 function getList() {
   loading.value = true;
-  listLeave(queryParams.value).then(response => {
+  TaskApi.getDoneTaskPage(queryParams.value).then(response => {
     leaveList.value = response.rows;
     total.value = response.total;
     loading.value = false;
