@@ -38,16 +38,12 @@ public class BpmProcessInstancePageItemRespVO {
      * 当前任务
      */
     private List<Task> tasks;
-
     @Data
     public static class Task {
-
         @Excel(name ="流程任务的编号")
         private String id;
-
         @Excel(name ="任务名称")
         private String name;
-
     }
 
 }

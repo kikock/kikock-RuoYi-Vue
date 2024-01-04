@@ -491,5 +491,10 @@ public class SysUserServiceImpl implements ISysUserService{
         return userMapper.selectUserSimpleVoList();
     }
 
+    @Override
+    public List<SysUser> getUserList(List<String> ids) {
+        return null;
+    }
+
 
 }

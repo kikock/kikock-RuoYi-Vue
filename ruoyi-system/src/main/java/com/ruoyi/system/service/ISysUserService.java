@@ -206,9 +206,17 @@ public interface ISysUserService{
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
 
     /**
+     *2024.1.2 新增
      * 查询用户分组的精简用户信息
      * @return
      */
     List<SysUserSimpleVo> selectUserSimpleVoList();
-
+    /**
+     *2024.1.4 新增
+     * 通过用户ID集合查询用户们
+     *
+     * @param ids 用户ID
+     * @return 用户对象信息
+     */
+    List<SysUser> getUserList(List<String> ids);
 }

@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.flowable;
 
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskPageReqVO;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 
-import static com.ruoyi.common.utils.PageUtils.startPage;
 @Tag(name = "管理后台 - 流程任务实例")
 @RestController
 @RequestMapping("/bpm/task")
@@ -26,16 +26,18 @@ public class BpmTaskController extends BaseController {
 
     // 获取我的代办任务
     @GetMapping("todo-page")
-    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+//    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+    @Anonymous
     public TableDataInfo taskToDoList(BpmTaskPageReqVO pageReqVO){
         startPage();
         return getDataTable(bpmTaskService.getToDotask(getUserId(),pageReqVO));
     }
     // 获取我的已办任务
     @GetMapping("done-page")
-    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+//    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+    @Anonymous
     public TableDataInfo taskDoenList(BpmTaskPageReqVO pageReqVO){
         startPage();
-        return getDataTable(bpmTaskService.getToDotask(getUserId(),pageReqVO));
+        return getDataTable(bpmTaskService.getDoentask(getUserId(),pageReqVO));
     }
 }
