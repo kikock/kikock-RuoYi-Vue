@@ -7,6 +7,7 @@ import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.system.domain.SysPost;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -224,4 +225,13 @@ public interface ISysUserService{
     public List<SysUserSimpleVo> selectBatchIds(List<Long> ids);
 
     public void validateUserList(List<Long> ids);
+
+    /**
+     *2024.1.4 新增
+     * 通过用户ID集合查询用户们
+     *
+     * @param ids 用户ID
+     * @return 用户对象信息
+     */
+    List<SysUser> getUserList(Collection<Long> ids);
 }

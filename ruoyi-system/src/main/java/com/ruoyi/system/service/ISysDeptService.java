@@ -58,7 +58,7 @@ public interface ISysDeptService{
      * @param deptId 部门ID
      * @return 部门信息
      */
-    public SysDept selectDeptByIds(Long deptId);
+    SysDept selectDeptById(Long deptId);
 
     /**
      * 根据ID查询所有子部门（正常状态）

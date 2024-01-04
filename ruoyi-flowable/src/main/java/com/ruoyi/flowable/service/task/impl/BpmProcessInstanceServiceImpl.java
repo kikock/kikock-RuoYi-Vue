@@ -121,7 +121,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         SysUser startUser = sysUserService.selectUserById(parseLong(processInstance.getStartUserId()));
         SysDept dept = null;
         if (startUser != null) {
-            dept = deptService.selectDeptByIds(startUser.getDeptId());
+            dept = deptService.selectDeptById(startUser.getDeptId());
         }
         // 拼接结果
         return convert0(processInstance, processInstanceExt,processDefinition,processDefinitionExt,bpmnXml,startUser,dept);

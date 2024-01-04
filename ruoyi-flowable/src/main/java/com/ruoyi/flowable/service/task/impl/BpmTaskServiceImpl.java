@@ -232,8 +232,8 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         List<SysUser> userList = sysUserService.getUserList(userIds);
         Map<Long, SysUser> userMap = convertMap(userList, SysUser::getUserId);
         // 获得 Dept Map
-        Set<Long> deptIds = convertSet(userMap.values(), SysUser::getDeptId);
-        List<SysDept> sysDepts = deptService.selectDeptByIds(deptIds);
+        List<Long> deptIds = convertList(userMap.values(), SysUser::getDeptId);
+        List<SysDept> sysDepts = deptService.selectBatchIds(deptIds);
         Map<Long, SysDept> deptMap = convertMap(sysDepts, SysDept::getDeptId);
         // 拼接数据
         return convertList(tasks, task -> {
