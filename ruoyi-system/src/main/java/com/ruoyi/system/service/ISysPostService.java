@@ -96,4 +96,14 @@ public interface ISysPostService{
      * @return 结果
      */
     public int updatePost(SysPost post);
+    /**
+     * 分页获取组件下拉数据
+     * @param keywords 模糊筛选
+     * @return 结果
+     */
+    public List<SysPost> getSimpleList(String keywords);
+
+    public List<SysPost> selectBatchIds(List<Long> ids);
+
+    public void validPostList(List<Long> ids);
 }

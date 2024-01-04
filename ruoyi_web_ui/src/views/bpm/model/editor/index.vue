@@ -1,7 +1,7 @@
 <template>
   <div v-loading="loading">
     <!-- 流程设计器，负责绘制流程等 -->
-    <my-process-designer
+    <MyProcessDesigner
         key="designer"
         v-model="xmlString"
         :value="xmlString"

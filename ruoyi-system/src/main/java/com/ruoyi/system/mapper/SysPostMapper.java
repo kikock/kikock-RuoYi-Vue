@@ -96,4 +96,8 @@ public interface SysPostMapper{
      * @return 结果
      */
     public SysPost checkPostCodeUnique(String postCode);
+
+    List<SysPost> getSimpleList(String keywords);
+
+    public List<SysPost> selectBatchIds(List<Long> ids);
 }

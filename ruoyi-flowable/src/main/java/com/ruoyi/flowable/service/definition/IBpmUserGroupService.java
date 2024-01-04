@@ -58,4 +58,10 @@ public interface IBpmUserGroupService{
      * @return 结果
      */
     public int deleteBpmUserGroupById(Long id);
+
+    public List<BpmUserGroup> getSimpleList(String keywords);
+
+    public List<BpmUserGroup> selectBatchIds(List<Long> ids);
+
+    public void validUserGroups(List<Long> optionIds);
 }

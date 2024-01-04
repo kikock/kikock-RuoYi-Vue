@@ -47,7 +47,6 @@ import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
  * 主要进行 Flowable {@link Model} 的维护
  */
 @Service
-@Validated
 @Slf4j
 public class BpmModelServiceImpl implements IBpmModelService{
 

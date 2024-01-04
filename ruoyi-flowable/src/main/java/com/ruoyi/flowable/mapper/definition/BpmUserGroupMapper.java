@@ -59,4 +59,9 @@ public interface BpmUserGroupMapper{
      * @return 结果
      */
     public int deleteBpmUserGroupByIds(Long[] ids);
+
+
+    public List<BpmUserGroup> getSimpleList(String keywords);
+
+    public List<BpmUserGroup> selectBatchIds(List<Long> ids);
 }

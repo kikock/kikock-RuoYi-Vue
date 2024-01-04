@@ -65,7 +65,7 @@ import ProcessViewer from '@/components/bpmnProcessDesigner/package/designer/Pro
 app.component('MyProcessDesigner', ProcessDesigner)
 app.component('MyPropertiesPanel', PropertiesPanel)
 app.component('MyProcessPalette', ProcessPalette)
-app.component('MyProcessViewer', ProcessPalette)
+app.component('MyProcessViewer', ProcessViewer)
 // 全局组件挂载
 app.component('DictTag', DictTag)
 app.component('Pagination', Pagination)

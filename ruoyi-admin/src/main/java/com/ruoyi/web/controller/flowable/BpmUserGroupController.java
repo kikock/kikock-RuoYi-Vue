@@ -1,13 +1,16 @@
 package com.ruoyi.web.controller.flowable;
 
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.vo.SelectMoreRequest;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.flowable.domain.definition.BpmUserGroup;
 import com.ruoyi.flowable.service.definition.IBpmUserGroupService;
+import com.ruoyi.system.domain.SysPost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -87,5 +90,15 @@ public class BpmUserGroupController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(bpmUserGroupService.deleteBpmUserGroupByIds(ids));
+    }
+
+    /**
+     * 分页获取组件下拉数据
+     */
+    @PostMapping("/simpleList")
+    public TableDataInfo simpleList(@RequestBody SelectMoreRequest request){
+        PageHelper.startPage(request.getPageNum(), request.getPageSize());
+        List<BpmUserGroup> list = bpmUserGroupService.getSimpleList(request.getKeywords());
+        return getDataTable(list);
     }
 }

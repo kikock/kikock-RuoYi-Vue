@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -7,6 +8,8 @@ import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreRequest;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
@@ -229,4 +232,20 @@ public class SysRoleController extends BaseController{
         ajax.put("depts", deptService.selectDeptTreeList(new SysDept()));
         return ajax;
     }
+
+
+    /**
+     * 分页获取组件下拉数据
+     */
+    @PostMapping("/simpleList")
+    public TableDataInfo simpleList(@RequestBody SelectMoreRequest request){
+        PageHelper.startPage(request.getPageNum(), request.getPageSize());
+        List<SysRole> list = roleService.getSimpleList(request.getKeywords());
+        return getDataTable(list);
+    }
+
+
+
+
+
 }

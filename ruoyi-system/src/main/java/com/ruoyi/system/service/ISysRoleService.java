@@ -1,6 +1,8 @@
 package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
+import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysUserRole;
 
 import java.util.List;
@@ -170,4 +172,11 @@ public interface ISysRoleService{
      * @return 结果
      */
     public int insertAuthUsers(Long roleId, Long[] userIds);
+
+    public List<SysRole> getSimpleList(String keywords);
+
+   public List<SysRole> selectBatchIds(List<Long> ids);
+
+    public void validateRoleList(List<Long> ids);
+
 }

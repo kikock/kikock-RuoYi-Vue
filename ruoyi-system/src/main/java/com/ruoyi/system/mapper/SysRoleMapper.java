@@ -1,8 +1,10 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.common.core.domain.entity.SysRole;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 角色表 数据层
@@ -104,4 +106,8 @@ public interface SysRoleMapper{
      * @return 结果
      */
     public int deleteRoleByIds(Long[] roleIds);
+
+    public List<SysRole> getSimpleList(String keywords);
+
+   public List<SysRole> selectBatchIds(@Param("list") List<Long> list);
 }

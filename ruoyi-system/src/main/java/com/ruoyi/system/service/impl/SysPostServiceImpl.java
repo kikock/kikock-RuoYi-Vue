@@ -1,5 +1,7 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
@@ -11,6 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 岗位信息 服务层处理
@@ -160,4 +165,33 @@ public class SysPostServiceImpl implements ISysPostService{
     public int updatePost(SysPost post){
         return postMapper.updatePost(post);
     }
+
+    @Override
+    public List<SysPost> getSimpleList(String keywords){
+        return postMapper.getSimpleList(keywords);
+    }
+    @Override
+    public List<SysPost> selectBatchIds(List<Long> ids){
+        return postMapper.selectBatchIds(ids);
+    }
+    @Override
+    public void validPostList(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        // 获得角色信息
+        List<SysPost> posts = selectBatchIds(ids);
+        Map<Long, SysPost> postMap = convertMap(posts, SysPost::getPostId);
+        // 校验
+        ids.forEach(id -> {
+            SysPost post = postMap.get(id);
+            if (post == null) {
+                throw new ServiceException(String.format("id为【%s】的岗位不存在",id), HttpStatus.ERROR);
+            }
+            if (!"0".equals(post.getStatus())) {
+                throw new ServiceException(String.format("名字为【%s】的岗位已被禁用",post.getPostName()), HttpStatus.ERROR);
+            }
+        });
+    }
+
 }

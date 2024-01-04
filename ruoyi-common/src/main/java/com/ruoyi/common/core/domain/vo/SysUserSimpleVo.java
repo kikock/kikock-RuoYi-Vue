@@ -27,5 +27,8 @@ public class SysUserSimpleVo implements Serializable{
      * 用户昵称
      */
     private String name;
-
+    /**
+     * 用户昵称
+     */
+    private String status;
 }

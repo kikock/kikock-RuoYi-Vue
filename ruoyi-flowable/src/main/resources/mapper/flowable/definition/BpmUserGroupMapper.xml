@@ -175,4 +175,26 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="getSimpleList" parameterType="String"
+            resultMap="BpmUserGroupResult">
+        <include refid="selectBpmUserGroupVo"/>
+        <where>
+            status = '0'
+            <if test="keywords != null and keywords != ''">
+                AND name like concat('%', #{keywords}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBatchIds"  resultMap="BpmUserGroupResult">
+        <include refid="selectBpmUserGroupVo"/>
+        <where>
+            id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
 </mapper>

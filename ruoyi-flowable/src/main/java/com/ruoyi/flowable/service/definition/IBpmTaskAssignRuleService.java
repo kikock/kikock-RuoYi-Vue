@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.service.definition;
 
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
 
 import java.util.List;
@@ -58,4 +59,8 @@ public interface IBpmTaskAssignRuleService{
      * @return 结果
      */
     public int deleteBpmTaskAssignRuleById(Long id);
+
+    public int createTaskAssignRule(BpmTaskAssignRule reqVO);
+
+    public int updateTaskAssignRule(BpmTaskAssignRule reqVO);
 }

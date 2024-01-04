@@ -1,6 +1,8 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysDept;
@@ -20,7 +22,10 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 部门管理 服务实现
@@ -266,6 +271,32 @@ public class SysDeptServiceImpl implements ISysDeptService{
         return deptMapper.deleteDeptById(deptId);
     }
 
+    @Override
+    public List<SysDept> selectBatchIds(List<Long> ids){
+        return deptMapper.selectBatchIds(ids);
+    }
+    @Override
+    public void validateDeptList(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        // 获得角色信息
+        List<SysDept> depts = selectBatchIds(ids);
+        Map<Long, SysDept> postMap = convertMap(depts, SysDept::getDeptId);
+        // 校验
+        ids.forEach(id -> {
+            SysDept dept = postMap.get(id);
+            if (dept == null) {
+                throw new ServiceException(String.format("id为【%s】的部门不存在",id), HttpStatus.ERROR);
+            }
+            if (!"0".equals(dept.getStatus())) {
+                throw new ServiceException(String.format("名字为【%s】的部门已被禁用",dept.getDeptName()), HttpStatus.ERROR);
+            }
+        });
+    }
+
+
+
     /**
      * 递归列表
      */
@@ -301,4 +332,8 @@ public class SysDeptServiceImpl implements ISysDeptService{
     private boolean hasChild(List<SysDept> list, SysDept t){
         return getChildList(list, t).size() > 0;
     }
+
+
+
+
 }

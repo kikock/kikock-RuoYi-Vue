@@ -121,4 +121,8 @@ public interface ISysDeptService{
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
+
+   public List<SysDept> selectBatchIds(List<Long> ids);
+
+    public void validateDeptList(List<Long> ids);
 }

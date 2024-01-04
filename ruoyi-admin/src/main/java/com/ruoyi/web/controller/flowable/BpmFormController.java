@@ -94,7 +94,7 @@ public class BpmFormController extends BaseController{
     /**
      * 分页获取组件下拉数据
      */
-    @PostMapping("/flowFormDatas")
+    @PostMapping("/simpleList")
     public TableDataInfo flowFormDatas(@RequestBody SelectMoreRequest request){
         PageHelper.startPage(request.getPageNum(), request.getPageSize());
         List<BpmForm> list = bpmFormService.flowFormDatas(request.getKeywords());
