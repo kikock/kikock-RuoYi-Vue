@@ -29,14 +29,14 @@ public class BpmProcessDefinitionController extends BaseController {
     @Resource
     private IBpmProcessDefinitionService bpmDefinitionService;
 
-//    @GetMapping("/page")
-//    @Operation(summary = "获得流程定义分页")
+    @GetMapping("/page")
+    @Operation(summary = "获得流程定义分页")
 //    @PreAuthorize("@ss.hasPermission('bpm:process-definition:query')")
-//    @Anonymous
-//    public TableDataInfo getProcessDefinitionPage(BpmProcessDefinitionVo pageReqVO) {
-//        startPage();
-//        return getDataTable(bpmDefinitionService.getProcessDefinitionList(pageReqVO));
-//    }
+    @Anonymous
+    public TableDataInfo getProcessDefinitionPage(BpmProcessDefinitionVo pageReqVO) {
+        startPage();
+        return getDataTable(bpmDefinitionService.getProcessDefinitionPage(pageReqVO));
+    }
 
     @GetMapping ("/list")
     @Operation(summary = "获得流程定义列表")
