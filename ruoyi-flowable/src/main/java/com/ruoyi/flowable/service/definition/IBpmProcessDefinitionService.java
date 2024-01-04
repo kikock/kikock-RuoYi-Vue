@@ -1,6 +1,7 @@
 package com.ruoyi.flowable.service.definition;
 
 
+import cn.hutool.db.PageResult;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
 import org.flowable.bpmn.model.BpmnModel;
@@ -21,6 +22,7 @@ import java.util.Set;
  */
 public interface IBpmProcessDefinitionService{
 
+    List<BpmProcessDefinitionVo> getProcessDefinitionPage(BpmProcessDefinitionVo pageReqVO);
     /**
      * 获得流程定义列表
      *

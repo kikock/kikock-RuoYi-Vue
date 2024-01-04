@@ -38,15 +38,15 @@ const detailLoading = ref(false) // 表单的加载中
 const detailData = ref() // 详情数据
 
 /** 打开弹窗 */
-// const open = async (data: TaskApi.TaskVO) => {
-//   dialogVisible.value = true
-//   // 设置数据
-//   detailLoading.value = true
-//   try {
-//     detailData.value = data
-//   } finally {
-//     detailLoading.value = false
-//   }
-// }
-// defineExpose({ open }) // 提供 open 方法，用于打开弹窗
+const open = async (data) => {
+  dialogVisible.value = true
+  // 设置数据
+  detailLoading.value = true
+  try {
+    detailData.value = data
+  } finally {
+    detailLoading.value = false
+  }
+}
+defineExpose({ open }) // 提供 open 方法，用于打开弹窗
 </script>
