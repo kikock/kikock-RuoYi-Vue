@@ -107,6 +107,7 @@ public class SysDeptServiceImpl implements ISysDeptService{
         return deptMapper.selectDeptListByRoleId(roleId, role.isDeptCheckStrictly());
     }
 
+
     /**
      * 根据部门ID查询信息
      *

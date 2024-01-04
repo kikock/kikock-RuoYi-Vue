@@ -55,7 +55,7 @@ public class SysDeptController extends BaseController{
     @GetMapping(value = "/{deptId}")
     public AjaxResult getInfo(@PathVariable Long deptId){
         deptService.checkDeptDataScope(deptId);
-        return success(deptService.selectDeptByIds(deptId));
+        return success(deptService.selectDeptById(deptId));
     }
 
     /**

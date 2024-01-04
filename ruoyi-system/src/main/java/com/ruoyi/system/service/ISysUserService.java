@@ -1,10 +1,17 @@
 package com.ruoyi.system.service;
 
+import cn.hutool.core.collection.CollUtil;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
+import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.system.domain.SysPost;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 用户 业务层
@@ -207,11 +214,18 @@ public interface ISysUserService{
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
 
     /**
-     *2024.1.2 新增
      * 查询用户分组的精简用户信息
      * @return
      */
-    List<SysUserSimpleVo> selectUserSimpleVoList();
+    public List<SysUserSimpleVo> selectUserSimpleVoList();
+
+    public  List<SysUserSimpleVo> getSimpleList(String keywords);
+
+
+    public List<SysUserSimpleVo> selectBatchIds(List<Long> ids);
+
+    public void validateUserList(List<Long> ids);
+
     /**
      *2024.1.4 新增
      * 通过用户ID集合查询用户们

@@ -497,5 +497,9 @@ public class SysUserServiceImpl implements ISysUserService{
         return userMapper.getUserList(ids);
     }
 
+    @Override
+    public List<SysUser> getUserList(Collection<Long> ids) {
+        return userMapper.getUserList(ids);
+    }
 
 }
