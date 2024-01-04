@@ -5,7 +5,7 @@ import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.page.TableDataInfo;
-import com.ruoyi.flowable.domain.task.vo.BpmTaskPageReqVO;
+import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -22,6 +22,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/bpm/process-instance")
 @Validated
+@Anonymous
 public class BpmProcessInstanceController extends BaseController {
 
     @Resource
@@ -31,7 +32,7 @@ public class BpmProcessInstanceController extends BaseController {
     @Operation(summary = "获得我的实例分页列表", description = "在【我的流程】菜单中，进行调用")
 //    @PreAuthorize("@ss.hasPermission('bpm:process:list')")
     @Anonymous
-    public TableDataInfo getMyProcessInstancePage(@Valid BpmTaskPageReqVO pageReqVO) {
+    public TableDataInfo getMyProcessInstancePage(@Valid BpmTaskReqVO pageReqVO) {
         startPage();
         pageReqVO.setUserId(getUserId());
         return getDataTable(processInstanceService.getMyProcessInstancePage(pageReqVO));
@@ -39,24 +40,24 @@ public class BpmProcessInstanceController extends BaseController {
 
     @PostMapping("/create")
     @Operation(summary = "新建流程实例")
-    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
-    public AjaxResult createProcessInstance(@Valid @RequestBody BpmTaskPageReqVO createReqVO) {
+//    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
+    public AjaxResult createProcessInstance(@Valid @RequestBody BpmTaskReqVO createReqVO) {
         return success(processInstanceService.createProcessInstance(getUserId(), createReqVO));
     }
 
-//    @GetMapping("/get")
-//    @Operation(summary = "获得指定流程实例", description = "在【流程详细】界面中，进行调用")
-//    @Parameter(name = "id", description = "流程实例的编号", required = true)
+    @GetMapping("/get")
+    @Operation(summary = "获得指定流程实例", description = "在【流程详细】界面中，进行调用")
+    @Parameter(name = "id", description = "流程实例的编号", required = true)
 //    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
-//    public CommonResult<BpmProcessInstanceRespVO> getProcessInstance(@RequestParam("id") String id) {
-//        return success(processInstanceService.getProcessInstanceVO(id));
-//    }
+    public AjaxResult getProcessInstance(@RequestParam("id") String id) {
+        return success(processInstanceService.getProcessInstanceVO(id));
+    }
 //
-//    @DeleteMapping("/cancel")
-//    @Operation(summary = "取消流程实例", description = "撤回发起的流程")
+    @DeleteMapping("/cancel")
+    @Operation(summary = "取消流程实例", description = "撤回发起的流程")
 //    @PreAuthorize("@ss.hasPermission('bpm:process-instance:cancel')")
-//    public CommonResult<Boolean> cancelProcessInstance(@Valid @RequestBody BpmProcessInstanceCancelReqVO cancelReqVO) {
-//        processInstanceService.cancelProcessInstance(getLoginUserId(), cancelReqVO);
-//        return success(true);
-//    }
+    public AjaxResult cancelProcessInstance(@RequestBody BpmTaskReqVO cancelReqVO) {
+        processInstanceService.cancelProcessInstance(getUserId(), cancelReqVO);
+        return success(true);
+    }
 }

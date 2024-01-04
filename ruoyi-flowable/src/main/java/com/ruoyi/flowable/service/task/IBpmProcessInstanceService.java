@@ -1,29 +1,26 @@
 package com.ruoyi.flowable.service.task;
 
-import com.ruoyi.flowable.domain.task.vo.BpmTaskPageReqVO;
+import com.ruoyi.common.utils.collection.CollectionUtils;
+import com.ruoyi.flowable.domain.task.vo.BpmProcessInstanceRespVO;
+import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
+import org.flowable.engine.delegate.event.FlowableCancelledEvent;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.runtime.ProcessInstance;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public interface IBpmProcessInstanceService {
     /**
-     * 获得流程实例的分页
+     * 获得流程实例
      *
-     * @param pageReqVO 分页请求
-     * @return 流程实例的分页
+     * @param id 流程实例的编号
+     * @return 流程实例
      */
-    List<?> getMyProcessInstancePage(BpmTaskPageReqVO pageReqVO);
-    /**
-     * 创建流程实例（提供给前端）
-     *
-     * @param userId 用户编号
-     * @param createReqVO 创建信息
-     * @return 实例的编号
-     */
-    String createProcessInstance(Long userId, BpmTaskPageReqVO createReqVO);
+    ProcessInstance getProcessInstance(String id);
+
     /**
      * 获得流程实例列表
      *
@@ -31,6 +28,47 @@ public interface IBpmProcessInstanceService {
      * @return 流程实例列表
      */
     List<ProcessInstance> getProcessInstances(Set<String> ids);
+
+    /**
+     * 获得流程实例的分页
+     *
+     * @param pageReqVO 分页请求
+     * @return 流程实例的分页
+     */
+    List<?> getMyProcessInstancePage(BpmTaskReqVO pageReqVO);
+
+    /**
+     * 创建流程实例（提供给前端）
+     *
+     * @param userId 用户编号
+     * @param createReqVO 创建信息
+     * @return 实例的编号
+     */
+    String createProcessInstance(Long userId, BpmTaskReqVO createReqVO);
+    /**
+ * 获得流程实例 VO 信息
+ *
+ * @param id 流程实例的编号
+ * @return 流程实例
+ */
+    BpmProcessInstanceRespVO getProcessInstanceVO(String id);
+
+    /**
+     * 取消流程实例
+     *
+     * @param userId 用户编号
+     * @param cancelReqVO 取消信息
+     */
+    void cancelProcessInstance(Long userId, BpmTaskReqVO cancelReqVO);
+
+    /**
+     * 获得历史的流程实例
+     *
+     * @param id 流程实例的编号
+     * @return 历史的流程实例
+     */
+    HistoricProcessInstance getHistoricProcessInstance(String id);
+
     /**
      * 获得历史的流程实例列表
      *
@@ -39,4 +77,33 @@ public interface IBpmProcessInstanceService {
      */
     List<HistoricProcessInstance> getHistoricProcessInstances(Set<String> ids);
 
+
+    /**
+     * 创建 ProcessInstance 拓展记录
+     *
+     * @param instance 流程任务
+     */
+    void createProcessInstanceExt(ProcessInstance instance);
+
+    /**
+     * 更新 ProcessInstance 拓展记录为取消
+     *
+     * @param event 流程取消事件
+     */
+    void updateProcessInstanceExtCancel(FlowableCancelledEvent event);
+
+    /**
+     * 更新 ProcessInstance 拓展记录为完成
+     *
+     * @param instance 流程任务
+     */
+    void updateProcessInstanceExtComplete(ProcessInstance instance);
+
+    /**
+     * 更新 ProcessInstance 拓展记录为不通过
+     *
+     * @param id 流程编号
+     * @param reason 理由。例如说，审批不通过时，需要传递该值
+     */
+    void updateProcessInstanceExtReject(String id, String reason);
 }

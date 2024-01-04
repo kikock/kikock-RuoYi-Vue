@@ -3,6 +3,7 @@ package com.ruoyi.system.service;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -218,5 +219,5 @@ public interface ISysUserService{
      * @param ids 用户ID
      * @return 用户对象信息
      */
-    List<SysUser> getUserList(List<String> ids);
+    List<SysUser> getUserList(Collection<Long> ids);
 }

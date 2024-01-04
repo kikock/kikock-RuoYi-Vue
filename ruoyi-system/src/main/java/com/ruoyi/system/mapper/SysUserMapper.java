@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -127,4 +128,6 @@ public interface SysUserMapper{
     public SysUser checkEmailUnique(String email);
 
     List<SysUserSimpleVo> selectUserSimpleVoList();
+
+    List<SysUser> getUserList(Collection<Long> ids);
 }
