@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.entity.SysDept;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * 部门管理 数据层
@@ -115,4 +116,6 @@ public interface SysDeptMapper{
      * @return 结果
      */
     public int deleteDeptById(Long deptId);
+
+    List<SysDept> selectDeptByIds(Set<Long> deptIds);
 }

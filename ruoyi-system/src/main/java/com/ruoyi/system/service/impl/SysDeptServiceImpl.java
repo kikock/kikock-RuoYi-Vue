@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -113,7 +114,7 @@ public class SysDeptServiceImpl implements ISysDeptService{
      * @return 部门信息
      */
     @Override
-    public SysDept selectDeptById(Long deptId){
+    public SysDept selectDeptByIds(Long deptId){
         return deptMapper.selectDeptById(deptId);
     }
 
@@ -264,6 +265,12 @@ public class SysDeptServiceImpl implements ISysDeptService{
     @Override
     public int deleteDeptById(Long deptId){
         return deptMapper.deleteDeptById(deptId);
+    }
+
+    @Override
+    public List<SysDept> selectDeptByIds(Set<Long> deptIds) {
+        return deptMapper.selectDeptByIds(deptIds);
+
     }
 
     /**

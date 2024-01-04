@@ -2,7 +2,7 @@ package com.ruoyi.flowable.mapper.task;
 
 
 import com.ruoyi.flowable.domain.task.BpmProcessInstanceExt;
-import com.ruoyi.flowable.domain.task.vo.BpmTaskPageReqVO;
+import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
 
 
 import java.util.List;
@@ -62,5 +62,5 @@ public interface BpmProcessInstanceExtMapper{
      */
     public int deleteBpmProcessInstanceExtByIds(Long[] ids);
 
-    List<BpmProcessInstanceExt> selectPage(BpmTaskPageReqVO pageReqVO);
+    List<BpmProcessInstanceExt> selectPage(BpmTaskReqVO pageReqVO);
 }

@@ -15,7 +15,7 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BpmTaskPageItemRespVO {
+public class BpmTaskItemRespVO {
     @Excel(name = "任务编号")
     private String id;//
     @Excel(name = "任务名字")
@@ -34,10 +34,14 @@ public class BpmTaskPageItemRespVO {
     @Excel(name = "持续时间")
     private Long durationInMillis;//""
     @Excel(name = "任务结果-参见 bpm_process_instance_result")
-    private Integer result;//""
+    private Integer result;
     @Excel(name = "审批建议")
-    private String reason;//""
+    private String reason;
 
+    @Excel(name = "新审批人的用户编号")
+    private Long assigneeUserId;
+    @Excel(name = "回退到的任务 Key")
+    private String targetDefinitionKey;
     /**
      * 所属流程实例
      */
@@ -56,4 +60,23 @@ public class BpmTaskPageItemRespVO {
         @Excel(name = "流程定义编号")
         private String processDefinitionId;
     }
+
+    @Excel(name = "任务定义的标识")
+    private String definitionKey;
+
+    /**
+     * 审核的用户信息
+     */
+    private User assigneeUser;
+    @Data
+    public static class User {
+
+        private Long id;
+        private String nickname;
+
+        private Long deptId;
+        private String deptName;
+
+    }
+
 }

@@ -1,21 +1,26 @@
 package com.ruoyi.flowable.domain.task.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.page.PageDomain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.Map;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BpmTaskPageReqVO extends PageDomain {
+public class BpmTaskReqVO extends PageDomain {
+    @Excel(name = "流程实例编号")
+    private String id;
+
+    @Excel(name = "取消原因")
+    private String reason;
+
     @Excel(name = "流程名称")
     private String name;
 

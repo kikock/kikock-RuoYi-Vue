@@ -75,6 +75,15 @@
         from sys_dept d
         where d.dept_id = #{deptId}
     </select>
+    <select id="selectDeptByIds" resultType="com.ruoyi.common.core.domain.entity.SysDept">
+        select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.phone, d.email, d.status,
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        from sys_dept d
+        where d.dept_id in
+        <foreach collection="deptIds" item="deptId" open="(" close=")" separator=",">
+            #{deptId}
+        </foreach>
+    </select>
 
     <select id="checkDeptExistUser" parameterType="Long" resultType="int">
         select count(1) from sys_user where dept_id = #{deptId} and del_flag = '0'
