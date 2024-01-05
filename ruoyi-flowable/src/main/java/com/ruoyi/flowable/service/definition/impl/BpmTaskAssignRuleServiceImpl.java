@@ -2,24 +2,38 @@ package com.ruoyi.flowable.service.definition.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.google.common.base.Joiner;
+import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ObjectUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
+import com.ruoyi.flowable.domain.definition.BpmUserGroup;
+import com.ruoyi.flowable.framework.code.enums.BpmTaskAssignRuleTypeEnum;
 import com.ruoyi.flowable.framework.utils.BpmnModelUtils;
 import com.ruoyi.flowable.mapper.definition.BpmTaskAssignRuleMapper;
 import com.ruoyi.flowable.service.definition.IBpmModelService;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
-import com.sun.corba.se.spi.ior.ObjectKey;
+import com.ruoyi.flowable.service.definition.IBpmUserGroupService;
+import com.ruoyi.system.domain.SysPost;
+import com.ruoyi.system.service.*;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.UserTask;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Bpm 任务规则Service业务层处理
@@ -31,13 +45,23 @@ import java.util.*;
 public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
     @Resource
     private BpmTaskAssignRuleMapper bpmTaskAssignRuleMapper;
-    @Resource
-    @Lazy // 解决循环依赖
+    @Autowired
     private IBpmModelService bpmModelService;
-
-    @Resource
-    @Lazy // 解决循环依赖
+    @Autowired
     private IBpmProcessDefinitionService bpmProcessDefinitionService;
+
+    @Autowired
+    private ISysRoleService roleService;
+    @Autowired
+    private ISysPostService postService;
+    @Autowired
+    private ISysDeptService deptService;
+    @Autowired
+    private ISysUserService userService;
+    @Autowired
+    private IBpmUserGroupService userGroupService;
+    @Autowired
+    private ISysDictDataService dictDataService;
 
 
     /**
@@ -82,14 +106,15 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
             return Collections.emptyList();
         }
 //        // 转换数据
-        Map<String, BpmTaskAssignRule> ruleMap = CollectionUtils.convertMap(rules, BpmTaskAssignRule::getTaskDefinitionKey);
-
+        Map<String,BpmTaskAssignRule> ruleMap = CollectionUtils.convertMap(rules, BpmTaskAssignRule::getTaskDefinitionKey);
         return CollectionUtils.convertList(userTasks, task -> {
             BpmTaskAssignRule respVO = ruleMap.get(task.getId());
             if (respVO == null) {
-                respVO =new BpmTaskAssignRule();
+                respVO = new BpmTaskAssignRule();
                 respVO.setTaskDefinitionKey(task.getId());
             }
+            setTaskAssignRuleOptionName(respVO.getType(), respVO);
+
             respVO.setTaskDefinitionName(task.getName());
             return respVO;
         });
@@ -139,5 +164,154 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
     @Override
     public int deleteBpmTaskAssignRuleById(Long id){
         return bpmTaskAssignRuleMapper.deleteBpmTaskAssignRuleById(id);
+    }
+
+    @Override
+    public int createTaskAssignRule(BpmTaskAssignRule reqVO){
+        if (StringUtils.isNull(reqVO.getTaskDefinitionKey())) {
+            throw new ServiceException("流程任务定义的编号不能为空！");
+        }
+        // 校验参数
+        String options = validTaskAssignRuleOptions(reqVO.getType(), reqVO.getOptionIds(), reqVO.getOptions());
+        // 校验是否已经配置
+        BpmTaskAssignRule existRule =
+                bpmTaskAssignRuleMapper.selectListByModelIdAndTaskDefinitionKey(reqVO.getModelId(), reqVO.getTaskDefinitionKey());
+        if (existRule != null) {
+            throw new ServiceException(String.format("流程(%s) 的任务(%s) 已经存在分配规则", reqVO.getModelId(), reqVO.getTaskDefinitionKey()), HttpStatus.ERROR);
+        }
+        reqVO.setOptions(options);
+//      空字符串  用于标识属于流程模型，而不属于流程定义
+        reqVO.setProcessDefinitionId("0");
+        // 存储
+        return bpmTaskAssignRuleMapper.insertBpmTaskAssignRule(reqVO);
+    }
+
+    @Override
+    public int updateTaskAssignRule(BpmTaskAssignRule reqVO){
+        //编辑不能修改
+        reqVO.setTaskDefinitionKey(null);
+        // 校验参数
+        String options = validTaskAssignRuleOptions(reqVO.getType(), reqVO.getOptionIds(), reqVO.getOptions());
+        // 校验是否存在
+        BpmTaskAssignRule existRule = bpmTaskAssignRuleMapper.selectBpmTaskAssignRuleById(reqVO.getId());
+        if (existRule == null) {
+            throw new ServiceException("流程任务分配规则不存在", HttpStatus.ERROR);
+        }
+        // 只允许修改流程模型的规则
+        if (!Objects.equals("0", existRule.getProcessDefinitionId())) {
+            throw new ServiceException("只有流程模型的任务分配规则，才允许被修改", HttpStatus.ERROR);
+        }
+        //参数设置
+        reqVO.setOptions(options);
+        // 执行更新
+        return bpmTaskAssignRuleMapper.updateBpmTaskAssignRule(reqVO);
+    }
+    private void setTaskAssignRuleOptionName(Integer type, BpmTaskAssignRule taskAssignRule){
+        if (StringUtils.isEmpty(taskAssignRule.getOptions())){
+            return;
+        }
+        List<String> list = Arrays.asList(taskAssignRule.getOptions().split(","));
+        List<Long> ids = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.ROLE.getType())) {
+            //角色id名称设置
+            List<SysRole> sysRoles = roleService.selectBatchIds(ids);
+            //回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysRoles.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getRoleId());
+                        selectMoreVo.setName(item.getRoleName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
+        } else if (ObjectUtils.equalsAny(type, BpmTaskAssignRuleTypeEnum.DEPT_MEMBER.getType(),
+                BpmTaskAssignRuleTypeEnum.DEPT_LEADER.getType())) {
+            //部门名称和id设置
+            List<SysDept> sysDepts = deptService.selectBatchIds(ids);
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysDepts.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getDeptId());
+                        selectMoreVo.setName(item.getDeptName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.POST.getType())) {
+            //设置岗位名称
+            List<SysPost> sysPosts = postService.selectBatchIds(ids);
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysPosts.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getPostId());
+                        selectMoreVo.setName(item.getPostName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.USER.getType())) {
+            //设置用户名称
+            List<SysUserSimpleVo> sysUserSimpleVos = userService.selectBatchIds(ids);
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysUserSimpleVos.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getId());
+                        selectMoreVo.setName(item.getName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.USER_GROUP.getType())) {
+            //用户组名称设
+            List<BpmUserGroup> bpmUserGroups = userGroupService.selectBatchIds(ids);
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = bpmUserGroups.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getId());
+                        selectMoreVo.setName(item.getName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.SCRIPT.getType())) {
+//            字典校验
+            String value = dictDataService.selectDictLabel("bpm_task_assign_script", taskAssignRule.getOptions());
+            taskAssignRule.setOptionName(value);
+        }
+    }
+    private String validTaskAssignRuleOptions(Integer type, List<Long> optionIds, String option){
+        if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.ROLE.getType())) {
+            //校验角色id是否存在
+            roleService.validateRoleList(optionIds);
+        } else if (ObjectUtils.equalsAny(type, BpmTaskAssignRuleTypeEnum.DEPT_MEMBER.getType(),
+                BpmTaskAssignRuleTypeEnum.DEPT_LEADER.getType())) {
+            //校验部门id是否存在
+            deptService.validateDeptList(optionIds);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.POST.getType())) {
+            //校验岗位id是否存在
+            postService.validPostList(optionIds);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.USER.getType())) {
+            //校验用户id是否存在
+            userService.validateUserList(optionIds);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.USER_GROUP.getType())) {
+            //校验用户组id是否存在
+            userGroupService.validUserGroups(optionIds);
+        } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.SCRIPT.getType())) {
+//            字典校验
+            String value = dictDataService.selectDictLabel("bpm_task_assign_script", option);
+            if (StringUtils.isEmpty(value)) {
+                throw new ServiceException(String.format("type为【%s】的类型不存在", option), HttpStatus.ERROR);
+            }
+            return option;
+        } else {
+            throw new ServiceException(String.format("未知的规则类型【%s】", type), HttpStatus.ERROR);
+        }
+        String result = Joiner.on(",").join(optionIds);
+        return  result;
     }
 }

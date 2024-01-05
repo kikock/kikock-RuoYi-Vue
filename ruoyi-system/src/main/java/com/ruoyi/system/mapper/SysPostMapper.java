@@ -1,5 +1,6 @@
 package com.ruoyi.system.mapper;
 
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.system.domain.SysPost;
 
 import java.util.List;
@@ -97,7 +98,7 @@ public interface SysPostMapper{
      */
     public SysPost checkPostCodeUnique(String postCode);
 
-    List<SysPost> getSimpleList(String keywords);
+    List<SelectMoreVo> getSimpleList(String keywords);
 
     public List<SysPost> selectBatchIds(List<Long> ids);
 }

@@ -2,6 +2,7 @@ package com.ruoyi.flowable.service.definition.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.constant.HttpStatus;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.flowable.domain.definition.BpmUserGroup;
@@ -95,7 +96,7 @@ public class BpmUserGroupServiceImpl implements IBpmUserGroupService{
     }
 
     @Override
-    public List<BpmUserGroup> getSimpleList(String keywords){
+    public List<SelectMoreVo> getSimpleList(String keywords){
         return bpmUserGroupMapper.getSimpleList(keywords);
     }
     @Override

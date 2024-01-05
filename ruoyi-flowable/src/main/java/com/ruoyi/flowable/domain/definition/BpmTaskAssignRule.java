@@ -2,6 +2,8 @@ package com.ruoyi.flowable.domain.definition;
 
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -16,6 +18,7 @@ import java.util.Set;
  * @author kikock
  * @date 2023-12-22
  */
+@Data
 public class BpmTaskAssignRule extends BaseEntity{
     private static final long serialVersionUID = 1L;
 
@@ -62,107 +65,23 @@ public class BpmTaskAssignRule extends BaseEntity{
      *
      */
     private List<Long> optionIds;
+
+    /**
+     *
+     * 回显内容
+     *
+     */
+    private List<SelectMoreVo> selectMoreVos;
+    /**
+     *
+     * 列表显示名称
+     *
+     */
     private String optionName;
     /**
      * 删除标志（0代表存在 2代表删除）
      */
     private String delFlag;
 
-    public void setId(Long id){
-        this.id = id;
-    }
 
-    public Long getId(){
-        return id;
-    }
-
-    public void setModelId(String modelId){
-        this.modelId = modelId;
-    }
-
-    public String getModelId(){
-        return modelId;
-    }
-
-    public void setProcessDefinitionId(String processDefinitionId){
-        this.processDefinitionId = processDefinitionId;
-    }
-
-    public String getProcessDefinitionId(){
-        return processDefinitionId;
-    }
-
-    public void setTaskDefinitionKey(String taskDefinitionKey){
-        this.taskDefinitionKey = taskDefinitionKey;
-    }
-
-    public String getTaskDefinitionKey(){
-        return taskDefinitionKey;
-    }
-
-    public void setType(Integer type){
-        this.type = type;
-    }
-
-    public Integer getType(){
-        return type;
-    }
-
-    public void setOptions(String options){
-        this.options = options;
-    }
-
-    public String getOptions(){
-        return options;
-    }
-
-    public void setDelFlag(String delFlag){
-        this.delFlag = delFlag;
-    }
-
-    public String getDelFlag(){
-        return delFlag;
-    }
-
-    public String getOptionName(){
-        return optionName;
-    }
-
-    public void setOptionName(String optionName){
-        this.optionName = optionName;
-    }
-
-    public String getTaskDefinitionName(){
-        return taskDefinitionName;
-    }
-
-    public void setTaskDefinitionName(String taskDefinitionName){
-        this.taskDefinitionName = taskDefinitionName;
-    }
-
-    public List<Long> getOptionIds(){
-        return optionIds;
-    }
-
-    public void setOptionIds(List<Long> optionIds){
-        this.optionIds = optionIds;
-    }
-
-    @Override
-    public String toString(){
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("modelId", getModelId())
-                .append("processDefinitionId", getProcessDefinitionId())
-                .append("taskDefinitionKey", getTaskDefinitionKey())
-                .append("type", getType())
-                .append("options", getOptions())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .append("remark", getRemark())
-                .toString();
-    }
 }

@@ -9,6 +9,7 @@ import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.domain.vo.SelectMoreRequest;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
@@ -240,7 +241,7 @@ public class SysRoleController extends BaseController{
     @PostMapping("/simpleList")
     public TableDataInfo simpleList(@RequestBody SelectMoreRequest request){
         PageHelper.startPage(request.getPageNum(), request.getPageSize());
-        List<SysRole> list = roleService.getSimpleList(request.getKeywords());
+        List<SelectMoreVo> list = roleService.getSimpleList(request.getKeywords());
         return getDataTable(list);
     }
 

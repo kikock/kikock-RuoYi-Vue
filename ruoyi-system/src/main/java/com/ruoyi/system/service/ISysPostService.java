@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.system.domain.SysPost;
 
 import java.util.List;
@@ -101,7 +102,7 @@ public interface ISysPostService{
      * @param keywords 模糊筛选
      * @return 结果
      */
-    public List<SysPost> getSimpleList(String keywords);
+    public List<SelectMoreVo> getSimpleList(String keywords);
 
     public List<SysPost> selectBatchIds(List<Long> ids);
 

@@ -17,11 +17,15 @@
         </template>
       </el-table-column>
       <el-table-column label="规则范围" align="center" prop="optionName">
-        <template #default="scope">
-          <el-tag class="mr-5px">
-            {{ scope.row.optionName}}
+        <template v-slot="scope">
+          <el-tag style="margin-right: 10Px" v-if="scope.row.selectMoreVos" :key="item.id" v-for="item in scope.row.selectMoreVos">
+            {{ item.name }}
+          </el-tag>
+          <el-tag style="margin-right: 10Px" v-if="scope.row.optionName" >
+            {{ scope.row.optionName }}
           </el-tag>
         </template>
+
       </el-table-column>
       <el-table-column v-if="queryParams.modelId" label="操作" align="center">
         <template #default="scope">
@@ -67,9 +71,8 @@
               search-pld-text="请输入角色名称筛选"
               select-pld-text="请选择角色"
               v-model="form.roleIds"
+              :edit-data="form.selectMoreVos"
               :showId="false"
-              value="roleId"
-              label="roleName"
               url="/system/role/simpleList"
               multiple>
           </select-more>
@@ -92,9 +95,8 @@
               search-pld-text="请输入岗位名称筛选"
               select-pld-text="请选择岗位"
               v-model="form.postIds"
+              :edit-data="form.selectMoreVos"
               :showId="false"
-              value="postId"
-              label="postName"
               url="/system/post/simpleList"
               multiple>
           </select-more>
@@ -109,9 +111,8 @@
               search-pld-text="请输入用户名称筛选"
               select-pld-text="请选择用户"
               v-model="form.userIds"
+              :edit-data="form.selectMoreVos"
               :showId="false"
-              value="id"
-              label="name"
               url="/system/user/simpleList"
               multiple>
           </select-more>
@@ -121,9 +122,8 @@
               search-pld-text="请输入用户组名称筛选"
               select-pld-text="请选择自定义用户组"
               v-model="form.userGroupIds"
+              :edit-data="form.selectMoreVos"
               :showId="false"
-              value="id"
-              label="name"
               url="/bpm/group/simpleList"
               multiple>
           </select-more>
@@ -199,7 +199,6 @@ function indexMethod(index) {
 
 /** 查询列表 */
 function getList() {
-  console.log("加载数据");
   loading.value = true;
   getTaskAssignRuleList(queryParams.value).then(response => {
     formList.value = response.rows;
@@ -239,20 +238,46 @@ function openForm(row) {
   }
   form.value = row
   if (row.type === 10) {
-    console.log(row.options);
-    form.value.roleIds = row.options.split(',');
-    form.value.roleEditData ={
-
-    }
-
+    const ids =[]
+    form.value.selectMoreVos.forEach(item => {
+      ids.push(item.id)
+    })
+    form.value.roleIds=ids
   } else if (row.type === 20 || row.type === 21) {
-    form.value.roleIds = row.options;
-  } else if (row.type === 22) {
+    //部门
     form.value.deptIds = row.options;
+    const ids =[]
+    form.value.selectMoreVos.forEach(item => {
+      ids.push(item)
+    })
+    form.value.deptIds=ids
+  } else if (row.type === 22) {
+    //岗位
+    form.value.postIds = row.options;
+    const ids =[]
+    form.value.selectMoreVos.forEach(item => {
+      ids.push(item.id)
+
+    })
+    form.value.postIds=ids
   } else if (row.type === 30 || row.type === 31 || row.type === 32) {
+    // 用户
     form.value.userIds = row.options;
+    const ids =[]
+    form.value.selectMoreVos.forEach(item => {
+      ids.push(item.id)
+
+    })
+    form.value.userIds=ids
+
   } else if (row.type === 40) {
     form.value.userGroupIds = row.options;
+    const ids =[]
+    form.value.selectMoreVos.forEach(item => {
+      ids.push(item.id)
+
+    })
+    form.value.userGroupIds=ids
   } else if (row.type === 50) {
     form.value.scripts = row.options;
   }
@@ -262,6 +287,7 @@ function openForm(row) {
 
 /** 取消按钮 */
 function cancel() {
+  console.log("表单参数",form.value);
   open.value = false;
   reset();
 }
@@ -290,19 +316,14 @@ function submitForm() {
         form.value.options = form.value.scripts;
         console.log("自定义",form.value.options);
       }
-      // 清空选择内容
-      form.value.roleIds = undefined;
-      form.value.deptIds = undefined;
-      form.value.postIds = undefined;
-      form.value.userIds = undefined;
-      form.value.userGroupIds = undefined;
-      form.value.scripts = undefined;
+
       // 新增
       if (!form.value.id) {
         form.value.modelId = queryParams.value.modelId; // 模型编号
         createTaskAssignRule(form.value).then(response => {
           proxy.$modal.msgSuccess("添加成功");
           open.value = false;
+          reset();
           getList();
         });
         // 修改
@@ -311,13 +332,12 @@ function submitForm() {
         updateTaskAssignRule(form.value).then(response => {
           proxy.$modal.msgSuccess("修改成功");
           open.value = false;
+          reset();
           getList();
         });
       }
     }
   });
-  // reset();
-  // open.value = false;
 
 }
 

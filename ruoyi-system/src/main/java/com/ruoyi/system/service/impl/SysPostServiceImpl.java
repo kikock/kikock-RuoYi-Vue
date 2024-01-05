@@ -3,6 +3,7 @@ package com.ruoyi.system.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.constant.UserConstants;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysPost;
@@ -167,7 +168,7 @@ public class SysPostServiceImpl implements ISysPostService{
     }
 
     @Override
-    public List<SysPost> getSimpleList(String keywords){
+    public List<SelectMoreVo> getSimpleList(String keywords){
         return postMapper.getSimpleList(keywords);
     }
     @Override

@@ -334,7 +334,7 @@
             #{userId}
         </foreach>
     </delete>
-    <select id="getSimpleList" parameterType="SysUserSimpleVo" resultType="SysUserSimpleVo">
+    <select id="getSimpleList" parameterType="String" resultType="SelectMoreVo">
         select user_id id,nick_name name from sys_user u
         <where>
             u.status = 0

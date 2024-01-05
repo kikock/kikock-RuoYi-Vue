@@ -5,6 +5,7 @@ import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.vo.SelectMoreRequest;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.poi.ExcelUtil;
@@ -115,7 +116,7 @@ public class SysPostController extends BaseController{
     @PostMapping("/simpleList")
     public TableDataInfo simpleList(@RequestBody SelectMoreRequest request){
         PageHelper.startPage(request.getPageNum(), request.getPageSize());
-        List<SysPost> list = postService.getSimpleList(request.getKeywords());
+        List<SelectMoreVo> list = postService.getSimpleList(request.getKeywords());
         return getDataTable(list);
     }
 

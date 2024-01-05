@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.system.domain.SysPost;
 import org.apache.ibatis.annotations.Param;
@@ -131,7 +132,7 @@ public interface SysUserMapper{
 
     public List<SysUserSimpleVo> selectUserSimpleVoList();
 
-    public List<SysUserSimpleVo> getSimpleList(String keywords);
+    public List<SelectMoreVo> getSimpleList(String keywords);
 
     public List<SysUserSimpleVo> selectBatchIds(List<Long> ids);
 
