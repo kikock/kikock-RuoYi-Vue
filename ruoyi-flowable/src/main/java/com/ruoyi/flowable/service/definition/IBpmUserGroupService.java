@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.service.definition;
 
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.flowable.domain.definition.BpmUserGroup;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public interface IBpmUserGroupService{
      */
     public int deleteBpmUserGroupById(Long id);
 
-    public List<BpmUserGroup> getSimpleList(String keywords);
+    public List<SelectMoreVo> getSimpleList(String keywords);
 
     public List<BpmUserGroup> selectBatchIds(List<Long> ids);
 

@@ -1,6 +1,7 @@
 package com.ruoyi.flowable.mapper.definition;
 
 
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.flowable.domain.definition.BpmUserGroup;
 
 import java.util.List;
@@ -61,7 +62,7 @@ public interface BpmUserGroupMapper{
     public int deleteBpmUserGroupByIds(Long[] ids);
 
 
-    public List<BpmUserGroup> getSimpleList(String keywords);
+    public List<SelectMoreVo> getSimpleList(String keywords);
 
     public List<BpmUserGroup> selectBatchIds(List<Long> ids);
 }

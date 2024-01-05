@@ -176,9 +176,10 @@
         </foreach>
     </delete>
 
-    <select id="getSimpleList" parameterType="String"
-            resultMap="BpmUserGroupResult">
-        <include refid="selectBpmUserGroupVo"/>
+    <select id="getSimpleList"  parameterType="String" resultType="SelectMoreVo">
+        select id,
+        name
+        from bpm_user_group
         <where>
             status = '0'
             <if test="keywords != null and keywords != ''">

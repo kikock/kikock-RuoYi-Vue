@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -107,7 +108,7 @@ public interface SysRoleMapper{
      */
     public int deleteRoleByIds(Long[] roleIds);
 
-    public List<SysRole> getSimpleList(String keywords);
+    public List<SelectMoreVo> getSimpleList(String keywords);
 
    public List<SysRole> selectBatchIds(@Param("list") List<Long> list);
 }

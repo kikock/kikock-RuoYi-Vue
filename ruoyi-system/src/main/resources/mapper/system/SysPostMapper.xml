@@ -165,8 +165,11 @@
         </foreach>
     </delete>
 
-    <select id="getSimpleList"  parameterType="String" resultMap="SysPostResult">
-        <include refid="selectPostVo"/>
+    <select id="getSimpleList"  parameterType="String" resultType="SelectMoreVo">
+        select post_id as id,
+        post_code as code,
+        post_name as name
+        from sys_post
         <where>
             status = '0'
             <if test="keywords != null and keywords != ''">

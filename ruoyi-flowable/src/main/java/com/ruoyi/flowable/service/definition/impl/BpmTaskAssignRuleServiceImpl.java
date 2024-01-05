@@ -7,12 +7,16 @@ import com.google.common.base.Joiner;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.ObjectUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
+import com.ruoyi.flowable.domain.definition.BpmUserGroup;
 import com.ruoyi.flowable.framework.code.enums.BpmTaskAssignRuleTypeEnum;
 import com.ruoyi.flowable.framework.utils.BpmnModelUtils;
 import com.ruoyi.flowable.mapper.definition.BpmTaskAssignRuleMapper;
@@ -20,6 +24,7 @@ import com.ruoyi.flowable.service.definition.IBpmModelService;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
 import com.ruoyi.flowable.service.definition.IBpmUserGroupService;
+import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.service.*;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.UserTask;
@@ -210,24 +215,69 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.ROLE.getType())) {
             //角色id名称设置
             List<SysRole> sysRoles = roleService.selectBatchIds(ids);
-            List<String> roleNames = sysRoles.stream()
-                    .map(SysRole::getRoleName)
+            //回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysRoles.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getRoleId());
+                        selectMoreVo.setName(item.getRoleName());
+                        return selectMoreVo;
+                    })
                     .collect(Collectors.toList());
-            taskAssignRule.setOptionName(Joiner.on(",").join(roleNames));
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
         } else if (ObjectUtils.equalsAny(type, BpmTaskAssignRuleTypeEnum.DEPT_MEMBER.getType(),
                 BpmTaskAssignRuleTypeEnum.DEPT_LEADER.getType())) {
-            //部门名称设置
+            //部门名称和id设置
             List<SysDept> sysDepts = deptService.selectBatchIds(ids);
-            List<String> deptName = sysDepts.stream()
-                    .map(SysDept::getDeptName)
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysDepts.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getDeptId());
+                        selectMoreVo.setName(item.getDeptName());
+                        return selectMoreVo;
+                    })
                     .collect(Collectors.toList());
-            taskAssignRule.setOptionName(Joiner.on(",").join(deptName));
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
         } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.POST.getType())) {
-            //校验岗位id是否存在
+            //设置岗位名称
+            List<SysPost> sysPosts = postService.selectBatchIds(ids);
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysPosts.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getPostId());
+                        selectMoreVo.setName(item.getPostName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
         } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.USER.getType())) {
-            //校验用户id是否存在
+            //设置用户名称
+            List<SysUserSimpleVo> sysUserSimpleVos = userService.selectBatchIds(ids);
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = sysUserSimpleVos.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getId());
+                        selectMoreVo.setName(item.getName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
         } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.USER_GROUP.getType())) {
-            //校验用户组id是否存在
+            //用户组名称设
+            List<BpmUserGroup> bpmUserGroups = userGroupService.selectBatchIds(ids);
+            //下拉回显内容处理
+            List<SelectMoreVo> selectMoreVos = bpmUserGroups.stream()
+                    .map(item -> {
+                        SelectMoreVo selectMoreVo = new SelectMoreVo();
+                        selectMoreVo.setId(item.getId());
+                        selectMoreVo.setName(item.getName());
+                        return selectMoreVo;
+                    })
+                    .collect(Collectors.toList());
+            taskAssignRule.setSelectMoreVos(selectMoreVos);
         } else if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.SCRIPT.getType())) {
 //            字典校验
             String value = dictDataService.selectDictLabel("bpm_task_assign_script", taskAssignRule.getOptions());
