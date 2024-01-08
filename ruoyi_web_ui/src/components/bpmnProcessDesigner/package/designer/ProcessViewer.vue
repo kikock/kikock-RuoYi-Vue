@@ -389,6 +389,7 @@ const elementOut = (element) => {
 
 onMounted(() => {
   xml.value = props.value
+  console.log( xml.value);
   activityLists.value = props.activityData
   // 初始化
   initBpmnModeler()

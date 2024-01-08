@@ -195,5 +195,24 @@
         where model_id = #{modelId} and
               task_definition_key = #{taskDefinitionKey}
     </select>
-
+    <insert id="insertBatchBpmTaskAssignRule" parameterType="BpmTaskAssignRule">
+        insert into bpm_task_assign_rule
+        (id,
+        model_id,
+        process_definition_id,
+        task_definition_key,
+        type,
+        options,
+        remark)
+        values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.id},
+            #{item.modelId},
+            #{item.processDefinitionId},
+            #{item.taskDefinitionKey},
+            #{item.type},
+            #{item.options},
+            #{item.remark})
+        </foreach>
+    </insert>
 </mapper>

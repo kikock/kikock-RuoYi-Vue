@@ -16,11 +16,13 @@ import com.ruoyi.flowable.domain.definition.BpmForm;
 import com.ruoyi.flowable.domain.definition.BpmModel;
 import com.ruoyi.flowable.domain.definition.vo.BpmModelMetaInfoVo;
 import com.ruoyi.flowable.domain.definition.vo.BpmModelVo;
+import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
 import com.ruoyi.flowable.service.definition.IBpmFormService;
 import com.ruoyi.flowable.service.definition.IBpmModelService;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceExtService;
+import liquibase.pro.packaged.S;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
@@ -40,6 +42,7 @@ import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.alibaba.fastjson2.JSON.copyTo;
 import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 
@@ -192,71 +195,86 @@ public class BpmModelServiceImpl implements IBpmModelService{
     }
 
     @Override
-    public void deployModel(String id){
+    @Transactional(rollbackFor = Exception.class) // 因为进行多个操作，所以开启事务
+    public int deployModel(String id){
 //// 1.1 校验流程模型存在
-//        Model model = repositoryService.getModel(id);
-//        if (ObjectUtils.isEmpty(model)) {
-////            throw exception(MODEL_NOT_EXISTS);
-//            return;
-//        }
+        Model model = repositoryService.getModel(id);
+        if (ObjectUtils.isEmpty(model)) {
+            throw new ServiceException("部署流程失败，原因：流程模型不存在!", HttpStatus.ERROR);
+        }
 //        // 1.2 校验流程图
-//        // TODO 芋艿：校验流程图的有效性；例如说，是否有开始的元素，是否有结束的元素；
-//        byte[] bpmnBytes = repositoryService.getModelEditorSource(model.getId());
-//        if (bpmnBytes == null) {
-////            throw exception(MODEL_NOT_EXISTS);
-//            return;
-//        }
+//        // TODO 校验流程图的有效性；例如说，是否有开始的元素，是否有结束的元素；
+        byte[] bpmnBytes = repositoryService.getModelEditorSource(model.getId());
+        if (bpmnBytes == null) {
+               throw new ServiceException("部署流程失败，原因：流程模型不存在!", HttpStatus.ERROR);
+        }
 //        // 1.3 校验表单已配
-//        BpmForm form = checkFormConfig(model.getMetaInfo());
+        BpmForm form = checkFormConfig(model.getMetaInfo());
 //        // 1.4 校验任务分配规则已配置
-//        taskAssignRuleService.checkTaskAssignRuleAllConfig(id);
+        taskAssignRuleService.checkTaskAssignRuleAllConfig(id);
 //
 //        // 1.5 校验模型是否发生修改。如果未修改，则不允许创建
-//        BpmProcessDefinitionCreateReqDTO definitionCreateReqDTO = BpmModelConvert.INSTANCE.convert2(model, form).setBpmnBytes(bpmnBytes);
-//        if (processDefinitionService.isProcessDefinitionEquals(definitionCreateReqDTO)) { // 流程定义的信息相等
-//            ProcessDefinition oldProcessDefinition = processDefinitionService.getProcessDefinitionByDeploymentId(model.getDeploymentId());
-//            if (oldProcessDefinition != null && taskAssignRuleService.isTaskAssignRulesEquals(model.getId(), oldProcessDefinition.getId())) {
-//                throw exception(MODEL_DEPLOY_FAIL_TASK_INFO_EQUALS);
-//            }
-//        }
-//
+        BpmProcessDefinitionVo bpmProcessDefinitionVo = convertToBPDVO(model, form);
+        if (processDefinitionService.isProcessDefinitionEquals(bpmProcessDefinitionVo)) { // 流程定义的信息相等
+            ProcessDefinition oldProcessDefinition = processDefinitionService.getProcessDefinitionByDeploymentId(model.getDeploymentId());
+            if (oldProcessDefinition != null && taskAssignRuleService.isTaskAssignRulesEquals(model.getId(), oldProcessDefinition.getId())) {
+                throw new ServiceException("部署流程失败，原因：流程信息未发生变化!", HttpStatus.ERROR);
+            }
+        }
+        bpmProcessDefinitionVo.setBpmnBytes(bpmnBytes);
 //        // 2.1 创建流程定义
-//        String definitionId = processDefinitionService.createProcessDefinition(definitionCreateReqDTO);
+        String definitionId = processDefinitionService.createProcessDefinition(bpmProcessDefinitionVo);
 //
 //        // 2.2 将老的流程定义进行挂起。也就是说，只有最新部署的流程定义，才可以发起任务。
-//        updateProcessDefinitionSuspended(model.getDeploymentId());
+        updateProcessDefinitionSuspended(model.getDeploymentId());
 //
 //        // 2.3 更新 model 的 deploymentId，进行关联
-//        ProcessDefinition definition = processDefinitionService.getProcessDefinition(definitionId);
-//        model.setDeploymentId(definition.getDeploymentId());
-//        repositoryService.saveModel(model);
-//
+        ProcessDefinition definition = processDefinitionService.getProcessDefinition(definitionId);
+        model.setDeploymentId(definition.getDeploymentId());
+        repositoryService.saveModel(model);
 //        // 2.4 复制任务分配规则
-//        taskAssignRuleService.copyTaskAssignRules(id, definition.getId());
+        taskAssignRuleService.copyTaskAssignRules(id, definition.getId());
+        return 1;
     }
-//    private BpmForm checkFormConfig(String  metaInfoStr) {
-//        BpmModelMetaInfoRespDTO metaInfo = JsonUtils.parseObject(metaInfoStr, BpmModelMetaInfoRespDTO.class);
-//        if (metaInfo == null || metaInfo.getFormType() == null) {
-//            throw exception(MODEL_DEPLOY_FAIL_FORM_NOT_CONFIG);
-//        }
-//        // 校验表单存在
-//        if (Objects.equals(metaInfo.getFormType(), BpmModelFormTypeEnum.NORMAL.getType())) {
-//            BpmFormDO form = bpmFormService.getForm(metaInfo.getFormId());
-//            if (form == null) {
-//                throw exception(FORM_NOT_EXISTS);
-//            }
-//            return form;
-//        }
-//        return null;
-//    }
+
+    private void updateProcessDefinitionSuspended(String deploymentId){
+        if (StrUtil.isEmpty(deploymentId)) {
+            return;
+        }
+        ProcessDefinition oldDefinition = processDefinitionService.getProcessDefinitionByDeploymentId(deploymentId);
+        if (oldDefinition == null) {
+            return;
+        }
+        processDefinitionService.updateProcessDefinitionState(oldDefinition.getId(), SuspensionState.SUSPENDED.getStateCode());
+    }
+
     @Override
     public void deleteModel(String id){
-
+        // 校验流程模型存在
+        Model model = repositoryService.getModel(id);
+        if (model == null) {
+            throw new ServiceException("流程模型不存在!", HttpStatus.ERROR);
+        }
+        // 执行删除
+        repositoryService.deleteModel(id);
+        // 禁用流程定义
+        updateProcessDefinitionSuspended(model.getDeploymentId());
     }
 
     @Override
     public void updateModelState(String id, Integer state){
-
+        // 校验流程模型存在
+        Model model = repositoryService.getModel(id);
+        if (model == null) {
+            throw new ServiceException("流程模型不存在!", HttpStatus.ERROR);
+        }
+        // 校验流程定义存在
+        ProcessDefinition definition = processDefinitionService.getProcessDefinitionByDeploymentId(model.getDeploymentId());
+        if (definition == null) {
+            throw new ServiceException("流程定义不存在!", HttpStatus.ERROR);
+        }
+        // 更新状态
+        processDefinitionService.updateProcessDefinitionState(definition.getId(), state);
     }
 
     @Override
@@ -318,7 +336,7 @@ public class BpmModelServiceImpl implements IBpmModelService{
         return JSONUtil.toJsonStr(metaInfo);
     }
 
-     List<BpmModel> convertList(List<Model> list, Map<Long, BpmForm> formMap,
+    private List<BpmModel> convertList(List<Model> list, Map<Long, BpmForm> formMap,
                                                      Map<String, Deployment> deploymentMap,
                                                      Map<String, ProcessDefinition> processDefinitionMap) {
         return CollectionUtils.convertList(list, model -> {
@@ -330,7 +348,7 @@ public class BpmModelServiceImpl implements IBpmModelService{
         });
      }
 
-    BpmModel convert(Model model, BpmForm form, Deployment deployment, ProcessDefinition processDefinition) {
+   private BpmModel convert(Model model, BpmForm form, Deployment deployment, ProcessDefinition processDefinition) {
         BpmModel modelVO = new BpmModel();
 //        model 参数
         modelVO.setId(model.getId());
@@ -403,6 +421,51 @@ public class BpmModelServiceImpl implements IBpmModelService{
                 bpmModel.getDescription(), bpmModel.getFormType(), bpmModel.getFormId(),
                 bpmModel.getFormCustomCreatePath(), bpmModel.getFormCustomViewPath()));
     }
+    /**
+     * 校验流程表单已配置
+     *
+     * @param metaInfoStr 流程模型 metaInfo 字段
+     * @return 流程表单
+     */
+    private BpmForm checkFormConfig(String  metaInfoStr) {
+        BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(metaInfoStr, BpmModelMetaInfoVo.class);
+        if (metaInfo == null || metaInfo.getFormType() == null) {
+//            部署流程失败，原因：流程表单未配置，请点击【修改流程】按钮进行配置
+            throw new ServiceException("部署流程失败，原因：流程表单未配置，请点击【修改流程】按钮进行配置!", HttpStatus.ERROR);
+        }
+        // 校验表单存在
+        if(metaInfo.getFormType()==10){
+            BpmForm form = bpmFormService.selectBpmFormById(metaInfo.getFormId());
+            if (form == null) {
+//                动态表单不存在
+                throw new ServiceException("部署流程失败，原因：动态表单不存在!", HttpStatus.ERROR);
+            }
+            return form;
+        }
+        return null;
+    }
 
+    private BpmProcessDefinitionVo convertToBPDVO(Model model, BpmForm form) {
+        BpmProcessDefinitionVo bpmProcessDefinitionVo = new BpmProcessDefinitionVo();
+        bpmProcessDefinitionVo.setModelId(model.getId());
+        bpmProcessDefinitionVo.setName(model.getName());
+        bpmProcessDefinitionVo.setKey(model.getKey());
+        bpmProcessDefinitionVo.setCategory(model.getCategory());
+        BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
+        // metaInfo
+        if ( Objects.nonNull(metaInfo) ) {
+            bpmProcessDefinitionVo.setDescription( metaInfo.getDescription() );
+            bpmProcessDefinitionVo.setFormType( metaInfo.getFormType() );
+            bpmProcessDefinitionVo.setFormId( metaInfo.getFormId() );
+            bpmProcessDefinitionVo.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
+            bpmProcessDefinitionVo.setFormCustomViewPath( metaInfo.getFormCustomViewPath() );
+        }
+        // form
+        if (form != null) {
+            bpmProcessDefinitionVo.setFormConf(form.getConf());
+//            bpmProcessDefinitionVo.setFormFields(form.getFields());
+        }
+        return bpmProcessDefinitionVo;
+    }
 
 }

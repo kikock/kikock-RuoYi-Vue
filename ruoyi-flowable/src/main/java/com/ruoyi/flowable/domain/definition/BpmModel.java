@@ -88,7 +88,9 @@ public class BpmModel extends BaseEntity{
         private Integer suspensionState;
 
     }
-
-
+    /**
+     * 流程状态
+     */
+    private Integer state;
 
 }

@@ -57,7 +57,7 @@ public interface IBpmModelService{
      *
      * @param id 编号
      */
-    public void deployModel(String id);
+    public int deployModel(String id);
 
     /**
      * 删除模型

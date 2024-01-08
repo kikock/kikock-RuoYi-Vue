@@ -62,4 +62,6 @@ public interface BpmTaskAssignRuleMapper{
     public int deleteBpmTaskAssignRuleByIds(Long[] ids);
 
     public BpmTaskAssignRule selectListByModelIdAndTaskDefinitionKey(@Param("modelId") String modelId,@Param("taskDefinitionKey") String taskDefinitionKey);
+
+    public void insertBatchBpmTaskAssignRule(List<BpmTaskAssignRule> rules);
 }

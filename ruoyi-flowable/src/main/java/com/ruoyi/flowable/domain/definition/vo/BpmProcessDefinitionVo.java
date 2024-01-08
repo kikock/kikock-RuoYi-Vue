@@ -66,7 +66,6 @@ public class BpmProcessDefinitionVo {
      */
     private String formCustomViewPath;
 
-    @AssertTrue(message = "流程表单信息不全")
     public boolean isNormalFormTypeValid(){
         //TODO 如果非业务表单，则直接通过  写死 流程表单类型 10 业务表单直接跳过 20 流程自定义表单进行判断是否存在表单
         if (!Objects.equals(formType, 10)) {
@@ -75,7 +74,6 @@ public class BpmProcessDefinitionVo {
         return formId != null && StrUtil.isNotEmpty(formConf) && CollUtil.isNotEmpty(formFields);
     }
 
-    @AssertTrue(message = "业务表单信息不全")
     public boolean isNormalCustomTypeValid(){
         //TODO 如果非业务表单，则直接通过   写死 流程表单类型 10 业务表单直接跳过 20 流程自定义表单跳过
         if (!Objects.equals(formType, 20)) {
