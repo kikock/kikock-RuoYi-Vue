@@ -45,13 +45,10 @@ public class BpmProcessDefinitionController extends BaseController {
     public AjaxResult getProcessDefinitionList(BpmProcessDefinitionVo listReqVO) {
         return success(bpmDefinitionService.getProcessDefinitionList(listReqVO));
     }
-    @GetMapping ("/get-bpmn-xml")
-    @Operation(summary = "获得流程定义的 BPMN XML")
-    @Parameter(name = "id", description = "编号", required = true, example = "1024")
-//    @PreAuthorize("@ss.hasPermission('bpm:process-definition:query')")
+    @GetMapping ("/getBpmnXml")
     @Anonymous
     public AjaxResult getProcessDefinitionBpmnXML(@RequestParam("id") String id) {
         String bpmnXML = bpmDefinitionService.getProcessDefinitionBpmnXML(id);
-        return success(bpmnXML);
+        return success().put("data",bpmnXML);
     }
 }

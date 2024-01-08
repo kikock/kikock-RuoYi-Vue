@@ -2,6 +2,7 @@ package com.ruoyi.flowable.mapper.definition;
 
 
 import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
+import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
 
 import java.util.List;
 

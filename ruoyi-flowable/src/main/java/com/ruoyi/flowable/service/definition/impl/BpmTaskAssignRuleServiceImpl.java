@@ -1,13 +1,12 @@
 package com.ruoyi.flowable.service.definition.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.google.common.base.Joiner;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
-import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.exception.ServiceException;
@@ -114,7 +113,6 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
                 respVO.setTaskDefinitionKey(task.getId());
             }
             setTaskAssignRuleOptionName(respVO.getType(), respVO);
-
             respVO.setTaskDefinitionName(task.getName());
             return respVO;
         });
@@ -206,8 +204,81 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         // 执行更新
         return bpmTaskAssignRuleMapper.updateBpmTaskAssignRule(reqVO);
     }
+
+    /**
+     * 校验流程模型的任务分配规则全部都配置了
+     * 目的：如果有规则未配置，会导致流程任务找不到负责人，进而流程无法进行下去！
+     *
+     * @param id 流程模型编号
+     */
+    @Override
+    public void checkTaskAssignRuleAllConfig(String id){
+        BpmTaskAssignRule bpmTaskAssignRule = new BpmTaskAssignRule();
+        bpmTaskAssignRule.setModelId(id);
+        // 一个用户任务都没配置，所以无需配置规则
+        List<BpmTaskAssignRule> taskAssignRules = selectBpmTaskAssignRuleList(bpmTaskAssignRule);
+        if (CollUtil.isEmpty(taskAssignRules)) {
+            return;
+        }
+        // 获得规则
+        List<BpmTaskAssignRule> rules = Collections.emptyList();
+        // 校验未配置规则的任务
+        taskAssignRules.forEach(rule -> {
+            if (CollUtil.isEmpty(rule.getSelectMoreVos())) {
+                throw new ServiceException(String.format("部署流程失败，原因：用户任务(%s)未配置分配规则，请点击【修改流程】按钮进行配置!", rule.getTaskDefinitionName()), HttpStatus.ERROR);
+            }
+        });
+
+    }
+
+    @Override
+    public boolean isTaskAssignRulesEquals(String modelId, String processDefinitionId){
+        // 过滤掉流程模型不需要的规则
+        BpmTaskAssignRule bpmTaskAssignRuleModel = new BpmTaskAssignRule();
+        bpmTaskAssignRuleModel.setModelId(modelId);
+        List<BpmTaskAssignRule> modelRules = selectBpmTaskAssignRuleList(bpmTaskAssignRuleModel);
+        BpmTaskAssignRule bpmTaskAssignRuleProcessDefinition = new BpmTaskAssignRule();
+
+        bpmTaskAssignRuleProcessDefinition.setProcessDefinitionId(processDefinitionId);
+        List<BpmTaskAssignRule> processDefinitionRules = selectBpmTaskAssignRuleList(bpmTaskAssignRuleModel);
+        if (modelRules.size() != processDefinitionRules.size()) {
+            return false;
+        }
+
+        // 遍历，匹配对应的规则
+        Map<String,BpmTaskAssignRule> processInstanceRuleMap =
+                CollectionUtils.convertMap(processDefinitionRules, BpmTaskAssignRule::getTaskDefinitionKey);
+
+        for (BpmTaskAssignRule modelRule : modelRules) {
+            BpmTaskAssignRule processInstanceRule = processInstanceRuleMap.get(modelRule.getTaskDefinitionKey());
+            if (processInstanceRule == null) {
+                return false;
+            }
+            if (!ObjectUtil.equals(modelRule.getType(), processInstanceRule.getType()) || !ObjectUtil.equal(
+                    modelRule.getOptions(), processInstanceRule.getOptions())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void copyTaskAssignRules(String fromModelId, String toProcessDefinitionId){
+        BpmTaskAssignRule bpmTaskAssignRule = new BpmTaskAssignRule();
+        bpmTaskAssignRule.setModelId(fromModelId);
+        List<BpmTaskAssignRule> rules = selectBpmTaskAssignRuleList(bpmTaskAssignRule);
+        if (CollUtil.isEmpty(rules)) {
+            return;
+        }
+        rules.forEach(rule -> {
+            rule.setProcessDefinitionId(toProcessDefinitionId);
+            rule.setId(null);
+        });
+        bpmTaskAssignRuleMapper.insertBatchBpmTaskAssignRule(rules);
+    }
+
     private void setTaskAssignRuleOptionName(Integer type, BpmTaskAssignRule taskAssignRule){
-        if (StringUtils.isEmpty(taskAssignRule.getOptions())){
+        if (StringUtils.isEmpty(taskAssignRule.getOptions())) {
             return;
         }
         List<String> list = Arrays.asList(taskAssignRule.getOptions().split(","));
@@ -284,6 +355,7 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
             taskAssignRule.setOptionName(value);
         }
     }
+
     private String validTaskAssignRuleOptions(Integer type, List<Long> optionIds, String option){
         if (Objects.equals(type, BpmTaskAssignRuleTypeEnum.ROLE.getType())) {
             //校验角色id是否存在
@@ -312,6 +384,6 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
             throw new ServiceException(String.format("未知的规则类型【%s】", type), HttpStatus.ERROR);
         }
         String result = Joiner.on(",").join(optionIds);
-        return  result;
+        return result;
     }
 }

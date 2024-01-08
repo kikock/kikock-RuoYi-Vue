@@ -63,4 +63,20 @@ public interface IBpmTaskAssignRuleService{
     public int createTaskAssignRule(BpmTaskAssignRule reqVO);
 
     public int updateTaskAssignRule(BpmTaskAssignRule reqVO);
+
+
+    /**
+     * 校验流程模型的任务分配规则全部都配置了
+     * 目的：如果有规则未配置，会导致流程任务找不到负责人，进而流程无法进行下去！
+     *
+     * @param id 流程模型编号
+     */
+   public void checkTaskAssignRuleAllConfig(String id);
+
+    public boolean isTaskAssignRulesEquals(String id, String id1);
+    /**
+     * 复制任务分配规则
+     *
+     */
+    public void copyTaskAssignRules(String id, String id1);
 }

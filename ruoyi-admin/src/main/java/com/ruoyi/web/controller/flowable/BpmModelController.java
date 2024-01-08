@@ -9,11 +9,14 @@ import com.ruoyi.flowable.domain.definition.BpmForm;
 import com.ruoyi.flowable.domain.definition.BpmModel;
 import com.ruoyi.flowable.domain.definition.vo.BpmModelVo;
 import com.ruoyi.flowable.service.definition.IBpmModelService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -66,8 +69,14 @@ public class BpmModelController extends BaseController{
     public AjaxResult getInfo(@PathVariable("id") String id){
         return success(modelService.selectBpmModelById(id));
     }
-
-
+    /**
+     * 获取部署流程模型
+     */
+    @PreAuthorize("@ss.hasPermi('bpm:model:query')")
+    @PostMapping(value = "/deploy/{id}")
+    public AjaxResult deployModel(@PathVariable("id") String id){
+        return success(modelService.deployModel(id));
+    }
     /**
      * 更新工作流流程图信息
      */
@@ -77,4 +86,18 @@ public class BpmModelController extends BaseController{
     public AjaxResult updateFlowChart(@RequestBody BpmModel bpmModel){
         return modelService.updateFlowChart(bpmModel);
     }
+
+
+    @PutMapping("/update-state")
+    public AjaxResult updateModelState(@RequestBody BpmModel bpmModel) {
+        modelService.updateModelState(bpmModel.getId(), bpmModel.getState());
+        return success(true);
+    }
+
+    @DeleteMapping("/delete")
+    public AjaxResult deleteModel(@RequestParam("id") String id) {
+        modelService.deleteModel(id);
+        return success(true);
+    }
+
 }

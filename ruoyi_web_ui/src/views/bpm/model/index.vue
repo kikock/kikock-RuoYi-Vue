@@ -66,9 +66,39 @@
           :index="indexMethod">
       </el-table-column>
       <el-table-column label="流程标识" align="center" prop="key" width="200" />
-      <el-table-column label="流程名称" align="center" prop="name" width="200"/>
-      <el-table-column label="流程分类" align="center" prop="category" width="80"/>
-      <el-table-column label="流程表单" align="center" prop="formType" width="200"/>
+      <el-table-column label="流程名称" align="center" prop="name" width="200">
+        <template v-slot="scope">
+          <el-button  type="primary" link  @click="handleBpmnDetail(scope.row)">
+            <span>{{ scope.row.name }}</span>
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="流程分类" align="center" prop="category" width="100">
+      <template #default="scope">
+        <dict-tag v-if="scope.row.category" :options="bpm_model_category" :value="scope.row.category"/>
+        <el-tag v-if="!scope.row.category" type="danger" >
+          未配置
+        </el-tag>
+      </template>
+      </el-table-column>
+
+      <el-table-column label="流程表单" align="center" prop="formType" width="200">
+        <template #default="scope">
+          <el-tag v-if="scope.row.formType === 10" type="success" >
+            <el-button  type="primary" link  @click="handleFromDetail(scope.row)">
+              <span>{{scope.row.formName}}</span>
+            </el-button>
+          </el-tag>
+          <el-tag v-if="scope.row.formType === 20" type="success" >
+            <el-button  type="primary" link  @click="handleFromDetail(scope.row)">
+              <span>{{scope.row.formCustomCreatePath}}</span>
+            </el-button>
+          </el-tag>
+          <el-tag v-if="scope.row.formType!=10 && scope.row.formType!=20" type="danger" >
+            未配置
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="创建时间" align="center" prop="createTime" width="180">
         <template #default="scope">
           <span>{{ parseTime(scope.row.createTime) }}</span>
@@ -81,8 +111,9 @@
             prop="processDefinition.version"
             width="100"
         >
-          <template #default="scope">
-              流程版本
+          <template v-slot="scope">
+            <el-tag  v-if="scope.row.processDefinition">v{{ scope.row.processDefinition.version }}</el-tag>
+            <el-tag  type="warning" v-else>未部署</el-tag>
           </template>
         </el-table-column>
         <el-table-column
@@ -91,13 +122,14 @@
             prop="processDefinition.version"
             width="85"
         >
-          <template #default="scope">
-              激活状态
+          <template v-slot="scope">
+            <el-switch v-if="scope.row.processDefinition" v-model="scope.row.processDefinition.suspensionState"
+                       :active-value="1" :inactive-value="2" @change="handleChangeState(scope.row)" />
           </template>
         </el-table-column>
         <el-table-column label="部署时间" align="center" prop="deploymentTime" width="180">
-          <template #default="scope">
-               部署时间
+          <template v-slot="scope">
+            <span v-if="scope.row.processDefinition">{{ parseTime(scope.row.processDefinition.deploymentTime) }}</span>
           </template>
         </el-table-column>
       </el-table-column>
@@ -242,16 +274,37 @@
         </div>
       </template>
     </el-dialog>
+    <!-- 流程模型图的预览 -->
+    <el-dialog title="流程图" v-model="showBpmnModelOpen" width="80%" append-to-body>
+      <my-process-viewer key="designer" :value="bpmnXML" v-bind="bpmnControlForm" />
+    </el-dialog>
 
+    <!-- 表单详情的预览 -->
+    <el-dialog   v-model="showBpmFromOpen" title="表单详情" width="800">
+      <FormCreate :option="bpmFromOption" :rule="bpmFromRule"  />
+    </el-dialog>
   </div>
 </template>
 
 <script setup name="bpmForm">
 import router from "@/router";
 import {getCurrentInstance, reactive, ref} from 'vue'
-import {createModel, getModel, listModel, updateModel} from '@/api/bpm/model'
+import {
+  createModel,
+  getModel,
+  listModel,
+  updateModel,
+  deployModel,
+  updateModelState,
+  deleteModel
+} from '@/api/bpm/model'
+//导入 form-create
+import formCreate from "@form-create/element-ui";
+//获取 formCreate 组件
+const FormCreate = formCreate.$form();
 import SelectMore from '@/components/SelectMore/index.vue'
-import {addSocialApp, updateSocialApp} from '@/api/system/socialApp'
+import MyProcessViewer from '@/components/bpmnProcessDesigner/package/designer/ProcessViewer.vue'
+import {getForm} from '@/api/bpm/form'
 const {proxy} = getCurrentInstance();
 const {bpm_model_category,bpm_model_form_type
 } = proxy.useDict('bpm_model_category','bpm_model_form_type');
@@ -264,7 +317,16 @@ const total = ref(0);
 //流程弹出
 const open = ref(false);
 const title = ref("");
-
+// BPMN 数据
+const showBpmnModelOpen =ref(false);
+const bpmnXML =ref("");
+const bpmnControlForm =ref({
+  prefix: "flowable"
+});
+// 表单详情 数据
+const showBpmFromOpen =ref(false);
+const bpmFromOption =ref({});
+const bpmFromRule =ref([]);
 
 const data = reactive({
   form: {},
@@ -364,6 +426,25 @@ function handleAdd() {
   open.value = true;
   title.value = "新增流程";
 }
+
+/** 流程图的详情按钮操作 */
+function handleBpmnDetail(row) {
+  getModel(row.id).then(response => {
+    bpmnXML.value = response.data.bpmnXml
+    // 弹窗打开
+    showBpmnModelOpen.value = true
+  })
+}
+/** 详情按钮*/
+function handleFromDetail(row) {
+  getForm(row.formId).then(respose=>{
+    bpmFromOption.value = JSON.parse(respose.data.conf)
+    bpmFromRule.value = JSON.parse(respose.data.fields);
+    // 弹窗打开
+    showBpmFromOpen.value = true
+  })
+}
+
 /** 修改按钮操作 */
 function handleUpdate(row) {
   reset();
@@ -377,7 +458,9 @@ function handleUpdate(row) {
   getModel(modelId).then(response => {
     form.value = response.data;
     open.value = true;
-    form.value.selectMoreName=`【${response.data.formId}】${response.data.formName}`
+    if (response.data.formId) {
+      form.value.selectMoreName = `【${response.data.formId}】${response.data.formName}`
+    }
     fromReadOnly.value=true
     title.value = "修改流程";
     console.log(form.value);
@@ -388,7 +471,22 @@ function openImportForm() {
   console.log("导入流程按钮");
 
 }
+/** 更新状态操作 */
+function handleChangeState(row) {
+  const id = row.id;
+  let state = row.processDefinition.suspensionState;
+  let statusState = state === 1 ? '激活' : '挂起';
 
+  proxy.$modal.confirm('是否确认' + statusState + '流程名字为"' + row.name + '"的数据？').then(function () {
+    return updateModelState(id, state);
+  }).then(() => {
+    getList();
+    proxy.$modal.msgSuccess(statusState + "成功");
+  }).catch(() => {
+    // 取消后，进行恢复按钮
+    row.processDefinition.suspensionState = (state === 1 ? 2 : 1);
+  });
+}
 /** 设计流程操作 */
 function handleDesign(row) {
   console.log("弹出设计流程页面");
@@ -402,28 +500,36 @@ function handleAssignRule(row) {
 /** 发布流程操作 */
 function handleDeploy(row) {
   console.log("发布流程操作操作");
+  proxy.$modal.confirm('是否发布该流程项？').then(function() {
+    deployModel(row.id).then(response => {
+      getList();
+      proxy.$modal.msgSuccess("部署成功");
+    })
+  }).catch(() => {});
 }
 /** 流程定义操作操作 */
-function handleDefinitionList() {
-  console.log("流程定义操作");
+function handleDefinitionList(row) {
+  console.log("弹出流程定义tab页面");
+  router.push({path: "/flowable/bpmModel/definition", query: {key: row.key}});
 }
 /** 删除按钮操作 */
 function handleDelete(row) {
-  const _ids = row.id
   proxy.$modal.confirm('是否确认删除工作流自定义表单数据？').then(function () {
-    // return delForm(_ids);
+    deleteModel(row.id).then(response => {
+      getList();
+      proxy.$modal.msgSuccess("删除成功");
+    })
   }).then(() => {
-    getList();
-    proxy.$modal.msgSuccess("删除成功");
+
   }).catch(() => {
   });
 }
 /** 表单参数设置 */
 function setFlowFormId(row) {
+  console.log("设置表单",row);
   form.value.formId=""
   form.value.formName=""
   if(row){
-    console.log("设置表单",row.name);
     form.value.formId=row.id
     form.value.formName=row.name
   }

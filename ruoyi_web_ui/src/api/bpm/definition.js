@@ -18,7 +18,7 @@ export function getProcessDefinitionList(query) {
 
 export function getProcessDefinitionBpmnXML(id) {
   return request({
-    url: '/bpm/process-definition/get-bpmn-xml?id=' + id,
+    url: '/bpm/process-definition/getBpmnXml?id=' + id,
     method: 'get'
   })
 }

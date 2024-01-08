@@ -63,7 +63,7 @@ export function deleteModel(id) {
 
 export function deployModel(id) {
   return request({
-    url: '/bpm/model/deploy?id=' + id,
+    url: '/bpm/model/deploy/' + id,
     method: 'POST'
   })
 }

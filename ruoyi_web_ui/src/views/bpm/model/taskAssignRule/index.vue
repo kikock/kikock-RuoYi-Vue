@@ -1,6 +1,15 @@
 <template>
   <div class="app-container">
-
+    <el-row :gutter="10" class="mb8">
+      <el-col :span="1.5">
+        <XButton
+            pre-icon="back2"
+            title="返回"
+            @click="backPage"
+            type="primary"
+        />
+      </el-col>
+    </el-row>
     <el-table v-loading="loading" :data="formList">
       <el-table-column
           type="index"
@@ -155,7 +164,7 @@ import {getCurrentInstance, reactive, ref} from 'vue'
 import {createTaskAssignRule, getTaskAssignRuleList,updateTaskAssignRule} from '@/api/bpm/taskAssignRule'
 import {deptTreeSelect} from "@/api/system/user";
 import SelectMore from '@/components/SelectMore/index.vue'
-
+import {XButton} from '@/components/XButton'
 const {query} = useRoute() // 查询参数
 const loading = ref(false) // 列表的加载中
 const {proxy} = getCurrentInstance();
@@ -215,6 +224,12 @@ function reset() {
     options: [],
   };
   proxy.resetForm("taskAssignRuleFormRef");
+}
+
+/** 返回按钮 */
+const backPage = () => {
+  const obj = {path: "/flowable/bpm/model"};
+  proxy.$tab.closeOpenPage(obj);
 }
 
 /** 添加/修改操作 */

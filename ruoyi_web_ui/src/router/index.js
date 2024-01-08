@@ -201,7 +201,17 @@ export const dynamicRoutes = [
           activeMenu: '/bpm/manager/model'
         }
       },
-
+      {
+        path: 'bpmModel/definition',
+        component: () => import('@/views/bpm/model/definition/index.vue'),
+        name: 'BpmModelDefinition',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '流程定义',
+          activeMenu: '/bpm/manager/model'
+        }
+      },
     ]
   },
   {

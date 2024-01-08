@@ -120,7 +120,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
       emit('update:modelValue', val)
       let row =null;
       list.value.forEach(item => {
-        if (item.name === val) {
+        if (item.id === val) {
           row =item;
         }
       })
