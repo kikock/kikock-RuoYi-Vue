@@ -47,8 +47,21 @@ public class BpmTaskReqVO extends PageDomain {
     private Date starTime;   @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     @Excel(name = "结束时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm:ss")
     private Date endTime;
-    @Excel(name =  "变量实例")
+
+    /**
+     * 流程定义的标识
+     */
+    private String processDefinitionKey;
+    /**
+     * 变量实例
+     */
     private Map<String, Object> variables;
-    @Excel(name =  "业务的唯一标识")
+
+    /**
+     * 业务的唯一标识
+     *
+     * 例如说，请假申请的编号。通过它，可以查询到对应的实例
+     */
     private String businessKey;
+
 }

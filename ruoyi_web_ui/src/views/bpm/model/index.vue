@@ -44,16 +44,16 @@
         >新建流程
         </el-button>
       </el-col>
-      <el-col :span="1.5">
-        <el-button
-            type="danger"
-            plain
-            icon="upload"
-            @click="openImportForm"
-            v-hasPermi="['bpm:model:import']"
-        >导入流程
-        </el-button>
-      </el-col>
+<!--      <el-col :span="1.5">-->
+<!--        <el-button-->
+<!--            type="danger"-->
+<!--            plain-->
+<!--            icon="upload"-->
+<!--            @click="openImportForm"-->
+<!--            v-hasPermi="['bpm:model:import']"-->
+<!--        >导入流程-->
+<!--        </el-button>-->
+<!--      </el-col>-->
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
@@ -239,7 +239,7 @@
                   />
                   <el-tooltip
                     class="item"
-                    content="自定义表单的提交路径，使用 Vue 的路由地址，例如说：bpm/oa/leave/create"
+                    content="自定义表单的提交路径，使用 Vue 的路由地址，例如说：/bpm/oa/leave/create"
                     effect="light"
                     placement="top"
                   >
@@ -258,7 +258,7 @@
                   />
                   <el-tooltip
                     class="item"
-                    content="自定义表单的查看路径，使用 Vue 的路由地址，例如说：bpm/oa/leave/view"
+                    content="自定义表单的查看路径，使用 Vue 的路由地址，例如说：/bpm/oa/leave/view"
                     effect="light"
                     placement="top"
                   >
@@ -437,12 +437,18 @@ function handleBpmnDetail(row) {
 }
 /** 详情按钮*/
 function handleFromDetail(row) {
-  getForm(row.formId).then(respose=>{
-    bpmFromOption.value = JSON.parse(respose.data.conf)
-    bpmFromRule.value = JSON.parse(respose.data.fields);
-    // 弹窗打开
-    showBpmFromOpen.value = true
-  })
+  // 流程表单
+  if (row.formId) {
+    getForm(row.formId).then(respose=>{
+      bpmFromOption.value = JSON.parse(respose.data.conf)
+      bpmFromRule.value = JSON.parse(respose.data.fields);
+      // 弹窗打开
+      showBpmFromOpen.value = true
+    })
+    // 业务表单
+  } else if (row.formCustomCreatePath) {
+    router.push({path: row.formCustomCreatePath});
+  }
 }
 
 /** 修改按钮操作 */
@@ -553,6 +559,17 @@ function submitForm() {
           proxy.$modal.msgSuccess("新增成功");
           open.value = false;
           getList();
+          proxy.$alert('<strong>新建模型成功！</strong>后续需要执行如下 4 个步骤：' +
+              '<div>1. 点击【修改流程】按钮，配置流程的分类、表单信息</div>' +
+              '<div>2. 点击【设计流程】按钮，绘制流程图</div>' +
+              '<div>3. 点击【分配规则】按钮，设置每个用户任务的审批人</div>' +
+              '<div>4. 点击【发布流程】按钮，完成流程的最终发布</div>' +
+              '注意，每次流程修改后，都需要点击【发布流程】按钮，才能正式生效！！！',
+              '重要提示', {
+                dangerouslyUseHTMLString: true,
+                type: 'success'
+              });
+
         });
       }
     }

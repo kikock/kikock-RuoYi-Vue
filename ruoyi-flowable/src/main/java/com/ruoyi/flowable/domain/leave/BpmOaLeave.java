@@ -3,6 +3,7 @@ package com.ruoyi.flowable.domain.leave;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -14,6 +15,7 @@ import java.util.Date;
  * @author kikock
  * @date 2023-12-22
  */
+@Data
 public class BpmOaLeave extends BaseEntity{
     private static final long serialVersionUID = 1L;
 
@@ -21,7 +23,10 @@ public class BpmOaLeave extends BaseEntity{
      * 请假表单主键
      */
     private Long id;
-
+    /**
+     * 流程定义key 请假默认 leave
+     */
+    private String process_key="leave";
     /**
      * 申请人的用户编号
      */
@@ -43,15 +48,13 @@ public class BpmOaLeave extends BaseEntity{
     /**
      * 开始时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Excel(name = "开始时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm:ss")
+    @Excel(name = "开始时间", width = 40, dateFormat = "yyyy-MM-dd hh:mm:ss")
     private Date startTime;
 
     /**
      * 结束时间
      */
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Excel(name = "结束时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm:ss")
+    @Excel(name = "结束时间", width = 40, dateFormat = "yyyy-MM-dd hh:mm:ss")
     private Date endTime;
 
     /**
@@ -77,104 +80,4 @@ public class BpmOaLeave extends BaseEntity{
      */
     private String delFlag;
 
-    public void setId(Long id){
-        this.id = id;
-    }
-
-    public Long getId(){
-        return id;
-    }
-
-    public void setUserId(Long userId){
-        this.userId = userId;
-    }
-
-    public Long getUserId(){
-        return userId;
-    }
-
-    public void setType(Integer type){
-        this.type = type;
-    }
-
-    public Integer getType(){
-        return type;
-    }
-
-    public void setReason(String reason){
-        this.reason = reason;
-    }
-
-    public String getReason(){
-        return reason;
-    }
-
-    public void setStartTime(Date startTime){
-        this.startTime = startTime;
-    }
-
-    public Date getStartTime(){
-        return startTime;
-    }
-
-    public void setEndTime(Date endTime){
-        this.endTime = endTime;
-    }
-
-    public Date getEndTime(){
-        return endTime;
-    }
-
-    public void setDay(Integer day){
-        this.day = day;
-    }
-
-    public Integer getDay(){
-        return day;
-    }
-
-    public void setResult(Integer result){
-        this.result = result;
-    }
-
-    public Integer getResult(){
-        return result;
-    }
-
-    public void setProcessInstanceId(String processInstanceId){
-        this.processInstanceId = processInstanceId;
-    }
-
-    public String getProcessInstanceId(){
-        return processInstanceId;
-    }
-
-    public void setDelFlag(String delFlag){
-        this.delFlag = delFlag;
-    }
-
-    public String getDelFlag(){
-        return delFlag;
-    }
-
-    @Override
-    public String toString(){
-        return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
-                .append("id", getId())
-                .append("userId", getUserId())
-                .append("type", getType())
-                .append("reason", getReason())
-                .append("startTime", getStartTime())
-                .append("endTime", getEndTime())
-                .append("day", getDay())
-                .append("result", getResult())
-                .append("processInstanceId", getProcessInstanceId())
-                .append("delFlag", getDelFlag())
-                .append("createBy", getCreateBy())
-                .append("createTime", getCreateTime())
-                .append("updateBy", getUpdateBy())
-                .append("updateTime", getUpdateTime())
-                .append("remark", getRemark())
-                .toString();
-    }
 }

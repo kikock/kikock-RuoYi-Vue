@@ -156,16 +156,16 @@
         <el-form-item label="开始时间" prop="startTime">
           <el-date-picker clearable
             v-model="form.startTime"
-            type="date"
-            value-format="YYYY-MM-DD"
+            type="datetime"
+            format="YYYY-MM-DD HH:mm:ss"
             placeholder="请选择开始时间">
           </el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间" prop="endTime">
           <el-date-picker clearable
             v-model="form.endTime"
-            type="date"
-            value-format="YYYY-MM-DD"
+            type="datetime"
+            format="YYYY-MM-DD HH:mm:ss"
             placeholder="请选择结束时间">
           </el-date-picker>
         </el-form-item>
