@@ -40,13 +40,13 @@ const activityList = ref([]) // 任务列表
 // })
 
 /** 初始化 */
-onMounted(async () => {
-  if (props.id) {
-    activityList.value = await ActivityApi.getActivityList({
-      processInstanceId: props.id
-    })
-  }
-})
+// onMounted(async () => {
+//   if (props.id) {
+//     activityList.value = await ActivityApi.getActivityList({
+//       processInstanceId: props.id
+//     })
+//   }
+// })
 </script>
 <style>
 .box-card {

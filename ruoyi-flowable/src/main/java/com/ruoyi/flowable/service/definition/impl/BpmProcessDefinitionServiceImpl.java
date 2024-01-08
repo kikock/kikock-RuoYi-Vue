@@ -85,7 +85,6 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
         Set<String> deploymentIds =new HashSet<>();
 
         processDefinitions.forEach(definition -> addIfNotNull(deploymentIds, definition.getDeploymentId()));
-
         // 获得 BpmProcessDefinitionDO Map
         Map<String, Deployment> deploymentMap = getDeploymentMap(deploymentIds);
         List<String> processDefinitionIds = convertList(processDefinitions, ProcessDefinition::getId);
@@ -125,16 +124,27 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
         if (CollUtil.isEmpty(processDefinitions)) {
             return Collections.emptyList();
         }
+        // 获得 Deployment Map
+        Set<String> deploymentIds =new HashSet<>();
+
+        processDefinitions.forEach(definition -> addIfNotNull(deploymentIds, definition.getDeploymentId()));
         // 获得 BpmProcessDefinitionDO Map
-        List<BpmProcessDefinitionExt> processDefinitionDOs = processDefinitionMapper.selectListByProcessDefinitionIds(
-                convertList(processDefinitions, ProcessDefinition::getId));
-        Map<String,BpmProcessDefinitionExt> processDefinitionDOMap = convertMap(processDefinitionDOs,
+        Map<String, Deployment> deploymentMap = getDeploymentMap(deploymentIds);
+        List<String> processDefinitionIds = convertList(processDefinitions, ProcessDefinition::getId);
+        List<BpmProcessDefinitionExt> bpmProcessDefinitionExts =new ArrayList<>();
+        if (CollUtil.isNotEmpty(processDefinitionIds) && processDefinitionIds.size()>0){
+            bpmProcessDefinitionExts = processDefinitionMapper.selectListByProcessDefinitionIds(
+                    processDefinitionIds);
+
+        }
+        Map<String, BpmProcessDefinitionExt> processDefinitionDOMap = convertMap(bpmProcessDefinitionExts,
                 BpmProcessDefinitionExt::getProcessDefinitionId);
-        // 执行查询，并返回
-        List<BpmProcessDefinitionExt> list = new ArrayList<>();
-        processDefinitionDOMap.values().forEach(list::add);
-        System.out.println(list);
-        return Collections.emptyList();
+        // 获得 Form Map
+        List<Long> formIdsList = convertList(bpmProcessDefinitionExts, BpmProcessDefinitionExt::getFormId);
+        // 获得 Form Map
+        Map<Long, BpmForm> formMap = formService.getFormMap(formIdsList);
+        return  convertBpmProcessDefinitionVoList(processDefinitions, deploymentMap,
+                processDefinitionDOMap,formMap);
     }
 
     @Override

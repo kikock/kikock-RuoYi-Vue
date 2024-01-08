@@ -2,8 +2,10 @@ package com.ruoyi.flowable.service.task.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
 import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
@@ -93,7 +95,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     @Transactional(rollbackFor = Exception.class)
     public String createProcessInstance(Long userId, BpmTaskReqVO createReqVO) {
         // 获得流程定义
-        ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionId());
+        ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionKey());
         // 发起流程
         return createProcessInstance0(userId, definition, createReqVO.getVariables(), null);
     }
@@ -261,7 +263,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
 
     @Override
     public ProcessInstance getProcessInstance(String id) {
-        return null;
+        return runtimeService.createProcessInstanceQuery().processInstanceId(id).singleResult();
     }
 
     @Override
@@ -308,14 +310,11 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     private String createProcessInstance0(Long userId, ProcessDefinition definition, Map<String, Object> variables, String businessKey) {
         // 校验流程定义
         if (definition == null) {
-//            throw exception(PROCESS_DEFINITION_NOT_EXISTS);
-            return "流程定义不存在";
+            throw new ServiceException("流程定义不存在!", HttpStatus.ERROR) ;
         }
         if (definition.isSuspended()) {
-//            throw exception(PROCESS_DEFINITION_IS_SUSPENDED);
-            return "流程定义处于挂起状态";
+            throw new ServiceException("流程定义处于挂起状态!", HttpStatus.ERROR) ;
         }
-
         // 创建流程实例
         ProcessInstance instance = runtimeService.createProcessInstanceBuilder()
                 .processDefinitionId(definition.getId())
@@ -325,7 +324,6 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
                 .start();
         // 设置流程名字
         runtimeService.setProcessInstanceName(instance.getId(), definition.getName());
-
         // 补全流程实例的拓展表
         BpmProcessInstanceExt bpmProcessInstanceExt = new BpmProcessInstanceExt();
         bpmProcessInstanceExt.setProcessInstanceId(instance.getId());

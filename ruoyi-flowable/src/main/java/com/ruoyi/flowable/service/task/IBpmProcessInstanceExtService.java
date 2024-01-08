@@ -1,6 +1,5 @@
 package com.ruoyi.flowable.service.task;
 
-import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.task.BpmProcessInstanceExt;
 import org.flowable.engine.repository.Deployment;
 
