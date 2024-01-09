@@ -6,6 +6,7 @@
     <resultMap type="BpmProcessInstanceExt" id="BpmProcessInstanceExtResult">
         <result property="id" column="id"/>
         <result property="startUserId" column="start_user_id"/>
+        <result property="businessKey" column="business_key"/>
         <result property="name" column="name"/>
         <result property="processInstanceId" column="process_instance_id"/>
         <result property="processDefinitionId" column="process_definition_id"/>
@@ -25,6 +26,7 @@
     <sql id="selectBpmProcessInstanceExtVo">
         select id,
                start_user_id,
+               business_key,
                name,
                process_instance_id,
                process_definition_id,
@@ -89,7 +91,10 @@
         <include refid="selectBpmProcessInstanceExtVo"/>
         where id = #{id}
     </select>
-
+    <select id="selectBpmProcessInstanceExtByProcessDefinitionId" parameterType="String" resultMap="BpmProcessInstanceExtResult">
+        <include refid="selectBpmProcessInstanceExtVo"/>
+        where process_instance_id = #{processDefinitionId}
+    </select>
     <select id="selectPage"  resultMap="BpmProcessInstanceExtResult">
         <include refid="selectBpmProcessInstanceExtVo"/>
         <where>
@@ -124,6 +129,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="startUserId != null">
                 start_user_id,
+            </if>
+            <if test="businessKey != null">
+                 business_key,
             </if>
             <if test="name != null">
                 name,
@@ -171,6 +179,9 @@
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="startUserId != null">
                 #{startUserId},
+            </if>
+            <if test="businessKey != null">
+               #{businessKey},
             </if>
             <if test="name != null">
                 #{name},
@@ -222,6 +233,9 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="startUserId != null">
                 start_user_id = #{startUserId},
+            </if>
+            <if test="businessKey != null">
+                business_key =#{businessKey}
             </if>
             <if test="name != null">
                 name = #{name},

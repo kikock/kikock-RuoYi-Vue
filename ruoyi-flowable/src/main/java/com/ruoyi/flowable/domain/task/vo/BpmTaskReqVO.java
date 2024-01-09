@@ -15,37 +15,51 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class BpmTaskReqVO extends PageDomain {
-    @Excel(name = "流程实例编号")
+
+
+    /**
+     * 流程实例编号
+     */
     private String id;
-
-    @Excel(name = "取消原因")
+    /**
+     * 取消原因
+     */
     private String reason;
-
-    @Excel(name = "流程名称")
+    /**
+     * 流程名称
+     */
     private String name;
-
-    @Excel(name = "用户id")
+    /**
+     * 用户id
+     */
     private Long userId;
-
-    @Excel(name = "流程定义的编号")
+    /**
+     * 流程定义的编号
+     */
     private String processDefinitionId;
-
-    @Excel(name =  "流程实例的状态-参见 bpm_process_instance_status")
+    /**
+     * 流程实例的状态
+     */
     private Integer status;
-
-    @Excel(name =  "流程实例的结果-参见 bpm_process_instance_result" )
+    /**
+     * 流程实例的结果
+     */
     private Integer result;
-
-    @Excel(name =  "流程分类-参见 bpm_model_category 数据字典" )
+    /**
+     * 流程分类
+     */
     private String category;
-
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Excel(name = "创建时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm:ss")
-    private Date[] createTime;
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Excel(name = "开始时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm:ss")
+    /**
+     * 创建时间
+     */
+    private Date createTime;
+    /**
+     * 开始时间
+     */
     private Date starTime;   @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Excel(name = "结束时间", width = 30, dateFormat = "yyyy-MM-dd hh:mm:ss")
+    /**
+     * 结束时间
+     */
     private Date endTime;
 
     /**

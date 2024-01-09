@@ -4,6 +4,7 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.flowable.domain.task.BpmProcessInstanceExt;
 import com.ruoyi.flowable.mapper.task.BpmProcessInstanceExtMapper;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceExtService;
+import jdk.nashorn.internal.ir.annotations.Reference;
 import org.flowable.engine.repository.Deployment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,7 +21,7 @@ import java.util.Set;
  */
 @Service
 public class BpmProcessInstanceExtServiceImpl implements IBpmProcessInstanceExtService{
-    @Autowired
+    @Reference
     private BpmProcessInstanceExtMapper bpmProcessInstanceExtMapper;
 
     /**

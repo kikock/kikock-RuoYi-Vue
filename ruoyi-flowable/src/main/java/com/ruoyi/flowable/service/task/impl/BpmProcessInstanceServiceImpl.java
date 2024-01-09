@@ -60,16 +60,12 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     private ISysDeptService deptService;
     @Override
     public List<?> getMyProcessInstancePage(BpmTaskReqVO pageReqVO) {
-        if (pageReqVO.getCreateTime() != null) {
-            pageReqVO.setStarTime(pageReqVO.getCreateTime()[0]);
-            pageReqVO.setEndTime(pageReqVO.getCreateTime()[1]);
-        }
         // 通过 BpmProcessInstanceExtDO 表，先查询到对应的分页
         List<BpmProcessInstanceExt> list = processInstanceExtMapper.selectPage(pageReqVO);
         if (CollUtil.isEmpty(list)) {
             return new ArrayList<>();
         }
-        List<String> processInstanceIds = list.stream().map(a -> a.getProcessDefinitionId()).collect(Collectors.toList());
+        List<String> processInstanceIds = list.stream().map(a -> a.getProcessInstanceId()).collect(Collectors.toList());
         // 获得流程 Task list
         List<Task> tasks = taskService.createTaskQuery().processInstanceIdIn(processInstanceIds).list();
         // 转换返回map
@@ -93,13 +89,20 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String createProcessInstance(Long userId, BpmTaskReqVO createReqVO) {
+    public String createProcessInstancebyProcessDefinitionId(Long userId, BpmTaskReqVO createReqVO) {
         // 获得流程定义
-        ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionKey());
+        ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionId());
         // 发起流程
         return createProcessInstance0(userId, definition, createReqVO.getVariables(), null);
     }
-
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public String createProcessInstanceByProcessDefinitionKey(Long userId, BpmTaskReqVO createReqVO) {
+        // 获得流程定义
+        ProcessDefinition definition = processDefinitionService.getActiveProcessDefinition(createReqVO.getProcessDefinitionKey());
+        // 发起流程
+        return createProcessInstance0(userId, definition, createReqVO.getVariables(), createReqVO.getBusinessKey());
+    }
     @Override
     public BpmProcessInstanceRespVO getProcessInstanceVO(String id) {
         // 获得流程实例
@@ -107,14 +110,14 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         if (processInstance == null) {
             return null;
         }
-        BpmProcessInstanceExt processInstanceExt = processInstanceExtMapper.selectBpmProcessInstanceExtById(Long.valueOf(id));
+        BpmProcessInstanceExt processInstanceExt = processInstanceExtMapper.selectBpmProcessInstanceExtByProcessDefinitionId(id);
         Assert.notNull(processInstanceExt, "流程实例拓展({}) 不存在", id);
 
         // 获得流程定义
         ProcessDefinition processDefinition = processDefinitionService
                 .getProcessDefinition(processInstance.getProcessDefinitionId());
         Assert.notNull(processDefinition, "流程定义({}) 不存在", processInstance.getProcessDefinitionId());
-        BpmProcessDefinitionVo processDefinitionExt = processDefinitionService.getProcessDefinitionExt(
+        BpmProcessDefinitionExt processDefinitionExt = processDefinitionService.getProcessDefinitionExt(
                 processInstance.getProcessDefinitionId());
         Assert.notNull(processDefinitionExt, "流程定义拓展({}) 不存在", id);
         String bpmnXml = processDefinitionService.getProcessDefinitionBpmnXML(processInstance.getProcessDefinitionId());
@@ -125,7 +128,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         if (startUser != null) {
             dept = deptService.selectDeptById(startUser.getDeptId());
         }
-        // 拼接结果
+        // 拼接返回结果
         return convert0(processInstance, processInstanceExt,processDefinition,processDefinitionExt,bpmnXml,startUser,dept);
 
     }
@@ -150,13 +153,13 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     }
 
     public BpmProcessInstanceRespVO convert0(HistoricProcessInstance processInstance, BpmProcessInstanceExt processInstanceExt,
-                                             ProcessDefinition processDefinition, BpmProcessDefinitionVo processDefinitionExt,
+                                             ProcessDefinition processDefinition, BpmProcessDefinitionExt processDefinitionExt,
                                              String bpmnXml, SysUser startUser, SysDept dept) {
         BpmProcessInstanceRespVO respVO = convert(processInstance);
         copyTo(processInstanceExt, respVO);
         // definition
         respVO.setProcessDefinition(convert1(processDefinition));
-        copyTo(processDefinitionExt, respVO.getProcessDefinition());
+//        copyTo(processDefinitionExt, respVO.getProcessDefinition());
         respVO.getProcessDefinition().setBpmnXml(bpmnXml);
         // user
         if (startUser != null) {
@@ -326,9 +329,18 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         runtimeService.setProcessInstanceName(instance.getId(), definition.getName());
         // 补全流程实例的拓展表
         BpmProcessInstanceExt bpmProcessInstanceExt = new BpmProcessInstanceExt();
+        bpmProcessInstanceExt.setStartUserId(userId);
+        bpmProcessInstanceExt.setCategory(definition.getCategory());
+        bpmProcessInstanceExt.setBusinessKey(businessKey);
+        bpmProcessInstanceExt.setProcessDefinitionId(definition.getId());
+        bpmProcessInstanceExt.setName(definition.getName());
         bpmProcessInstanceExt.setProcessInstanceId(instance.getId());
         bpmProcessInstanceExt.setFormVariables(variables.toString());
-        processInstanceExtMapper.updateBpmProcessInstanceExt(bpmProcessInstanceExt);
+//        1 处理中 2 通过 3 不通过 4 已取消
+        bpmProcessInstanceExt.setResult(1);
+//        1 进行 2已完成
+        bpmProcessInstanceExt.setStatus(1);
+        processInstanceExtMapper.insertBpmProcessInstanceExt(bpmProcessInstanceExt);
         return instance.getId();
     }
 

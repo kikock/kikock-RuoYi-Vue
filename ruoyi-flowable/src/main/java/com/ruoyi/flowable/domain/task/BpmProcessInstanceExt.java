@@ -1,13 +1,9 @@
 package com.ruoyi.flowable.domain.task;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
 
 import java.util.Date;
 
@@ -37,7 +33,10 @@ public class BpmProcessInstanceExt extends BaseEntity{
      * 流程实例的名字
      */
     private String name;
-
+    /**
+     * 流程实例id
+     */
+    private String businessKey;
     /**
      * 流程实例的编号
      */

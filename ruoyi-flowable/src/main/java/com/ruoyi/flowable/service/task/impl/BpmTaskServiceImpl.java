@@ -57,12 +57,6 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         if (StrUtil.isNotBlank(pageVO.getName())) {
             taskQuery.taskNameLike("%" + pageVO.getName() + "%");
         }
-        if (ArrayUtil.get(pageVO.getCreateTime(), 0) != null) {
-            taskQuery.taskCreatedAfter(pageVO.getCreateTime()[0]);
-        }
-        if (ArrayUtil.get(pageVO.getCreateTime(), 1) != null) {
-            taskQuery.taskCreatedBefore(pageVO.getCreateTime()[1]);
-        }
         // 执行查询
         List<Task> tasks = taskQuery.listPage((pageVO.getPageNum()-1)*pageVO.getPageSize(), pageVO.getPageSize());
         if (CollUtil.isEmpty(tasks)) {
@@ -122,12 +116,6 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
                 .orderByHistoricTaskInstanceEndTime().desc(); // 审批时间倒序
         if (StrUtil.isNotBlank(pageVO.getName())) {
             taskQuery.taskNameLike("%" + pageVO.getName() + "%");
-        }
-        if (ArrayUtil.get(pageVO.getCreateTime(), 0) != null) {
-            taskQuery.taskCreatedAfter(pageVO.getCreateTime()[0]);
-        }
-        if (ArrayUtil.get(pageVO.getCreateTime(), 1) != null) {
-            taskQuery.taskCreatedBefore(pageVO.getCreateTime()[1]);
         }
         // 执行查询
         List<HistoricTaskInstance> tasks = taskQuery.listPage((pageVO.getPageNum()-1)*pageVO.getPageSize(), pageVO.getPageSize());

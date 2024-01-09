@@ -3,6 +3,7 @@ package com.ruoyi.flowable.mapper.definition;
 
 import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
 import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -76,5 +77,5 @@ public interface BpmProcessDefinitionExtMapper{
     public  List<BpmProcessDefinitionExt> selectListByProcessDefinitionIds(List<String> ids);
 
 
-
+    public BpmProcessDefinitionExt selectByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
 }
