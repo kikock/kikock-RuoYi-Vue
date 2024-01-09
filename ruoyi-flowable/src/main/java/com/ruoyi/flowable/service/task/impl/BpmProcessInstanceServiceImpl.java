@@ -6,6 +6,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.ObjectUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
 import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
@@ -128,8 +129,9 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         if (startUser != null) {
             dept = deptService.selectDeptById(startUser.getDeptId());
         }
-        // 拼接返回结果
-        return convert0(processInstance, processInstanceExt,processDefinition,processDefinitionExt,bpmnXml,startUser,dept);
+        // 拼接返回结果   processInstance 流程定义 processInstanceExt 流程定义扩展 processDefinition 实例信息 processDefinitionExt 实例扩展信息
+        //          bpmnXml 流程 xml数据
+        return convertToVo(processInstance, processInstanceExt,processDefinition,processDefinitionExt,bpmnXml,startUser,dept);
 
     }
 
@@ -152,105 +154,62 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         runtimeService.deleteProcessInstance(cancelReqVO.getId(), BpmProcessInstanceDeleteReasonEnum.CANCEL_TASK.format(cancelReqVO.getReason()));
     }
 
-    public BpmProcessInstanceRespVO convert0(HistoricProcessInstance processInstance, BpmProcessInstanceExt processInstanceExt,
+    public BpmProcessInstanceRespVO convertToVo(HistoricProcessInstance processInstance, BpmProcessInstanceExt processInstanceExt,
                                              ProcessDefinition processDefinition, BpmProcessDefinitionExt processDefinitionExt,
                                              String bpmnXml, SysUser startUser, SysDept dept) {
-        BpmProcessInstanceRespVO respVO = convert(processInstance);
-        copyTo(processInstanceExt, respVO);
-        // definition
-        respVO.setProcessDefinition(convert1(processDefinition));
-//        copyTo(processDefinitionExt, respVO.getProcessDefinition());
-        respVO.getProcessDefinition().setBpmnXml(bpmnXml);
-        // user
-        if (startUser != null) {
-            respVO.setStartUser(convert2(startUser));
-            if (dept != null) {
-                respVO.getStartUser().setDeptName(dept.getDeptName());
+        BpmProcessInstanceRespVO processInstanceRespVO = new BpmProcessInstanceRespVO();
+//        processInstance 流程定义设置  processDefinitionExt 实例扩展信息
+        //          bpmnXml 流程 xml数据
+        if ( Objects.nonNull(processInstance)) {
+            processInstanceRespVO.setId( processInstance.getId() );
+            processInstanceRespVO.setName( processInstance.getName() );
+            processInstanceRespVO.setEndTime( processInstance.getEndTime());
+            processInstanceRespVO.setBusinessKey( processInstance.getBusinessKey() );
+        }
+//        processInstanceExt 流程定义扩展设置
+        if ( Objects.nonNull(processInstanceExt)) {
+            processInstanceRespVO.setName(processInstanceExt.getName());
+            processInstanceRespVO.setCategory(processInstanceExt.getCategory());
+            processInstanceRespVO.setStatus(processInstanceExt.getStatus());
+            processInstanceRespVO.setResult(processInstanceExt.getResult());
+            processInstanceRespVO.setCreateTime(processInstanceExt.getCreateTime());
+            processInstanceRespVO.setEndTime(processInstanceExt.getEndTime());
+            if (processInstanceRespVO.getFormVariables() != null) {
+                String formVariables = processInstanceExt.getFormVariables();
+                if (formVariables != null) {
+                    processInstanceRespVO.setFormVariables(formVariables);
+                } else {
+                    processInstanceRespVO.setFormVariables(null);
+                }
+            } else {
+                String map = processInstanceExt.getFormVariables();
+                if (map != null) {
+                    processInstanceRespVO.setFormVariables(map);
+                }
             }
         }
-        return respVO;
+
+//        processDefinition 实例信息设置
+
+        BpmProcessInstanceRespVO.ProcessDefinition processDefinitionVo = new BpmProcessInstanceRespVO.ProcessDefinition();
+        if(Objects.nonNull(processDefinition)){
+            processDefinitionVo.setId(processDefinition.getId());
+            processDefinitionVo.setBpmnXml(bpmnXml);
+        }
+        processInstanceRespVO.setProcessDefinition(processDefinitionVo);
+        //用户信息
+        BpmProcessInstanceRespVO.User user = new BpmProcessInstanceRespVO.User();
+
+        if(Objects.nonNull(startUser)){
+            user.setId( startUser.getUserId() );
+            user.setNickname( startUser.getNickName() );
+            user.setDeptId( startUser.getDeptId() );
+        }
+        processInstanceRespVO.setStartUser(user);
+        return processInstanceRespVO;
     }
 
-    public BpmProcessInstanceRespVO convert(HistoricProcessInstance bean) {
-        if ( bean == null ) {
-            return null;
-        }
-
-        BpmProcessInstanceRespVO bpmProcessInstanceRespVO = new BpmProcessInstanceRespVO();
-
-        bpmProcessInstanceRespVO.setId( bean.getId() );
-        bpmProcessInstanceRespVO.setName( bean.getName() );
-        bpmProcessInstanceRespVO.setEndTime( bean.getEndTime());
-        bpmProcessInstanceRespVO.setBusinessKey( bean.getBusinessKey() );
-
-        return bpmProcessInstanceRespVO;
-    }
-    public void copyTo(BpmProcessInstanceExt from, BpmProcessInstanceRespVO to) {
-        if ( from == null ) {
-            return;
-        }
-
-        to.setName( from.getName() );
-        to.setCategory( from.getCategory() );
-        to.setStatus( from.getStatus() );
-        to.setResult( from.getResult() );
-        to.setCreateTime( from.getCreateTime() );
-        to.setEndTime( from.getEndTime() );
-        if ( to.getFormVariables() != null ) {
-            String formVariables = from.getFormVariables();
-            if ( formVariables != null ) {
-                to.setFormVariables(  formVariables  );
-            }
-            else {
-                to.setFormVariables( null );
-            }
-        }
-        else {
-            String map = from.getFormVariables();
-            if ( map != null ) {
-                to.setFormVariables(  map  );
-            }
-        }
-    }
-    public BpmProcessInstanceRespVO.ProcessDefinition convert1(ProcessDefinition bean) {
-        if ( bean == null ) {
-            return null;
-        }
-
-        BpmProcessInstanceRespVO.ProcessDefinition processDefinition = new BpmProcessInstanceRespVO.ProcessDefinition();
-
-        processDefinition.setId( bean.getId() );
-
-        return processDefinition;
-    }
-    public void copyTo(BpmProcessDefinitionVo from, BpmProcessInstanceRespVO.ProcessDefinition to) {
-        if ( from == null ) {
-            return;
-        }
-
-        to.setFormType( from.getFormType() );
-        to.setFormId( from.getFormId() );
-        to.setFormConf( from.getFormConf() );
-        if ( to.getFormFields() != null ) {
-            List<String> list = from.getFormFields();
-            if ( list != null ) {
-                to.getFormFields().clear();
-                to.getFormFields().addAll( list );
-            }
-            else {
-                to.setFormFields( null );
-            }
-        }
-        else {
-            List<String> list = from.getFormFields();
-            if ( list != null ) {
-                to.setFormFields( new ArrayList<String>( list ) );
-            }
-        }
-        to.setFormCustomCreatePath( from.getFormCustomCreatePath() );
-        to.setFormCustomViewPath( from.getFormCustomViewPath() );
-    }
-    public BpmProcessInstanceRespVO.User convert2(SysUser bean) {
+    public BpmProcessInstanceRespVO.User convertToUser(SysUser bean) {
         if ( bean == null ) {
             return null;
         }

@@ -25,7 +25,7 @@ export default defineConfig(({ mode, command }) => {
     },
     // vite 相关配置
     server: {
-      port: 80,
+      port: 8088,
       host: true,
       open: true,
       proxy: {
@@ -38,7 +38,7 @@ export default defineConfig(({ mode, command }) => {
         },
         //测试环境
         '/stage-api': {
-          target: 'http://localhost:8080',
+          target: 'http://211.149.159.61:8086',
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/stage-api/, '')
         },
