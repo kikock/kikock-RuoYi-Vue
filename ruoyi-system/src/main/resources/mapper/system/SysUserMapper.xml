@@ -168,7 +168,7 @@
     <select id="getUserList" resultMap="SysUserResult">
         <include refid="selectUserVo"/>
         where u.user_id in
-            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            <foreach collection="list" item="id" open="(" close=")" separator=",">
                 #{id}
             </foreach>
     </select>
