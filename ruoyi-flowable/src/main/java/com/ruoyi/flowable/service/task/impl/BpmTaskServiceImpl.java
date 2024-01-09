@@ -67,7 +67,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         List<ProcessInstance> processList = processInstanceService.getProcessInstances(ids);
         Map<String, ProcessInstance> processInstanceMap = convertMap(processList, ProcessInstance::getProcessInstanceId);
         // 获得 User Map
-        Set<Long> starUserIds = convertSet(processInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId()));
+        List<Long> starUserIds = convertList(processInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId()));
         List<SysUser> userList = sysUserService.getUserList(starUserIds);
         Map<Long, SysUser> userMap = convertMap(userList, SysUser::getUserId);
         //拼接集合
@@ -131,7 +131,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         List<HistoricProcessInstance> historicProcessInstances = processInstanceService.getHistoricProcessInstances(ids);
         Map<String, HistoricProcessInstance> historicProcessInstanceMap = convertMap(historicProcessInstances, HistoricProcessInstance::getId);
         // 获得 User Map
-        Set<Long> starUserIds = convertSet(historicProcessInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId()));
+        List<Long> starUserIds = convertList(historicProcessInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId()));
         List<SysUser> userList = sysUserService.getUserList(starUserIds);
         Map<Long, SysUser> userMap = convertMap(userList, SysUser::getUserId);
         // 拼接结果
@@ -215,7 +215,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         // 获得 ProcessInstance Map
         HistoricProcessInstance processInstance = processInstanceService.getHistoricProcessInstance(processInstanceId);
         // 获得 User Map
-        Set<Long> userIds = convertSet(tasks, task -> parseLong(task.getAssignee()));
+        List<Long> userIds = convertList(tasks, task -> parseLong(task.getAssignee()));
         userIds.add(parseLong(processInstance.getStartUserId()));
         List<SysUser> userList = sysUserService.getUserList(userIds);
         Map<Long, SysUser> userMap = convertMap(userList, SysUser::getUserId);

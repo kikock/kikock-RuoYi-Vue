@@ -28,7 +28,6 @@ import org.springframework.util.CollectionUtils;
 
 import javax.validation.Validator;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -530,7 +529,7 @@ public class SysUserServiceImpl implements ISysUserService{
     }
 
     @Override
-    public List<SysUser> getUserList(Collection<Long> ids) {
+    public List<SysUser> getUserList(List<Long> ids) {
         return userMapper.getUserList(ids);
     }
 
