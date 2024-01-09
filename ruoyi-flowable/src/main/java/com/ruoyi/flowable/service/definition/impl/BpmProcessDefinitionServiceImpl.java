@@ -92,7 +92,6 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
         if (CollUtil.isNotEmpty(processDefinitionIds) && processDefinitionIds.size()>0){
             bpmProcessDefinitionExts = processDefinitionMapper.selectListByProcessDefinitionIds(
                     processDefinitionIds);
-
         }
 
         Map<String, BpmProcessDefinitionExt> processDefinitionDOMap = convertMap(bpmProcessDefinitionExts,
@@ -174,7 +173,7 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
         BpmProcessDefinitionExt bpmProcessDefinitionExt =new BpmProcessDefinitionExt();
         bpmProcessDefinitionExt.setProcessDefinitionId(definition.getId());
         bpdVOToBpdeData(bpmProcessDefinitionExt,bpmProcessDefinitionVo);
-        // 插入数据
+        // 插入数据  Bpm 流程定义信息
        processDefinitionMapper.insertBpmProcessDefinitionExt(bpmProcessDefinitionExt);
         return definition.getId();
     }
@@ -226,8 +225,8 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
     }
 
     @Override
-    public BpmProcessDefinitionVo getProcessDefinitionExt(String id){
-        return null;
+    public BpmProcessDefinitionExt getProcessDefinitionExt(String id){
+        return processDefinitionMapper.selectByProcessDefinitionId(id);
     }
 
     @Override

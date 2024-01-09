@@ -52,7 +52,7 @@
             class="!w-240px"
         >
           <el-option
-              v-for="dict in bpm_process_instance_status"
+              v-for="dict in bpm_process_instance_result"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
@@ -84,14 +84,14 @@
       </el-form-item>
     </el-form>
     <el-table v-loading="loading" :data="list" @selection-change="handleSelectionChange">
-      <el-table-column label="流程编号" align="center" prop="id" width="300px" />
-      <el-table-column label="流程名称" align="center" prop="name" />
+      <el-table-column label="流程编号" align="center" prop="id" width="300px"/>
+      <el-table-column label="流程名称" align="center" prop="name"/>
       <el-table-column label="流程分类" align="center">
         <template #default="scope">
-          <dict-tag :options="bpm_model_category" :value="scope.row.category" />
+          <dict-tag :options="bpm_model_category" :value="scope.row.category"/>
         </template>
       </el-table-column>
-      <el-table-column label="当前审批任务" align="center" >
+      <el-table-column label="当前审批任务" align="center">
         <template #default="scope">
           <el-button type="primary" v-for="task in scope.row.tasks" :key="task.id" link>
             <span>{{ task.name }}</span>
@@ -100,12 +100,12 @@
       </el-table-column>
       <el-table-column label="状态" align="center">
         <template #default="scope">
-          <dict-tag :options="bpm_process_instance_status" :value="scope.row.status" />
+          <dict-tag :options="bpm_process_instance_status" :value="scope.row.status"/>
         </template>
       </el-table-column>
       <el-table-column label="结果" align="center">
         <template #default="scope">
-          <dict-tag :options="bpm_process_instance_result" :value="scope.row.result" />
+          <dict-tag :options="bpm_process_instance_result" :value="scope.row.result"/>
         </template>
       </el-table-column>
       <el-table-column label="提交时间" align="center" prop="createTime" width="180"/>
@@ -144,14 +144,14 @@
 </template>
 
 <script setup name="BpmProcessInstance">
-import {getCurrentInstance, reactive, ref,toRefs} from 'vue'
+import {getCurrentInstance, reactive, ref, toRefs} from 'vue'
 import router from "@/router";
 import {getMyProcessInstancePage} from "@/api/bpm/processInstance";
 const {proxy} = getCurrentInstance();
-const {bpm_oa_leave_type} = proxy.useDict("bpm_oa_leave_type");
-const {bpm_process_instance_result} = proxy.useDict("bpm_process_instance_result");
-const {bpm_process_instance_status} = proxy.useDict("bpm_process_instance_status");
-const {bpm_model_category} = proxy.useDict("bpm_model_category");
+
+const {  bpm_model_category, bpm_process_instance_status, bpm_process_instance_result} =
+    proxy.useDict('bpm_model_category', 'bpm_model_form_type', 'bpm_process_instance_status', 'bpm_process_instance_result');
+
 const list = ref([]);
 const open = ref(false);
 const loading = ref(true);
@@ -207,9 +207,9 @@ const data = reactive({
 
 const {queryParams, form, rules} = toRefs(data);
 
-/** 查询OA 请假申请列表 */
+/** 查询 */
 function getList() {
-  console.log(queryParams.value)
+  console.log("查询", queryParams.value)
   getMyProcessInstancePage(queryParams.value).then(response => {
     list.value = response.rows;
     total.value = response.total;
@@ -250,6 +250,7 @@ function handleQuery() {
   queryParams.value.pageNum = 1;
   getList();
 }
+
 /** 发起按钮操作 */
 function handleCreate() {
   router.push({path: "/task/bpmprocessInstance/create"})
@@ -282,7 +283,7 @@ function handleDetail(row) {
  * 取消流程
  * @param row
  */
-function handleCancel (row){
+function handleCancel(row) {
   // 二次确认
   // const { value } =  ElMessageBox.prompt('请输入取消原因', '取消流程', {
   //   confirmButtonText: t('common.ok'),
@@ -294,9 +295,8 @@ function handleCancel (row){
   //  ProcessInstanceApi.cancelProcessInstance(row.id, value)
   // message.success('取消成功')
   // 刷新列表
-   getList()
+  getList()
 }
-
 
 
 getList();

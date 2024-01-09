@@ -44,7 +44,18 @@ public interface IBpmProcessInstanceService {
      * @param createReqVO 创建信息
      * @return 实例的编号
      */
-    String createProcessInstance(Long userId, BpmTaskReqVO createReqVO);
+    String createProcessInstancebyProcessDefinitionId(Long userId, BpmTaskReqVO createReqVO);
+
+
+    /**
+     * 创建流程实例（提供给内部）
+     *
+     * @param userId 用户编号
+     * @param createReqDTO 创建信息
+     * @return 实例的编号
+     */
+    String createProcessInstanceByProcessDefinitionKey(Long userId, @Valid BpmTaskReqVO createReqDTO);
+
     /**
  * 获得流程实例 VO 信息
  *

@@ -65,6 +65,7 @@ public class BpmOaLeaveServiceImpl implements IBpmOaLeaveService{
         //0 申请中 1 通过 2不通过
         bpmOaLeave.setResult(0);
         bpmOaLeave.setCreateTime(DateUtils.getNowDate());
+        bpmOaLeave.setProcess_key("leave001");
         int i = bpmOaLeaveMapper.insertBpmOaLeave(bpmOaLeave);
         if (i > 0) {
             // 发起 BPM 流程
@@ -74,7 +75,7 @@ public class BpmOaLeaveServiceImpl implements IBpmOaLeaveService{
             bpmTaskReqVO.setBusinessKey(String.valueOf(bpmOaLeave.getId()));
             bpmTaskReqVO.setVariables(processInstanceVariables);
             bpmTaskReqVO.setProcessDefinitionKey(bpmOaLeave.getProcess_key());
-            String processInstanceId = processInstanceService.createProcessInstance(bpmOaLeave.getUserId(), bpmTaskReqVO);
+            String processInstanceId = processInstanceService.createProcessInstanceByProcessDefinitionKey(bpmOaLeave.getUserId(), bpmTaskReqVO);
         }
         // 将工作流的编号，更新到 OA 请假单中
 //        bpmOaLeaveMapper.updateById();

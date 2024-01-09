@@ -26,10 +26,11 @@ export function cancelProcessInstance(id, reason) {
     }
   })
 }
-
-export function getProcessInstance(id) {
+// 获得指定流程实例
+export function getProcessInstance(query) {
   return request({
-    url: '/bpm/process-instance/get?id=' + id,
+    url: '/bpm/process-instance/findById',
     method: 'get',
+    params: query
   })
 }

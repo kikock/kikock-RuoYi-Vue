@@ -263,4 +263,12 @@
             </foreach>
         </where>
     </select>
+
+    <select id="selectByProcessDefinitionId" parameterType="String"
+            resultMap="BpmProcessDefinitionExtResult">
+        <include refid="selectBpmProcessDefinitionExtVo"/>
+        <where>
+            process_definition_id = #{processDefinitionId}
+        </where>
+    </select>
 </mapper>

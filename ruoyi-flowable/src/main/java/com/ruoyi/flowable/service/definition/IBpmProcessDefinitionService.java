@@ -3,6 +3,7 @@ package com.ruoyi.flowable.service.definition;
 
 import cn.hutool.db.PageResult;
 import com.ruoyi.common.utils.collection.CollectionUtils;
+import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
 import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.engine.repository.Deployment;
@@ -69,7 +70,7 @@ public interface IBpmProcessDefinitionService{
      * @param id 编号
      * @return 流程定义拓展
      */
-    BpmProcessDefinitionVo getProcessDefinitionExt(String id);
+    BpmProcessDefinitionExt getProcessDefinitionExt(String id);
 
     /**
      * 获得编号对应的 ProcessDefinition
