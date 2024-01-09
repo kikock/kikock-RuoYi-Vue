@@ -99,7 +99,7 @@ function getDetailData() {
       }
       console.log(response);
       // 设置流程信息
-      //   processInstance = response.data;
+        processInstance = response.data;
       //
       //   //将业务表单，注册为动态组件
       //   const path = this.processInstance.processDefinition.formCustomViewPath;
