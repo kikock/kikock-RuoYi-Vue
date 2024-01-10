@@ -74,7 +74,7 @@ const {proxy} = getCurrentInstance()
 // 流程实例的加载中
 // ========== 流程实例信息 ==========
 const processInstanceLoading = ref(false)
-const processInstance = ref({}) // 流程实例
+const processInstance = ref({}) // 流程实例信息
 const bpmnXML = ref('') // BPMN XML
 const tasksLoad = ref(true) // 任务的加载中
 const runningTasks = ref([]) // 任务列表
@@ -99,13 +99,18 @@ function getDetailData() {
       }
       console.log(response);
       // 设置流程信息
-        processInstance = response.data;
+        processInstance.value = response.data;
       //
       //   //将业务表单，注册为动态组件
-      //   const path = this.processInstance.processDefinition.formCustomViewPath;
-      //   Vue.component("async-biz-form-component", function (resolve) {
-      //     require([`@/views${path}`], resolve);
-      //   });
+        const path = processInstance.value.processDefinition.formCustomViewPath;
+        console.log("注册业务表单,动态组件");
+      // 工厂函数执行 resolve 回调
+      Vue.component('async-biz-form-component', function (resolve) {
+        // 这个特殊的 `require` 语法将会告诉 webpack
+        // 自动将你的构建代码切割成多个包, 这些包
+        // 会通过 Ajax 请求加载
+        require([`@/views${path}`], resolve);
+      })
       //
       //   // 设置表单信息
       //   if (this.processInstance.processDefinition.formType === 10) {
