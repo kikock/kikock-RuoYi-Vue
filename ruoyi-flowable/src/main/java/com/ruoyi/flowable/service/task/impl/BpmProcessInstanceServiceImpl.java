@@ -3,7 +3,6 @@ package com.ruoyi.flowable.service.task.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -48,7 +47,7 @@ import static com.ruoyi.flowable.service.task.impl.BpmTaskServiceImpl.parseLong;
 
 
 @Service
-public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService {
+public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService{
     @Resource
     private BpmProcessInstanceExtMapper processInstanceExtMapper;
     @Resource
@@ -69,8 +68,9 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     private ISysUserService sysUserService;
     @Resource
     private ISysDeptService deptService;
+
     @Override
-    public List<?> getMyProcessInstancePage(BpmTaskReqVO pageReqVO) {
+    public List<?> getMyProcessInstancePage(BpmTaskReqVO pageReqVO){
         // 通过 BpmProcessInstanceExtDO 表，先查询到对应的分页
         List<BpmProcessInstanceExt> list = processInstanceExtMapper.selectPage(pageReqVO);
         if (CollUtil.isEmpty(list)) {
@@ -80,7 +80,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         // 获得流程 Task list
         List<Task> tasks = taskService.createTaskQuery().processInstanceIdIn(processInstanceIds).list();
         // 转换返回map
-        Map<String, List<Task>> taskMap = CollectionUtils.convertMultiMap(tasks, Task::getProcessInstanceId);
+        Map<String,List<Task>> taskMap = CollectionUtils.convertMultiMap(tasks, Task::getProcessInstanceId);
         List<BpmProcessInstancePageItemRespVO> list1 = new ArrayList<>(list.size());
         for (BpmProcessInstanceExt bean : list) {
             BpmProcessInstancePageItemRespVO bpmProcessInstancePageItemRespVO = new BpmProcessInstancePageItemRespVO();
@@ -100,22 +100,24 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String createProcessInstancebyProcessDefinitionId(Long userId, BpmTaskReqVO createReqVO) {
+    public String createProcessInstancebyProcessDefinitionId(Long userId, BpmTaskReqVO createReqVO){
         // 获得流程定义
         ProcessDefinition definition = processDefinitionService.getProcessDefinition(createReqVO.getProcessDefinitionId());
         // 发起流程
         return createProcessInstance0(userId, definition, createReqVO.getVariables(), null);
     }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String createProcessInstanceByProcessDefinitionKey(Long userId, BpmTaskReqVO createReqVO) {
+    public String createProcessInstanceByProcessDefinitionKey(Long userId, BpmTaskReqVO createReqVO){
         // 获得流程定义
         ProcessDefinition definition = processDefinitionService.getActiveProcessDefinition(createReqVO.getProcessDefinitionKey());
         // 发起流程
         return createProcessInstance0(userId, definition, createReqVO.getVariables(), createReqVO.getBusinessKey());
     }
+
     @Override
-    public BpmProcessInstanceRespVO getProcessInstanceVO(String id) {
+    public BpmProcessInstanceRespVO getProcessInstanceVO(String id){
         // 获得流程实例
         HistoricProcessInstance processInstance = getHistoricProcessInstance(id);
         if (processInstance == null) {
@@ -141,20 +143,20 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         }
         // 拼接返回结果   processInstance 流程定义 processInstanceExt 流程定义扩展 processDefinition 实例信息 processDefinitionExt 实例扩展信息
         //          bpmnXml 流程 xml数据
-        return convertToVo(processInstance, processInstanceExt,processDefinition,processDefinitionExt,bpmnXml,startUser,dept);
+        return convertToVo(processInstance, processInstanceExt, processDefinition, processDefinitionExt, bpmnXml, startUser, dept);
 
     }
 
     @Override
-    public void cancelProcessInstance(Long userId, BpmTaskReqVO cancelReqVO) {
+    public void cancelProcessInstance(Long userId, BpmTaskReqVO cancelReqVO){
         // 校验流程实例存在
         ProcessInstance instance = getProcessInstance(cancelReqVO.getId());
         if (instance == null) {
-            throw new ServiceException("流程取消失败，流程不处于运行中!", HttpStatus.ERROR) ;
+            throw new ServiceException("流程取消失败，流程不处于运行中!", HttpStatus.ERROR);
         }
         // 只能取消自己的
         if (!Objects.equals(instance.getStartUserId(), String.valueOf(userId))) {
-        throw new ServiceException("流程取消失败，该流程不是你发起的!", HttpStatus.ERROR) ;
+            throw new ServiceException("流程取消失败，该流程不是你发起的!", HttpStatus.ERROR);
         }
         // 通过删除流程实例，实现流程实例的取消,
         // 删除流程实例，正则执行任务 ACT_RU_TASK. 任务会被删除。通过历史表查询
@@ -162,19 +164,19 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     }
 
     public BpmProcessInstanceRespVO convertToVo(HistoricProcessInstance processInstance, BpmProcessInstanceExt processInstanceExt,
-                                             ProcessDefinition processDefinition, BpmProcessDefinitionExt processDefinitionExt,
-                                             String bpmnXml, SysUser startUser, SysDept dept) {
+                                                ProcessDefinition processDefinition, BpmProcessDefinitionExt processDefinitionExt,
+                                                String bpmnXml, SysUser startUser, SysDept dept){
         BpmProcessInstanceRespVO processInstanceRespVO = new BpmProcessInstanceRespVO();
 //        processInstance 流程定义设置  processDefinitionExt 实例扩展信息
         //          bpmnXml 流程 xml数据
-        if ( Objects.nonNull(processInstance)) {
-            processInstanceRespVO.setId( processInstance.getId() );
-            processInstanceRespVO.setName( processInstance.getName() );
-            processInstanceRespVO.setEndTime( processInstance.getEndTime());
-            processInstanceRespVO.setBusinessKey( processInstance.getBusinessKey() );
+        if (Objects.nonNull(processInstance)) {
+            processInstanceRespVO.setId(processInstance.getId());
+            processInstanceRespVO.setName(processInstance.getName());
+            processInstanceRespVO.setEndTime(processInstance.getEndTime());
+            processInstanceRespVO.setBusinessKey(processInstance.getBusinessKey());
         }
 //        processInstanceExt 流程定义扩展设置
-        if ( Objects.nonNull(processInstanceExt)) {
+        if (Objects.nonNull(processInstanceExt)) {
             processInstanceRespVO.setName(processInstanceExt.getName());
             processInstanceRespVO.setCategory(processInstanceExt.getCategory());
             processInstanceRespVO.setStatus(processInstanceExt.getStatus());
@@ -199,7 +201,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
 //        processDefinition 实例信息设置
 
         BpmProcessInstanceRespVO.ProcessDefinition processDefinitionVo = new BpmProcessInstanceRespVO.ProcessDefinition();
-        if(Objects.nonNull(processDefinition)){
+        if (Objects.nonNull(processDefinition)) {
             processDefinitionVo.setId(processDefinition.getId());
             processDefinitionVo.setBpmnXml(bpmnXml);
         }
@@ -207,46 +209,46 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         //用户信息
         BpmProcessInstanceRespVO.User user = new BpmProcessInstanceRespVO.User();
 
-        if(Objects.nonNull(startUser)){
-            user.setId( startUser.getUserId() );
-            user.setNickname( startUser.getNickName() );
-            user.setDeptId( startUser.getDeptId() );
+        if (Objects.nonNull(startUser)) {
+            user.setId(startUser.getUserId());
+            user.setNickname(startUser.getNickName());
+            user.setDeptId(startUser.getDeptId());
         }
         processInstanceRespVO.setStartUser(user);
         return processInstanceRespVO;
     }
 
-    public BpmProcessInstanceRespVO.User convertToUser(SysUser bean) {
-        if ( bean == null ) {
+    public BpmProcessInstanceRespVO.User convertToUser(SysUser bean){
+        if (bean == null) {
             return null;
         }
 
         BpmProcessInstanceRespVO.User user = new BpmProcessInstanceRespVO.User();
 
-        user.setId( bean.getUserId() );
-        user.setNickname( bean.getNickName() );
-        user.setDeptId( bean.getDeptId() );
+        user.setId(bean.getUserId());
+        user.setNickname(bean.getNickName());
+        user.setDeptId(bean.getDeptId());
         return user;
     }
 
 
     @Override
-    public ProcessInstance getProcessInstance(String id) {
+    public ProcessInstance getProcessInstance(String id){
         return runtimeService.createProcessInstanceQuery().processInstanceId(id).singleResult();
     }
 
     @Override
-    public List<ProcessInstance> getProcessInstances(Set<String> ids) {
+    public List<ProcessInstance> getProcessInstances(Set<String> ids){
         return runtimeService.createProcessInstanceQuery().processInstanceIds(ids).list();
     }
 
     @Override
-    public List<HistoricProcessInstance> getHistoricProcessInstances(Set<String> ids) {
+    public List<HistoricProcessInstance> getHistoricProcessInstances(Set<String> ids){
         return historyService.createHistoricProcessInstanceQuery().processInstanceIds(ids).list();
     }
 
     @Override
-    public void createProcessInstanceExt(ProcessInstance instance) {
+    public void createProcessInstanceExt(ProcessInstance instance){
         // 获得流程定义
         ProcessDefinition definition = processDefinitionService.getProcessDefinition2(instance.getProcessDefinitionId());
         // 插入 BpmProcessInstanceExtDO 对象
@@ -256,8 +258,8 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         instanceExtDO.setName(instance.getProcessDefinitionName());
         String startUserId = instance.getStartUserId();
         Long id = SecurityUtils.getUserId();
-        if(StringUtils.isNotEmpty(startUserId)){
-            id=Long.valueOf(startUserId);
+        if (StringUtils.isNotEmpty(startUserId)) {
+            id = Long.valueOf(startUserId);
         }
         instanceExtDO.setStartUserId(id);
         instanceExtDO.setCategory(definition.getCategory());
@@ -267,10 +269,10 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     }
 
     @Override
-    public void updateProcessInstanceExtCancel(FlowableCancelledEvent event) {
+    public void updateProcessInstanceExtCancel(FlowableCancelledEvent event){
         // 判断是否为 Reject 不通过。如果是，则不进行更新.
         // 因为，updateProcessInstanceExtReject 方法，已经进行更新了
-        if (BpmProcessInstanceDeleteReasonEnum.isRejectReason((String)event.getCause())) {
+        if (BpmProcessInstanceDeleteReasonEnum.isRejectReason((String) event.getCause())) {
             return;
         }
         // 需要主动查询，因为 instance 只有 id 属性
@@ -294,7 +296,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     }
 
     @Override
-    public void updateProcessInstanceExtComplete(ProcessInstance instance) {
+    public void updateProcessInstanceExtComplete(ProcessInstance instance){
         // 需要主动查询，因为 instance 只有 id 属性
         // 另外，此时如果去查询 ProcessInstance 的话，字段是不全的，所以去查询了 HistoricProcessInstance
         HistoricProcessInstance processInstance = getHistoricProcessInstance(instance.getId());
@@ -319,7 +321,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     }
 
     @Override
-    public void updateProcessInstanceExtReject(String id, String reason) {
+    public void updateProcessInstanceExtReject(String id, String reason){
         // 需要主动查询，因为 instance 只有 id 属性
         ProcessInstance processInstance = getProcessInstance(id);
         // 删除流程实例，以实现驳回任务时，取消整个审批流程
@@ -345,12 +347,13 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         // 发送流程实例的状态事件
         processInstanceResultEventPublisher.sendProcessInstanceResultEvent(processInstanceResultEvent);
     }
-    private void deleteProcessInstance(String id, String reason) {
+
+    private void deleteProcessInstance(String id, String reason){
         runtimeService.deleteProcessInstance(id, reason);
     }
 
 
-    private static List<BpmProcessInstancePageItemRespVO.Task> getTask(List<Task> tasks) {
+    private static List<BpmProcessInstancePageItemRespVO.Task> getTask(List<Task> tasks){
         List<BpmProcessInstancePageItemRespVO.Task> listTask = new ArrayList<BpmProcessInstancePageItemRespVO.Task>(tasks.size());
         for (Task task : tasks) {
             BpmProcessInstancePageItemRespVO.Task task1 = new BpmProcessInstancePageItemRespVO.Task();
@@ -361,13 +364,13 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         return listTask;
     }
 
-    private String createProcessInstance0(Long userId, ProcessDefinition definition, Map<String, Object> variables, String businessKey) {
+    private String createProcessInstance0(Long userId, ProcessDefinition definition, Map<String,Object> variables, String businessKey){
         // 校验流程定义
         if (definition == null) {
-            throw new ServiceException("流程定义不存在!", HttpStatus.ERROR) ;
+            throw new ServiceException("流程定义不存在!", HttpStatus.ERROR);
         }
         if (definition.isSuspended()) {
-            throw new ServiceException("流程定义处于挂起状态!", HttpStatus.ERROR) ;
+            throw new ServiceException("流程定义处于挂起状态!", HttpStatus.ERROR);
         }
         // 创建流程实例
         ProcessInstance instance = runtimeService.createProcessInstanceBuilder()
@@ -388,7 +391,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     }
 
     @Override
-    public HistoricProcessInstance getHistoricProcessInstance(String id) {
+    public HistoricProcessInstance getHistoricProcessInstance(String id){
         return historyService.createHistoricProcessInstanceQuery().processInstanceId(id).singleResult();
     }
 
