@@ -33,6 +33,7 @@ import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.api.FlowableException;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -54,8 +55,10 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
     @Resource
     private BpmTaskAssignRuleMapper bpmTaskAssignRuleMapper;
     @Autowired
+    @Lazy
     private IBpmModelService bpmModelService;
     @Autowired
+    @Lazy
     private IBpmProcessDefinitionService bpmProcessDefinitionService;
 
     @Autowired

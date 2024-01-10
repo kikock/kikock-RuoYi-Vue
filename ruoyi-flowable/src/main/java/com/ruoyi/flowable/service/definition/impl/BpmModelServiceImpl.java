@@ -33,6 +33,7 @@ import org.flowable.engine.repository.Deployment;
 import org.flowable.engine.repository.Model;
 import org.flowable.engine.repository.ModelQuery;
 import org.flowable.engine.repository.ProcessDefinition;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -55,6 +56,7 @@ import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 public class BpmModelServiceImpl implements IBpmModelService{
 
     @Resource
+    @Lazy
     private RepositoryService repositoryService;
     @Resource
     private IBpmProcessInstanceExtService processInstanceExtService;
