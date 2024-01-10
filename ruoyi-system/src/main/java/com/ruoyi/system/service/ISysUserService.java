@@ -1,16 +1,10 @@
 package com.ruoyi.system.service;
 
-import cn.hutool.core.collection.CollUtil;
-import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
-import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.system.domain.SysPost;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
@@ -234,5 +228,5 @@ public interface ISysUserService{
      * @param ids 用户ID
      * @return 用户对象信息
      */
-    List<SysUser> getUserList(Collection<Long> ids);
+    List<SysUser> getUserList(List<Long> ids);
 }
