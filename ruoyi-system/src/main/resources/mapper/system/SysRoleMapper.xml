@@ -241,7 +241,7 @@
             </foreach>
         </where>
     </select>
-    <select id="selectUsersBatchIds"  resultMap="SysRoleResult">
+    <select id="selectUsersBatchIds"  resultType="Long">
         SELECT
         u.user_id
         FROM
@@ -256,7 +256,7 @@
         r.role_id = ur.role_id
         <where>
             r.role_id in
-            <foreach item="id" collection="list" open="(" separator="," close=")">
+            <foreach item="id" collection="collection" open="(" separator="," close=")">
                 #{id}
             </foreach>
         </where>

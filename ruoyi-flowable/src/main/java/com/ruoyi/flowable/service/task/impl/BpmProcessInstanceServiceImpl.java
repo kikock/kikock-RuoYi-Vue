@@ -8,6 +8,8 @@ import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
 import com.ruoyi.flowable.domain.task.BpmProcessInstanceExt;
@@ -251,7 +253,12 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         instanceExtDO.setProcessInstanceId(instance.getId());
         instanceExtDO.setProcessDefinitionId(definition.getId());
         instanceExtDO.setName(instance.getProcessDefinitionName());
-        instanceExtDO.setStartUserId(Long.valueOf(instance.getStartUserId()));
+        String startUserId = instance.getStartUserId();
+        Long id = SecurityUtils.getUserId();
+        if(StringUtils.isNotEmpty(startUserId)){
+            id=Long.valueOf(startUserId);
+        }
+        instanceExtDO.setStartUserId(id);
         instanceExtDO.setCategory(definition.getCategory());
         instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
         instanceExtDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult());
@@ -373,7 +380,6 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         // 补全流程实例的拓展表
         BpmProcessInstanceExt bpmProcessInstanceExt = new BpmProcessInstanceExt();
         bpmProcessInstanceExt.setStartUserId(userId);
-        bpmProcessInstanceExt.setCategory(definition.getCategory());
         bpmProcessInstanceExt.setBusinessKey(businessKey);
         bpmProcessInstanceExt.setProcessDefinitionId(definition.getId());
         bpmProcessInstanceExt.setName(definition.getName());
@@ -383,7 +389,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         bpmProcessInstanceExt.setResult(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
 //        1 进行 2已完成
         bpmProcessInstanceExt.setStatus(BpmProcessInstanceResultEnum.PROCESS.getResult());
-        processInstanceExtMapper.insertBpmProcessInstanceExt(bpmProcessInstanceExt);
+        processInstanceExtMapper.updateBpmProcessInstanceExt(bpmProcessInstanceExt);
         return instance.getId();
     }
 
