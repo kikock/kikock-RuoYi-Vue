@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 工作流的流程任务的拓展对象 bpm_task_ext
@@ -24,6 +25,12 @@ public class BpmTaskExt extends BaseEntity{
      * 任务的审批人
      */
     private Long assigneeUserId;
+
+    /**
+     * 任务的审批候选人
+     */
+    private List<Long> userList;
+
 
     /**
      * 任务的名字

@@ -21,6 +21,7 @@ import com.ruoyi.flowable.enums.BpmProcessInstanceResultEnum;
 import com.ruoyi.flowable.enums.BpmProcessInstanceStatusEnum;
 import com.ruoyi.flowable.framework.event.BpmProcessInstanceResultEvent;
 import com.ruoyi.flowable.framework.event.BpmProcessInstanceResultEventPublisher;
+import com.ruoyi.flowable.framework.utils.FlowableUtils;
 import com.ruoyi.flowable.mapper.task.BpmProcessInstanceExtMapper;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
@@ -372,7 +373,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         if (definition.isSuspended()) {
             throw new ServiceException("流程定义处于挂起状态!", HttpStatus.ERROR);
         }
-        // 创建流程实例
+        FlowableUtils.setAuthenticatedUserId(userId);
         ProcessInstance instance = runtimeService.createProcessInstanceBuilder()
                 .processDefinitionId(definition.getId())
                 .businessKey(businessKey)

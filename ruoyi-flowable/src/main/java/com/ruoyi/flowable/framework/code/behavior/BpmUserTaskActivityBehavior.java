@@ -67,10 +67,6 @@ public class BpmUserTaskActivityBehavior extends UserTaskActivityBehavior {
     }
 
     private Set<Long> calculateTaskCandidateUsers(DelegateExecution execution) {
-
-
-
-
         // 情况一，如果是多实例的任务，例如说会签、或签等情况，则从 Variable 中获取。它的任务处理人在 BpmParallelMultiInstanceBehavior 中已经被分配了
         if (super.multiInstanceActivityBehavior != null) {
             return Collections.singleton(execution.getVariable(super.multiInstanceActivityBehavior.getCollectionElementVariable(), Long.class));
