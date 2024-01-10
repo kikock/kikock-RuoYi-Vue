@@ -38,8 +38,7 @@ public class BpmUserGroupController extends BaseController {
     @GetMapping("/list")
     public TableDataInfo list(BpmUserGroup bpmUserGroup) {
         startPage();
-        List<BpmUserGroup> list = bpmUserGroupService.selectBpmUserGroupList(bpmUserGroup);
-        return getDataTable(list);
+        return getDataTable(bpmUserGroupService.selectBpmUserGroupList(bpmUserGroup));
     }
 
     /**
