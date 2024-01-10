@@ -244,7 +244,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     @Override
     public void createProcessInstanceExt(ProcessInstance instance) {
         // 获得流程定义
-        ProcessDefinition definition = processDefinitionService.getProcessDefinition2(instance.getProcessDefinitionId());
+        ProcessDefinition definition = processDefinitionService.getProcessDefinition(instance.getProcessDefinitionId());
         // 插入 BpmProcessInstanceExtDO 对象
         BpmProcessInstanceExt instanceExtDO = new BpmProcessInstanceExt();
         instanceExtDO.setProcessInstanceId(instance.getId());
