@@ -26,7 +26,9 @@ public class BpmProcessInstanceController extends BaseController{
 
     @Resource
     private IBpmProcessInstanceService processInstanceService;
-
+    /**
+     * 流程实例列表
+     */
     @GetMapping("/my-page")
 //    @PreAuthorize("@ss.hasPermission('bpm:process:list')")
     @Anonymous
@@ -35,23 +37,27 @@ public class BpmProcessInstanceController extends BaseController{
         pageReqVO.setUserId(getUserId());
         return getDataTable(processInstanceService.getMyProcessInstancePage(pageReqVO));
     }
-
+    /**
+     * 新建流程实例
+     */
     @PostMapping("/create")
-    @Operation(summary = "新建流程实例")
 //    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     public AjaxResult createProcessInstance(@Valid @RequestBody BpmTaskReqVO createReqVO){
         return success(processInstanceService.createProcessInstancebyProcessDefinitionId(getUserId(), createReqVO));
     }
-
+    /**
+     * 查询流程实例
+     */
     @GetMapping("/findById")
 //    @PreAuthorize("@ss.hasPermission('bpm:process-instance:query')")
     public AjaxResult getProcessInstance(@RequestParam String id){
         return success(processInstanceService.getProcessInstanceVO(id));
     }
 
-    //
+    /**
+     * 查询流程实例
+     */
     @DeleteMapping("/cancel")
-    @Operation(summary = "取消流程实例", description = "撤回发起的流程")
 //    @PreAuthorize("@ss.hasPermission('bpm:process-instance:cancel')")
     public AjaxResult cancelProcessInstance(@RequestBody BpmTaskReqVO cancelReqVO){
         processInstanceService.cancelProcessInstance(getUserId(), cancelReqVO);

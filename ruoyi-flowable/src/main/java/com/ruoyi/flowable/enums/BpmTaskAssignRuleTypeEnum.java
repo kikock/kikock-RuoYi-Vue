@@ -1,4 +1,4 @@
-package com.ruoyi.flowable.framework.code.enums;
+package com.ruoyi.flowable.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -2,8 +2,10 @@ package com.ruoyi.flowable.service.definition;
 
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
+import org.flowable.engine.delegate.DelegateExecution;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Bpm 任务规则Service接口
@@ -79,4 +81,13 @@ public interface IBpmTaskAssignRuleService{
      *
      */
     public void copyTaskAssignRules(String id, String id1);
+
+    /**
+     * 计算当前执行任务的处理人
+     *
+     * @param execution 执行任务
+     * @return 处理人的编号数组
+     */
+    Set<Long> calculateTaskCandidateUsers(DelegateExecution execution);
+
 }

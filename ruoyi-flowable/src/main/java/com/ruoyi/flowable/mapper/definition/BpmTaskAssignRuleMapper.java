@@ -64,4 +64,6 @@ public interface BpmTaskAssignRuleMapper{
     public BpmTaskAssignRule selectListByModelIdAndTaskDefinitionKey(@Param("modelId") String modelId,@Param("taskDefinitionKey") String taskDefinitionKey);
 
     public void insertBatchBpmTaskAssignRule(List<BpmTaskAssignRule> rules);
+
+    public List<BpmTaskAssignRule> getTaskAssignRuleListByProcessDefinitionId(@Param("processDefinitionId")String processDefinitionId,@Param("taskDefinitionKey") String taskDefinitionKey);
 }

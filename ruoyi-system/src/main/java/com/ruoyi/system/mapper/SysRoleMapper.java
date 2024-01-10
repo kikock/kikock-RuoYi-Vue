@@ -111,4 +111,6 @@ public interface SysRoleMapper{
     public List<SelectMoreVo> getSimpleList(String keywords);
 
    public List<SysRole> selectBatchIds(@Param("list") List<Long> list);
+
+   public Set<Long> selectUsersBatchIds(Set<Long> ids);
 }

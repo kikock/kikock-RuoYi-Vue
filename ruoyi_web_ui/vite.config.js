@@ -32,7 +32,7 @@ export default defineConfig(({ mode, command }) => {
         // https://cn.vitejs.dev/config/#server-proxy
           //开发环境
         '/dev-api': {
-          target: 'http://localhost:8080',
+          target: 'http://localhost:8086',
           changeOrigin: true,
           rewrite: (p) => p.replace(/^\/dev-api/, '')
         },
