@@ -264,7 +264,6 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
         instanceExtDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult());
         processInstanceExtMapper.insertBpmProcessInstanceExt(instanceExtDO);
-        System.out.println(instanceExtDO.getId());
     }
 
     @Override
@@ -381,7 +380,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         runtimeService.setProcessInstanceName(instance.getId(), definition.getName());
         // 补全流程实例的拓展表
         BpmProcessInstanceExt bpmProcessInstanceExt = new BpmProcessInstanceExt();
-        bpmProcessInstanceExt.setProcessDefinitionId(definition.getId());
+        bpmProcessInstanceExt.setProcessInstanceId(instance.getId());
         bpmProcessInstanceExt.setBusinessKey(businessKey);
         bpmProcessInstanceExt.setFormVariables(variables.toString());
         processInstanceExtMapper.updateBpmProcessInstanceExtByProcessDefinitionId(bpmProcessInstanceExt);

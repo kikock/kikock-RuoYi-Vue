@@ -298,12 +298,12 @@
     update bpm_process_instance_ext
     <trim prefix="SET" suffixOverrides=",">
         <if test="businessKey != null">
-            business_key =#{businessKey}
+            business_key =#{businessKey},
         </if>
         <if test="formVariables != null">
             form_variables = #{formVariables},
         </if>
     </trim>
-    where process_definition_id = #{processDefinitionId}
+    where process_instance_id = #{processInstanceId}
 </update>
 </mapper>
