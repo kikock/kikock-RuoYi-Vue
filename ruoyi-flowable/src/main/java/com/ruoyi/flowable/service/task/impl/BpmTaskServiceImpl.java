@@ -63,6 +63,9 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         // 执行查询
         List<Task> tasks = taskQuery.listPage((pageVO.getPageNum()-1)*pageVO.getPageSize(), pageVO.getPageSize());
         if (CollUtil.isEmpty(tasks)) {
+            tasks = taskService.createTaskQuery().taskCandidateUser(String.valueOf(userId)).list();
+        }
+        if (CollUtil.isEmpty(tasks)) {
             return Collections.emptyList();
         }
         // 获得 ProcessInstance Map

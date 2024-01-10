@@ -173,39 +173,10 @@ const data = reactive({
     status: '',
     createTime: '',
     result: null,
-  },
-  rules: {
-    userId: [
-      {required: true, message: "申请人的用户编号不能为空", trigger: "blur"}
-    ],
-    type: [
-      {required: true, message: "请假类型不能为空", trigger: "change"}
-    ],
-    reason: [
-      {required: true, message: "请假原因不能为空", trigger: "blur"}
-    ],
-    startTime: [
-      {required: true, message: "开始时间不能为空", trigger: "blur"}
-    ],
-    endTime: [
-      {required: true, message: "结束时间不能为空", trigger: "blur"}
-    ],
-    day: [
-      {required: true, message: "请假天数不能为空", trigger: "blur"}
-    ],
-    result: [
-      {required: true, message: "请假结果不能为空", trigger: "blur"}
-    ],
-    createTime: [
-      {required: true, message: "创建时间不能为空", trigger: "blur"}
-    ],
-    updateTime: [
-      {required: true, message: "更新时间不能为空", trigger: "blur"}
-    ],
   }
 });
 
-const {queryParams, form, rules} = toRefs(data);
+const {queryParams, form} = toRefs(data);
 
 /** 查询 */
 function getList() {

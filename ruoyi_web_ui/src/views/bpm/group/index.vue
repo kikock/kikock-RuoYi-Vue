@@ -76,8 +76,9 @@
       <el-table-column label="描述" align="center" prop="description"/>
       <el-table-column label="成员" align="center">
         <template #default="scope">
-          <span v-for="userId in scope.row.memberUserIds" :key="userId" style="margin-left: 2px">
-            {{ userList.find((user) => user.id == userId)?.name }}
+          <span v-for="userId in scope.row.memberUserIds.split(',')" :key="userId" style="margin-left: 2px">
+<!--            {{userId}}-->
+            {{ userList.find((user) => user.id=== Number(userId) )?.name }}
           </span>
         </template>
       </el-table-column>
@@ -203,6 +204,7 @@ const {queryParams, form, rules} = toRefs(data);
 function getList() {
   loading.value = true;
   listGroup(queryParams.value).then(response => {
+    console.log(response.rows);
     groupList.value = response.rows;
     total.value = response.total;
     loading.value = false;
@@ -212,6 +214,7 @@ function getList() {
 /**查询用户**/
 function getUserList() {
   listUserSimple().then(response => {// 加载用户列表
+    console.log(typeof response.rows[0].id);
     userList.value = response.rows;
   })
 }
