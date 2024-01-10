@@ -3,6 +3,7 @@ package com.ruoyi.flowable.service.task.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -263,6 +264,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
         instanceExtDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult());
         processInstanceExtMapper.insertBpmProcessInstanceExt(instanceExtDO);
+        System.out.println(instanceExtDO.getId());
     }
 
     @Override
@@ -379,17 +381,10 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         runtimeService.setProcessInstanceName(instance.getId(), definition.getName());
         // 补全流程实例的拓展表
         BpmProcessInstanceExt bpmProcessInstanceExt = new BpmProcessInstanceExt();
-        bpmProcessInstanceExt.setStartUserId(userId);
-        bpmProcessInstanceExt.setBusinessKey(businessKey);
         bpmProcessInstanceExt.setProcessDefinitionId(definition.getId());
-        bpmProcessInstanceExt.setName(definition.getName());
-        bpmProcessInstanceExt.setProcessInstanceId(instance.getId());
+        bpmProcessInstanceExt.setBusinessKey(businessKey);
         bpmProcessInstanceExt.setFormVariables(variables.toString());
-//        1 处理中 2 通过 3 不通过 4 已取消
-        bpmProcessInstanceExt.setResult(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
-//        1 进行 2已完成
-        bpmProcessInstanceExt.setStatus(BpmProcessInstanceResultEnum.PROCESS.getResult());
-        processInstanceExtMapper.updateBpmProcessInstanceExt(bpmProcessInstanceExt);
+        processInstanceExtMapper.updateBpmProcessInstanceExtByProcessDefinitionId(bpmProcessInstanceExt);
         return instance.getId();
     }
 

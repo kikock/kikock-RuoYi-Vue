@@ -7,6 +7,7 @@ import com.ruoyi.flowable.mapper.leave.BpmOaLeaveMapper;
 import com.ruoyi.flowable.service.leave.IBpmOaLeaveService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +26,8 @@ import java.util.Map;
 public class BpmOaLeaveServiceImpl implements IBpmOaLeaveService{
     @Resource
     private BpmOaLeaveMapper bpmOaLeaveMapper;
-    @Autowired
+    @Resource
+    @Lazy // 解决循环依赖
     private IBpmProcessInstanceService processInstanceService;
 
     /**
