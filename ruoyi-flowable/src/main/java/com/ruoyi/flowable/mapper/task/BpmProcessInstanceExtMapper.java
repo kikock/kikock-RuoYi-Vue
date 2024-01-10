@@ -66,4 +66,6 @@ public interface BpmProcessInstanceExtMapper{
     List<BpmProcessInstanceExt> selectPage(BpmTaskReqVO pageReqVO);
 
     public BpmProcessInstanceExt selectBpmProcessInstanceExtByProcessDefinitionId(@Param("processDefinitionId") String processDefinitionId);
+
+    public int updateBpmProcessInstanceExtByProcessDefinitionId(BpmProcessInstanceExt bpmProcessInstanceExt);
 }
