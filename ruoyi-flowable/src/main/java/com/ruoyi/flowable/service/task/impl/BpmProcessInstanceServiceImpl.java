@@ -2,19 +2,23 @@ package com.ruoyi.flowable.service.task.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.exception.ServiceException;
-import com.ruoyi.common.utils.ObjectUtils;
+import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
-import com.ruoyi.flowable.domain.definition.vo.BpmProcessDefinitionVo;
 import com.ruoyi.flowable.domain.task.BpmProcessInstanceExt;
 import com.ruoyi.flowable.domain.task.vo.BpmProcessInstancePageItemRespVO;
 import com.ruoyi.flowable.domain.task.vo.BpmProcessInstanceRespVO;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
 import com.ruoyi.flowable.enums.BpmProcessInstanceDeleteReasonEnum;
+import com.ruoyi.flowable.enums.BpmProcessInstanceResultEnum;
+import com.ruoyi.flowable.enums.BpmProcessInstanceStatusEnum;
+import com.ruoyi.flowable.framework.event.BpmProcessInstanceResultEvent;
+import com.ruoyi.flowable.framework.event.BpmProcessInstanceResultEventPublisher;
 import com.ruoyi.flowable.mapper.task.BpmProcessInstanceExtMapper;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
@@ -45,6 +49,8 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
     private BpmProcessInstanceExtMapper processInstanceExtMapper;
     @Resource
     private IBpmProcessDefinitionService processDefinitionService;
+    @Resource
+    private BpmProcessInstanceResultEventPublisher processInstanceResultEventPublisher;
     @Resource
     private RuntimeService runtimeService;
     //    @Resource
@@ -140,15 +146,12 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         // 校验流程实例存在
         ProcessInstance instance = getProcessInstance(cancelReqVO.getId());
         if (instance == null) {
-            return;
-//            throw exception(PROCESS_INSTANCE_CANCEL_FAIL_NOT_EXISTS);
+            throw new ServiceException("流程取消失败，流程不处于运行中!", HttpStatus.ERROR) ;
         }
         // 只能取消自己的
         if (!Objects.equals(instance.getStartUserId(), String.valueOf(userId))) {
-            return;
-//          throw exception(PROCESS_INSTANCE_CANCEL_FAIL_NOT_SELF);
+        throw new ServiceException("流程取消失败，该流程不是你发起的!", HttpStatus.ERROR) ;
         }
-
         // 通过删除流程实例，实现流程实例的取消,
         // 删除流程实例，正则执行任务 ACT_RU_TASK. 任务会被删除。通过历史表查询
         runtimeService.deleteProcessInstance(cancelReqVO.getId(), BpmProcessInstanceDeleteReasonEnum.CANCEL_TASK.format(cancelReqVO.getReason()));
@@ -240,23 +243,103 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
 
     @Override
     public void createProcessInstanceExt(ProcessInstance instance) {
-
+        // 获得流程定义
+        ProcessDefinition definition = processDefinitionService.getProcessDefinition2(instance.getProcessDefinitionId());
+        // 插入 BpmProcessInstanceExtDO 对象
+        BpmProcessInstanceExt instanceExtDO = new BpmProcessInstanceExt();
+        instanceExtDO.setProcessInstanceId(instance.getId());
+        instanceExtDO.setProcessDefinitionId(definition.getId());
+        instanceExtDO.setName(instance.getProcessDefinitionName());
+        instanceExtDO.setStartUserId(Long.valueOf(instance.getStartUserId()));
+        instanceExtDO.setCategory(definition.getCategory());
+        instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
+        instanceExtDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult());
+        processInstanceExtMapper.insertBpmProcessInstanceExt(instanceExtDO);
     }
 
     @Override
     public void updateProcessInstanceExtCancel(FlowableCancelledEvent event) {
+        // 判断是否为 Reject 不通过。如果是，则不进行更新.
+        // 因为，updateProcessInstanceExtReject 方法，已经进行更新了
+        if (BpmProcessInstanceDeleteReasonEnum.isRejectReason((String)event.getCause())) {
+            return;
+        }
+        // 需要主动查询，因为 instance 只有 id 属性
+        // 另外，此时如果去查询 ProcessInstance 的话，字段是不全的，所以去查询了 HistoricProcessInstance
+        HistoricProcessInstance processInstance = getHistoricProcessInstance(event.getProcessInstanceId());
+        // 更新拓展表
+        BpmProcessInstanceExt instanceExtDO = new BpmProcessInstanceExt();
+        instanceExtDO.setProcessInstanceId(event.getProcessInstanceId());
+        instanceExtDO.setEndTime(DateUtils.getNowDate()); // 由于 ProcessInstance 里没有办法拿到 endTime，所以这里设置
+        instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.FINISH.getStatus());
+        instanceExtDO.setResult(BpmProcessInstanceResultEnum.CANCEL.getResult());
+        processInstanceExtMapper.updateBpmProcessInstanceExt(instanceExtDO);
 
+        BpmProcessInstanceResultEvent processInstanceResultEvent = new BpmProcessInstanceResultEvent(this);
+        processInstanceResultEvent.setId(processInstance.getId());
+        processInstanceResultEvent.setProcessDefinitionKey(processInstance.getProcessDefinitionKey());
+        processInstanceResultEvent.setBusinessKey(processInstance.getBusinessKey());
+        processInstanceResultEvent.setResult(instanceExtDO.getResult());
+        // 发送流程实例的状态事件
+        processInstanceResultEventPublisher.sendProcessInstanceResultEvent(processInstanceResultEvent);
     }
 
     @Override
     public void updateProcessInstanceExtComplete(ProcessInstance instance) {
+        // 需要主动查询，因为 instance 只有 id 属性
+        // 另外，此时如果去查询 ProcessInstance 的话，字段是不全的，所以去查询了 HistoricProcessInstance
+        HistoricProcessInstance processInstance = getHistoricProcessInstance(instance.getId());
+        // 更新拓展表
+        BpmProcessInstanceExt instanceExtDO = new BpmProcessInstanceExt();
+        instanceExtDO.setProcessInstanceId(instance.getProcessInstanceId());
+        instanceExtDO.setEndTime(DateUtils.getNowDate()); // 由于 ProcessInstance 里没有办法拿到 endTime，所以这里设置
+        instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.FINISH.getStatus());
+        instanceExtDO.setResult(BpmProcessInstanceResultEnum.APPROVE.getResult()); // 如果正常完全，说明审批通过
+        processInstanceExtMapper.updateBpmProcessInstanceExt(instanceExtDO);
 
+        // 发送流程通过消息(忽略)
+
+        // 发送流程实例的状态事件
+        BpmProcessInstanceResultEvent processInstanceResultEvent = new BpmProcessInstanceResultEvent(this);
+        processInstanceResultEvent.setId(processInstance.getId());
+        processInstanceResultEvent.setProcessDefinitionKey(processInstance.getProcessDefinitionKey());
+        processInstanceResultEvent.setBusinessKey(processInstance.getBusinessKey());
+        processInstanceResultEvent.setResult(instanceExtDO.getResult());
+        // 发送流程实例的状态事件
+        processInstanceResultEventPublisher.sendProcessInstanceResultEvent(processInstanceResultEvent);
     }
 
     @Override
     public void updateProcessInstanceExtReject(String id, String reason) {
+        // 需要主动查询，因为 instance 只有 id 属性
+        ProcessInstance processInstance = getProcessInstance(id);
+        // 删除流程实例，以实现驳回任务时，取消整个审批流程
+        deleteProcessInstance(id, StrUtil.format(BpmProcessInstanceDeleteReasonEnum.REJECT_TASK.format(reason)));
 
+        // 更新 status + result
+        // 注意，不能和上面的逻辑更换位置。因为 deleteProcessInstance 会触发流程的取消，进而调用 updateProcessInstanceExtCancel 方法，
+        // 设置 result 为 BpmProcessInstanceStatusEnum.CANCEL，显然和 result 不一定是一致的
+        BpmProcessInstanceExt instanceExtDO = new BpmProcessInstanceExt();
+        instanceExtDO.setProcessInstanceId(id);
+        instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.FINISH.getStatus());
+        instanceExtDO.setResult(BpmProcessInstanceResultEnum.REJECT.getResult());
+        processInstanceExtMapper.updateBpmProcessInstanceExt(instanceExtDO);
+
+        // 发送流程被不通过的消息(略)
+
+        // 发送流程实例的状态事件
+        BpmProcessInstanceResultEvent processInstanceResultEvent = new BpmProcessInstanceResultEvent(this);
+        processInstanceResultEvent.setId(processInstance.getId());
+        processInstanceResultEvent.setProcessDefinitionKey(processInstance.getProcessDefinitionKey());
+        processInstanceResultEvent.setBusinessKey(processInstance.getBusinessKey());
+        processInstanceResultEvent.setResult(instanceExtDO.getResult());
+        // 发送流程实例的状态事件
+        processInstanceResultEventPublisher.sendProcessInstanceResultEvent(processInstanceResultEvent);
     }
+    private void deleteProcessInstance(String id, String reason) {
+        runtimeService.deleteProcessInstance(id, reason);
+    }
+
 
     private static List<BpmProcessInstancePageItemRespVO.Task> getTask(List<Task> tasks) {
         List<BpmProcessInstancePageItemRespVO.Task> listTask = new ArrayList<BpmProcessInstancePageItemRespVO.Task>(tasks.size());
@@ -296,9 +379,9 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         bpmProcessInstanceExt.setProcessInstanceId(instance.getId());
         bpmProcessInstanceExt.setFormVariables(variables.toString());
 //        1 处理中 2 通过 3 不通过 4 已取消
-        bpmProcessInstanceExt.setResult(1);
+        bpmProcessInstanceExt.setResult(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
 //        1 进行 2已完成
-        bpmProcessInstanceExt.setStatus(1);
+        bpmProcessInstanceExt.setStatus(BpmProcessInstanceResultEnum.PROCESS.getResult());
         processInstanceExtMapper.insertBpmProcessInstanceExt(bpmProcessInstanceExt);
         return instance.getId();
     }

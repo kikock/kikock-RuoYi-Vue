@@ -180,4 +180,6 @@ public interface ISysRoleService{
 
     public void validateRoleList(List<Long> ids);
 
+
+    public Set<Long> selectUsersBatchIds(Set<Long> ids);
 }

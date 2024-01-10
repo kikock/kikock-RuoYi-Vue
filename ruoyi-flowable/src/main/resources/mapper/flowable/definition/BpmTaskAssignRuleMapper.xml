@@ -195,6 +195,22 @@
         where model_id = #{modelId} and
               task_definition_key = #{taskDefinitionKey}
     </select>
+    <select id="getTaskAssignRuleListByProcessDefinitionId"
+            resultMap="BpmTaskAssignRuleResult">
+        <include refid="selectBpmTaskAssignRuleVo"/>
+        <where>
+            <if test="processDefinitionId != null  and processDefinitionId != ''">
+                and process_definition_id =
+                #{processDefinitionId}
+            </if>
+            <if test="taskDefinitionKey != null  and taskDefinitionKey != ''">
+                and task_definition_key =
+                #{taskDefinitionKey}
+            </if>
+        </where>
+    </select>
+
+
     <insert id="insertBatchBpmTaskAssignRule" parameterType="BpmTaskAssignRule">
         insert into bpm_task_assign_rule
         (id,

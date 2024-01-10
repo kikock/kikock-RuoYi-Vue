@@ -11,7 +11,6 @@ import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
-import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysRoleDept;
 import com.ruoyi.system.domain.SysRoleMenu;
 import com.ruoyi.system.domain.SysUserRole;
@@ -414,4 +413,8 @@ public class SysRoleServiceImpl implements ISysRoleService{
         });
     }
 
+    @Override
+    public Set<Long> selectUsersBatchIds(Set<Long> ids){
+        return roleMapper.selectUsersBatchIds(ids);
+    }
 }
