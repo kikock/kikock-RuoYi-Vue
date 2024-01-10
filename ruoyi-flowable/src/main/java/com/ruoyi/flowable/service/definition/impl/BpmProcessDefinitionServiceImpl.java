@@ -237,7 +237,7 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
 
     @Override
     public ProcessDefinition getProcessDefinition2(String id){
-        return null;
+        return repositoryService.createProcessDefinitionQuery().processDefinitionId(id).singleResult();
     }
 
     @Override
