@@ -27,10 +27,10 @@ export function cancelProcessInstance(id, reason) {
   })
 }
 // 获得指定流程实例
-export function getProcessInstance(query) {
-  return request({
-    url: '/bpm/process-instance/findById',
+export const getProcessInstance = async (id) => {
+  return await request({
+    url: '/bpm/process-instance/findById?id=' + id ,
     method: 'get',
-    params: query
   })
+
 }

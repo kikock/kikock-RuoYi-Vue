@@ -6,6 +6,7 @@
     <resultMap type="BpmTaskExt" id="BpmTaskExtResult">
         <result property="id" column="id"/>
         <result property="assigneeUserId" column="assignee_user_id"/>
+        <result property="userList" column="user_list"/>
         <result property="name" column="name"/>
         <result property="taskId" column="task_id"/>
         <result property="result" column="result"/>
@@ -24,6 +25,7 @@
     <sql id="selectBpmTaskExtVo">
         select id,
                assignee_user_id,
+               user_list,
                name,
                task_id,
                result,
@@ -86,7 +88,7 @@
     <select id="selectListByTaskIds" resultMap="BpmTaskExtResult">
         <include refid="selectBpmTaskExtVo"/>
         WHERE task_id IN
-        <foreach collection="ids" item="taskId" open="(" close=")" separator=",">
+        <foreach collection="collection" item="taskId" open="(" close=")" separator=",">
             #{taskId}
         </foreach>
     </select>
@@ -97,6 +99,9 @@
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="assigneeUserId != null">
                 assignee_user_id,
+            </if>
+            <if test="userList != null and userList != ''">
+                user_list,
             </if>
             <if test="name != null">
                 name,
@@ -141,6 +146,9 @@
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="assigneeUserId != null">
                 #{assigneeUserId},
+            </if>
+            <if test="userList != null and userList != ''">
+                #{userList},
             </if>
             <if test="name != null">
                 #{name},
@@ -189,6 +197,9 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="assigneeUserId != null">
                 assignee_user_id = #{assigneeUserId},
+            </if>
+            <if test="userList != null and userList != ''">
+                user_list = #{userList},
             </if>
             <if test="name != null">
                 name = #{name},

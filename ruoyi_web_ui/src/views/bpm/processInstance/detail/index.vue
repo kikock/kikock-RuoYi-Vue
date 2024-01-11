@@ -61,136 +61,158 @@
       </el-col>
     </el-card>
 
+    <!-- 表单信息 -->
 
   </div>
 </template>
 <script setup name="BpmProcessInstanceDetail">
-import {getCurrentInstance, ref} from 'vue'
-import {getProcessInstance} from '@/api/bpm/processInstance'
+import {getCurrentInstance, reactive, ref, toRefs} from 'vue'
+import useUserStore from '@/store/modules/user'
+import * as ProcessInstanceApi from '@/api/bpm/processInstance'
+import * as TaskApi from '@/api/bpm/task'
+import {setConfAndFields2} from "@/utils/formCreate";
+import {getProcessDefinitionBpmnXML} from '@/api/bpm/definition'
 
 const {query} = useRoute() // 查询参数
 const {proxy} = getCurrentInstance()
-// 当前登录用户id
+const id = query.id // 流程实例的编号
 // 流程实例的加载中
 // ========== 流程实例信息 ==========
 const processInstanceLoading = ref(false)
 const processInstance = ref({}) // 流程实例信息
 const bpmnXML = ref('') // BPMN XML
 const tasksLoad = ref(true) // 任务的加载中
-const runningTasks = ref([]) // 任务列表
-
+const tasks = ref([]) // 任务列表
 // ========== 审批信息 ==========
-
-
-// ========== 申请信息 ==========
-
-function getDetailData() {
-  // 获得流程实例相关
-  processInstanceLoading.value = true;
-  if (query.id) {
-    console.log("开始加载数据!");
-    getProcessInstance({
-           id: query.id
-        }).then(response => {
-      console.log("查询到流程信息", response);
-      if (!response.data) {
-        proxy.$message.error('查询不到流程信息！');
-        return;
-      }
-      console.log(response);
-      // 设置流程信息
-        processInstance.value = response.data;
-      //
-      //   //将业务表单，注册为动态组件
-        const path = processInstance.value.processDefinition.formCustomViewPath;
-        console.log("注册业务表单,动态组件");
-      // 工厂函数执行 resolve 回调
-      Vue.component('async-biz-form-component', function (resolve) {
-        // 这个特殊的 `require` 语法将会告诉 webpack
-        // 自动将你的构建代码切割成多个包, 这些包
-        // 会通过 Ajax 请求加载
-        require([`@/views${path}`], resolve);
-      })
-      //
-      //   // 设置表单信息
-      //   if (this.processInstance.processDefinition.formType === 10) {
-      //     this.detailForm = {
-      //       ...JSON.parse(this.processInstance.processDefinition.formConf),
-      //       disabled: true, // 表单禁用
-      //       formBtns: false, // 按钮隐藏
-      //       fields: decodeFields(this.processInstance.processDefinition.formFields)
-      //     }
-      //     // 设置表单的值
-      //     this.detailForm.fields.forEach(item => {
-      //       const val = this.processInstance.formVariables[item.__vModel__]
-      //       if (val) {
-      //         item.__config__.defaultValue = val
-      //       }
-      //     });
-      //   }
-      //
-      //   // 加载流程图
-      //   getProcessDefinitionBpmnXML(this.processInstance.processDefinition.id).then(response => {
-      //     this.bpmnXML = response.data
-      //   });
-      //   // 加载活动列表
-      //   getActivityList({
-      //     processInstanceId: this.processInstance.id
-      //   }).then(response => {
-      //     this.activityList = response.data;
-      //   });
-      //
-      //   // 取消加载中
-      //   this.processInstanceLoading = false;
-      // });
-      // // 获得流程任务列表（审批记录）
-      // this.tasksLoad = true;
-      // this.runningTasks = [];
-      // this.auditForms = [];
-      // getTaskListByProcessInstanceId(this.id).then(response => {
-      //   // 审批记录
-      //   this.tasks = [];
-      //   // 移除已取消的审批
-      //   response.data.forEach(task => {
-      //     if (task.result !== 4) {
-      //       this.tasks.push(task);
-      //     }
-      //   });
-      //   // 排序，将未完成的排在前面，已完成的排在后面；
-      //   this.tasks.sort((a, b) => {
-      //     // 有已完成的情况，按照完成时间倒序
-      //     if (a.endTime && b.endTime) {
-      //       return b.endTime - a.endTime;
-      //     } else if (a.endTime) {
-      //       return 1;
-      //     } else if (b.endTime) {
-      //       return -1;
-      //       // 都是未完成，按照创建时间倒序
-      //     } else {
-      //       return b.createTime - a.createTime;
-      //     }
-      //   });
-      //
-      //   // 需要审核的记录
-      //   const userId = store.getters.userId;
-      //   this.tasks.forEach(task => {
-      //     if (task.result !== 1) { // 只有待处理才需要
-      //       return;
-      //     }
-      //     if (!task.assigneeUser || task.assigneeUser.id !== userId) { // 自己不是处理人
-      //       return;
-      //     }
-      //     this.runningTasks.push({...task});
-      //     this.auditForms.push({
-      //       reason: ''
-      //     })
-      //   });
-      //
-      //   // 取消加载中
-      //   this.tasksLoad = false;
-    });
+const runningTasks = ref([]) // 运行中的任务
+const auditData = reactive({
+  detailForm:{
+    // 流程表单详情
+    rule: [],
+    option: {},
+    value: {}
+  },
+  auditForms: {}, //审批任务的表单
+  auditRule: {
+    reason: [
+      {required: true, message: "审批建议不能为空", trigger: "blur"}
+    ],
   }
-  processInstanceLoading.value = false;
+});
+const {auditRule, auditForms,detailForm} = toRefs(auditData);
+// ========== 申请信息 ==========
+const fApi = ref() //
+
+/** 获得详情 */
+function getDetailData() {
+  // 1. 获得流程实例相关
+  getProcessInstanceData()
+  // 2. 获得流程任务列表（审批记录）
+  getTaskListData()
+  console.log(runningTasks.value);
+}
+// 获得流程实例信息
+const getProcessInstanceData = async () => {
+  try {
+    processInstanceLoading.value = true
+    const data = await ProcessInstanceApi.getProcessInstance(query.id)
+    if (!data.data) {
+      proxy.$message.error('查询不到流程信息！');
+      return
+    }
+
+    processInstance.value = data.data
+    // 设置表单信息
+    const processDefinition = data.data.processDefinition
+    if (processDefinition.formType === 10) {
+      setConfAndFields2(
+          detailForm,
+          processDefinition.formConf,
+          processDefinition.formFields,
+          data.data.formVariables
+      )
+      nextTick().then(() => {
+        fApi.value?.fapi?.btn.show(false)
+        fApi.value?.fapi?.resetBtn.show(false)
+        fApi.value?.fapi?.disabled(true)
+      })
+    } else {
+      // BusinessFormComponent.value = registerComponent(data.data.processDefinition.formCustomViewPath)
+    }
+
+    // 加载流程图
+    getBpmnXml(processDefinition.id);
+  } finally {
+    processInstanceLoading.value = false
+  }
+}
+const getBpmnXml = async (id) => {
+   await getProcessDefinitionBpmnXML(id).then(response => {
+      bpmnXML.value = response.data
+    })
+  }
+/** 加载任务列表 */
+const getTaskListData = async () => {
+  try {
+    // 获得未取消的任务
+    tasksLoad.value = true
+    const data = await TaskApi.getTaskListByProcessInstanceId(id)
+    tasks.value = []
+    // 1.1 移除已取消的审批
+    data.data.forEach((task) => {
+      if (task.result !== 4) {
+        tasks.value.push(task)
+      }
+    })
+    // 1.2 排序，将未完成的排在前面，已完成的排在后面；
+    tasks.value.sort((a, b) => {
+      // 有已完成的情况，按照完成时间倒序
+      if (a.endTime && b.endTime) {
+        return b.endTime - a.endTime
+      } else if (a.endTime) {
+        return 1
+      } else if (b.endTime) {
+        return -1
+        // 都是未完成，按照创建时间倒序
+      } else {
+        return b.createTime - a.createTime
+      }
+    })
+
+    // 获得需要自己审批的任务
+    runningTasks.value = []
+    auditForms.value = []
+    loadRunningTask(tasks.value)
+  } finally {
+    tasksLoad.value = false
+  }
+}
+
+
+/**
+ * 设置 runningTasks 中的任务
+ */
+const loadRunningTask = (tasks) => {
+  tasks.forEach((task) => {
+    if (task.children) {
+      loadRunningTask(task.children)
+    }
+    // 2.1 只有待处理才需要
+    console.log("只有待处理才需要",task.result);
+    if (task.result !== 1 && task.result !== 6) {
+
+      return
+    }
+    // 2.2 自己不是处理人
+    if (!task.assigneeUser || task.assigneeUser.id !== userId) {
+      return
+    }
+    // 2.3 添加到处理任务
+    runningTasks.value.push({ ...task })
+    auditForms.value.push({
+      reason: ''
+    })
+  })
 }
 
 getDetailData()

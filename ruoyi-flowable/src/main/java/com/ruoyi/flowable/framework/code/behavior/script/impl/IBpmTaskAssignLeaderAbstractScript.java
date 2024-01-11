@@ -36,10 +36,10 @@ public abstract class IBpmTaskAssignLeaderAbstractScript implements IBpmTaskAssi
     @Lazy // 解决循环依赖
     private IBpmProcessInstanceService bpmProcessInstanceService;
 
-    protected Set<Long> calculateTaskCandidateUsers(DelegateExecution execution, int level){
+    protected Set<Long> calculateTaskCandidateUsers(String processInstanceId, int level){
         Assert.isTrue(level > 0, "level 必须大于 0");
         // 获得发起人
-        ProcessInstance processInstance = bpmProcessInstanceService.getProcessInstance(execution.getProcessInstanceId());
+        ProcessInstance processInstance = bpmProcessInstanceService.getProcessInstance(processInstanceId);
         //获取发起人id
         String startUserId = processInstance.getStartUserId();
         // 获得对应 leve 的部门
