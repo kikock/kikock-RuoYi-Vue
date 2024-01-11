@@ -1,11 +1,12 @@
 package com.ruoyi.flowable.framework.code.behavior.script.impl;
 
-import com.alibaba.excel.util.NumberUtils;
 import com.ruoyi.common.utils.collection.SetUtils;
+import com.ruoyi.flowable.enums.BpmTaskRuleScriptEnum;
 import com.ruoyi.flowable.framework.code.behavior.script.IBpmTaskAssignScript;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
-import org.flowable.engine.delegate.DelegateExecution;
+import org.flowable.engine.RuntimeService;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
@@ -20,14 +21,17 @@ import java.util.Set;
 @Component
 public class IBpmTaskAssignStartUserScript implements IBpmTaskAssignScript{
 
-    @Resource
-    @Lazy // 解决循环依赖
-    private IBpmProcessInstanceService bpmProcessInstanceService;
-
+    @Autowired
+    @Lazy
+    private RuntimeService runtimeService;
     @Override
-    public Set<Long> calculateTaskCandidateUsers(String processInstanceId) {
-        ProcessInstance processInstance = bpmProcessInstanceService.getProcessInstance(processInstanceId);
+    public Set<Long> calculateTaskCandidateUsers(String processInstanceId){
+        ProcessInstance processInstance =   runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
         String startUserId = processInstance.getStartUserId();
         return SetUtils.asSet(Long.valueOf(startUserId));
+    }
+    @Override
+    public BpmTaskRuleScriptEnum getEnum() {
+        return BpmTaskRuleScriptEnum.START_USER;
     }
 }

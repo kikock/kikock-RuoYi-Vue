@@ -234,10 +234,9 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         HistoricProcessInstance processInstance = processInstanceService.getHistoricProcessInstance(processInstanceId);
         // 获得 处理人和候选人 user map信息
         //候选人信息
+
         List<String> userlists = convertList(bpmTaskExtDOs, taskExt -> taskExt.getUserList());
         //所有候选人list
-
-
         List<Long> userIds = convertList(tasks, task -> parseLong(task.getAssignee()));
         userIds.add(parseLong(processInstance.getStartUserId()));
         List<SysUserSimpleVo> userList = sysUserService.selectBatchIds(userIds);
@@ -252,6 +251,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             respVO.setEndTime( taskExtDO.getEndTime() );
             respVO.setResult( taskExtDO.getResult() );
             respVO.setReason( taskExtDO.getReason() );
+
             if (processInstance != null) {
                 SysUserSimpleVo startUser = userMap.get(parseLong(processInstance.getStartUserId()));
                 respVO.setProcessInstance(convert(processInstance, startUser));
@@ -260,6 +260,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             if (assignUser != null) {
                 respVO.setAssigneeUser(assignUser);
             }
+
             return respVO;
         });
     }
@@ -306,7 +307,9 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         taskExt.setCreateTime(task.getCreateTime());
         taskExt.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult());
        //拓展表保存候选用户集合
-        Set<Long> set = taskAssignRuleService.calculateTaskCandidateUsers2(task.getName(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+        Set<Long> set = taskAssignRuleService.calculateTaskCandidateUsers(task.getName(),
+                task.getProcessDefinitionId(),
+                task.getTaskDefinitionKey(),task.getProcessInstanceId());
         taskExt.setUserList(Joiner.on(",").join(set));
         taskExtMapper.insertBpmTaskExt(taskExt);
     }

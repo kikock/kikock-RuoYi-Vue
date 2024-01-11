@@ -19,6 +19,7 @@ import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
 import com.ruoyi.flowable.domain.definition.BpmUserGroup;
 import com.ruoyi.flowable.enums.BpmTaskAssignRuleTypeEnum;
+import com.ruoyi.flowable.framework.code.behavior.script.IBpmTaskAssignScript;
 import com.ruoyi.flowable.framework.utils.BpmnModelUtils;
 import com.ruoyi.flowable.mapper.definition.BpmTaskAssignRuleMapper;
 import com.ruoyi.flowable.service.definition.IBpmModelService;
@@ -31,8 +32,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.api.FlowableException;
+import org.flowable.engine.RuntimeService;
 import org.flowable.engine.delegate.DelegateExecution;
-import org.flowable.task.api.Task;
+import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -42,7 +44,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.hutool.core.text.CharSequenceUtil.format;
-import static com.ruoyi.common.utils.collection.CollectionUtils.convertSet;
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * Bpm 任务规则Service业务层处理
@@ -63,6 +65,10 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
     private IBpmProcessDefinitionService bpmProcessDefinitionService;
 
     @Autowired
+    @Lazy
+    private RuntimeService runtimeService;
+
+    @Autowired
     private ISysRoleService roleService;
     @Autowired
     private ISysPostService postService;
@@ -75,7 +81,15 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
     @Autowired
     private ISysDictDataService dictDataService;
 
+    /**
+     * 任务分配脚本
+     */
+    private Map<Long,IBpmTaskAssignScript> scriptMap = Collections.emptyMap();
 
+    @Resource
+    public void setScripts(List<IBpmTaskAssignScript> scripts) {
+        this.scriptMap = convertMap(scripts, script -> script.getEnum().getId());
+    }
     /**
      * 查询Bpm 任务规则
      *
@@ -118,7 +132,7 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
             return Collections.emptyList();
         }
 //        // 转换数据
-        Map<String,BpmTaskAssignRule> ruleMap = CollectionUtils.convertMap(rules, BpmTaskAssignRule::getTaskDefinitionKey);
+        Map<String,BpmTaskAssignRule> ruleMap = convertMap(rules, BpmTaskAssignRule::getTaskDefinitionKey);
         return CollectionUtils.convertList(userTasks, task -> {
             BpmTaskAssignRule respVO = ruleMap.get(task.getId());
             if (respVO == null) {
@@ -237,7 +251,10 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         List<BpmTaskAssignRule> rules = Collections.emptyList();
         // 校验未配置规则的任务
         taskAssignRules.forEach(rule -> {
-            if (CollUtil.isEmpty(rule.getSelectMoreVos())) {
+            if (rule.getType()!= 50 && CollUtil.isEmpty(rule.getSelectMoreVos())) {
+                throw new ServiceException(String.format("部署流程失败，原因：用户任务(%s)未配置分配规则，请点击【修改流程】按钮进行配置!", rule.getTaskDefinitionName()), HttpStatus.ERROR);
+            }
+            if(rule.getType()== 50 && StringUtils.isEmpty(rule.getOptionName())){
                 throw new ServiceException(String.format("部署流程失败，原因：用户任务(%s)未配置分配规则，请点击【修改流程】按钮进行配置!", rule.getTaskDefinitionName()), HttpStatus.ERROR);
             }
         });
@@ -260,7 +277,7 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
 
         // 遍历，匹配对应的规则
         Map<String,BpmTaskAssignRule> processInstanceRuleMap =
-                CollectionUtils.convertMap(processDefinitionRules, BpmTaskAssignRule::getTaskDefinitionKey);
+                convertMap(processDefinitionRules, BpmTaskAssignRule::getTaskDefinitionKey);
 
         for (BpmTaskAssignRule modelRule : modelRules) {
             BpmTaskAssignRule processInstanceRule = processInstanceRuleMap.get(modelRule.getTaskDefinitionKey());
@@ -289,53 +306,8 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         });
         bpmTaskAssignRuleMapper.insertBatchBpmTaskAssignRule(rules);
     }
-
     @Override
-    public Set<Long> calculateTaskCandidateUsers(DelegateExecution execution){
-        List<BpmTaskAssignRule> taskRules = bpmTaskAssignRuleMapper.getTaskAssignRuleListByProcessDefinitionId(
-                execution.getProcessDefinitionId(), execution.getCurrentActivityId());
-        if (CollUtil.isEmpty(taskRules)) {
-            throw new FlowableException(format("流程任务({}/{}/{}) 找不到符合的任务规则",
-                    execution.getId(), execution.getProcessDefinitionId(), execution.getCurrentActivityId()));
-        }
-        if (taskRules.size() > 1) {
-            throw new FlowableException(format("流程任务({}/{}/{}) 找到过多任务规则({})",
-                    execution.getId(), execution.getProcessDefinitionId(), execution.getCurrentActivityId()));
-        }
-        BpmTaskAssignRule bpmTaskAssignRule = taskRules.get(0);
-        return calculateTaskCandidateUsers(execution, bpmTaskAssignRule);
-    }
-
-    @VisibleForTesting
-    Set<Long> calculateTaskCandidateUsers(DelegateExecution execution, BpmTaskAssignRule rule) {
-        Set<Long> assigneeUserIds = null;
-        if (Objects.equals(BpmTaskAssignRuleTypeEnum.ROLE.getType(), rule.getType())) {
-            assigneeUserIds = calculateTaskCandidateUsersByRole(rule);
-        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.DEPT_MEMBER.getType(), rule.getType())) {
-            assigneeUserIds = calculateTaskCandidateUsersByDeptMember(rule);
-        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.DEPT_LEADER.getType(), rule.getType())) {
-            assigneeUserIds = calculateTaskCandidateUsersByDeptLeader(rule);
-        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.POST.getType(), rule.getType())) {
-            assigneeUserIds = calculateTaskCandidateUsersByPost(rule);
-        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.USER.getType(), rule.getType())) {
-            assigneeUserIds = calculateTaskCandidateUsersByUser(rule);
-        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.USER_GROUP.getType(), rule.getType())) {
-            assigneeUserIds = calculateTaskCandidateUsersByUserGroup(rule);
-        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.SCRIPT.getType(), rule.getType())) {
-            assigneeUserIds = calculateTaskCandidateUsersByScript(execution, rule);
-        }
-        // 移除被禁用的用户
-        removeDisableUsers(assigneeUserIds);
-        // 如果候选人为空，抛出异常
-        if (CollUtil.isEmpty(assigneeUserIds)) {
-            log.error("[calculateTaskCandidateUsers][流程任务({}/{}/{}) 任务规则({}) 找不到候选人]", execution.getId(),
-                    execution.getProcessDefinitionId(), execution.getCurrentActivityId(), JSONUtil.toJsonStr(rule));
-            throw new ServiceException("操作失败，原因：找不到任务的审批人！" ,HttpStatus.ERROR);
-        }
-        return assigneeUserIds;
-    }
-    @Override
-    public Set<Long> calculateTaskCandidateUsers2(String name, String processDefinitionId, String taskDefinitionKey){
+    public Set<Long> calculateTaskCandidateUsers(String name, String processDefinitionId, String taskDefinitionKey,String processInstanceId){
         List<BpmTaskAssignRule> taskRules = bpmTaskAssignRuleMapper.getTaskAssignRuleListByProcessDefinitionId(
                 processDefinitionId, taskDefinitionKey);
         if (CollUtil.isEmpty(taskRules)) {
@@ -347,14 +319,16 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
                     name, processDefinitionId, taskDefinitionKey));
         }
         BpmTaskAssignRule bpmTaskAssignRule = taskRules.get(0);
-        return calculateTaskCandidateUsers2(name,processDefinitionId,taskDefinitionKey, bpmTaskAssignRule);
+        return calculateTaskCandidateUsers(name, processDefinitionId, taskDefinitionKey, bpmTaskAssignRule,processInstanceId);
     }
     @VisibleForTesting
-    Set<Long> calculateTaskCandidateUsers2(String name , String  processDefinitionId,String taskDefinitionKey, BpmTaskAssignRule rule) {
+    Set<Long> calculateTaskCandidateUsers(String name, String processDefinitionId, String taskDefinitionKey, BpmTaskAssignRule rule ,String processInstanceId){
         Set<Long> assigneeUserIds = null;
         if (Objects.equals(BpmTaskAssignRuleTypeEnum.ROLE.getType(), rule.getType())) {
+//            角色
             assigneeUserIds = calculateTaskCandidateUsersByRole(rule);
         } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.DEPT_MEMBER.getType(), rule.getType())) {
+            //部门
             assigneeUserIds = calculateTaskCandidateUsersByDeptMember(rule);
         } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.DEPT_LEADER.getType(), rule.getType())) {
             assigneeUserIds = calculateTaskCandidateUsersByDeptLeader(rule);
@@ -365,7 +339,7 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.USER_GROUP.getType(), rule.getType())) {
             assigneeUserIds = calculateTaskCandidateUsersByUserGroup(rule);
         } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.SCRIPT.getType(), rule.getType())) {
-            assigneeUserIds =null;
+            assigneeUserIds =calculateTaskCandidateUsersByScript(processInstanceId,rule);
         }
         // 移除被禁用的用户
         removeDisableUsers(assigneeUserIds);
@@ -377,68 +351,78 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         }
         return assigneeUserIds;
     }
-    private Set<Long> calculateTaskCandidateUsersByRole(BpmTaskAssignRule rule) {
+
+    private Set<Long> calculateTaskCandidateUsersByRole(BpmTaskAssignRule rule){
         List<String> list = Arrays.asList(rule.getOptions().split(","));
         Set<Long> ids = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toSet());
         return roleService.selectUsersBatchIds(ids);
     }
 
-    private Set<Long> calculateTaskCandidateUsersByDeptMember(BpmTaskAssignRule rule) {
-//        List<AdminUserRespDTO> users = adminUserApi.getUserListByDeptIds(rule.getOptions());
-//        return convertSet(users, AdminUserRespDTO::getId);
-        return null;
-    }
-
-    private Set<Long> calculateTaskCandidateUsersByDeptLeader(BpmTaskAssignRule rule) {
-//        List<DeptRespDTO> depts = deptApi.getDeptList(rule.getOptions());
-//        return convertSet(depts, DeptRespDTO::getLeaderUserId);
-        return null;
-    }
-
-    private Set<Long> calculateTaskCandidateUsersByPost(BpmTaskAssignRule rule) {
-//        List<AdminUserRespDTO> users = adminUserApi.getUserListByPostIds(rule.getOptions());
-//        return convertSet(users, AdminUserRespDTO::getId);
-        return null;
-    }
-
-    private Set<Long> calculateTaskCandidateUsersByUser(BpmTaskAssignRule rule) {
+    private Set<Long> calculateTaskCandidateUsersByDeptMember(BpmTaskAssignRule rule){
         List<String> list = Arrays.asList(rule.getOptions().split(","));
-       return list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toSet());
+        List<Long> ids = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<SysUserSimpleVo> userSimpleVos = userService.selectBatchDeptIds(ids);
+        return userSimpleVos.stream().map(SysUserSimpleVo::getId).collect(Collectors.toSet());
     }
 
-    private Set<Long> calculateTaskCandidateUsersByUserGroup(BpmTaskAssignRule rule) {
-//        List<BpmUserGroupDO> userGroups = userGroupService.getUserGroupList(rule.getOptions());
+    private Set<Long> calculateTaskCandidateUsersByDeptLeader(BpmTaskAssignRule rule){
+        List<String> list = Arrays.asList(rule.getOptions().split(","));
+        List<Long> ids = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<SysDept> sysDepts = deptService.selectBatchIds(ids);
+        return sysDepts.stream().map(SysDept::getLeader).collect(Collectors.toSet());
+    }
+
+    private Set<Long> calculateTaskCandidateUsersByPost(BpmTaskAssignRule rule){
+        List<String> list = Arrays.asList(rule.getOptions().split(","));
+        List<Long> ids = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+        List<SysUserSimpleVo> userSimpleVos = userService.selectBatchPostIds(ids);
+        return userSimpleVos.stream().map(SysUserSimpleVo::getId).collect(Collectors.toSet());
+    }
+
+    private Set<Long> calculateTaskCandidateUsersByUser(BpmTaskAssignRule rule){
+        List<String> list = Arrays.asList(rule.getOptions().split(","));
+        return list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toSet());
+    }
+
+    private Set<Long> calculateTaskCandidateUsersByUserGroup(BpmTaskAssignRule rule){
+        List<String> list = Arrays.asList(rule.getOptions().split(","));
+        List<Long> ids = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
         Set<Long> userIds = new HashSet<>();
-//        userGroups.forEach(group -> userIds.addAll(group.getMemberUserIds()));
+        List<BpmUserGroup> bpmUserGroups = userGroupService.selectBatchIds(ids);
+        bpmUserGroups.forEach(group -> {
+            String memberUserIds = group.getMemberUserIds();
+            List<String> ids1 = Arrays.asList(group.getMemberUserIds().split(","));
+            List<Long> ids2 = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            userIds.addAll(ids2);
+        });
         return userIds;
     }
-
-    private Set<Long> calculateTaskCandidateUsersByScript(DelegateExecution execution, BpmTaskAssignRule rule) {
+    private Set<Long> calculateTaskCandidateUsersByScript(String processDefinitionId, BpmTaskAssignRule rule) {
         // 获得对应的脚本
-//        List<BpmTaskAssignScript> scripts = new ArrayList<>(rule.getOptions().size());
-//        rule.getOptions().forEach(id -> {
-//            BpmTaskAssignScript script = scriptMap.get(id);
-//            if (script == null) {
-//                throw exception(TASK_ASSIGN_SCRIPT_NOT_EXISTS, id);
-//            }
-//            scripts.add(script);
-//        });
-//         逐个计算任务
+        List<String> list = Arrays.asList(rule.getOptions().split(","));
+        List<IBpmTaskAssignScript> scripts = new ArrayList<>(list.size());
+        list.forEach(id -> {
+            IBpmTaskAssignScript script = scriptMap.get(Long.valueOf(id));
+            if (script == null) {
+                throw new ServiceException("操作失败，原因：操作失败，原因：任务分配脚本不存在！" ,HttpStatus.ERROR);
+            }
+
+            scripts.add(script);
+        });
+        // 逐个计算任务
         Set<Long> userIds = new HashSet<>();
-//        scripts.forEach(script -> CollUtil.addAll(userIds, script.calculateTaskCandidateUsers(execution)));
+        scripts.forEach(script -> CollUtil.addAll(userIds, script.calculateTaskCandidateUsers(processDefinitionId)));
         return userIds;
     }
 
     @VisibleForTesting
-    void removeDisableUsers(Set<Long> assigneeUserIds) {
-//        if (CollUtil.isEmpty(assigneeUserIds)) {
-//            return;
-//        }
-//        Map<Long, AdminUserRespDTO> userMap = adminUserApi.getUserMap(assigneeUserIds);
-//        assigneeUserIds.removeIf(id -> {
-//            AdminUserRespDTO user = userMap.get(id);
-//            return user == null || !CommonStatusEnum.ENABLE.getStatus().equals(user.getStatus());
-//        });
+    void removeDisableUsers(Set<Long> assigneeUserIds){
+        if (CollUtil.isEmpty(assigneeUserIds)) {
+            return;
+        }
+//        再查询一次  移除禁用或删除用户
+        List<SysUserSimpleVo> userSimpleVos = userService.selectBatchIds((List<Long>) assigneeUserIds);
+         userSimpleVos.stream().map(SysUserSimpleVo::getId).collect(Collectors.toSet());
     }
 
     private void setTaskAssignRuleOptionName(Integer type, BpmTaskAssignRule taskAssignRule){
