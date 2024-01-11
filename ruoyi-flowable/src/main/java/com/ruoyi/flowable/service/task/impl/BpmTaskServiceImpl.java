@@ -11,6 +11,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
 import com.ruoyi.flowable.domain.task.BpmTaskExt;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskItemRespVO;
@@ -23,6 +24,7 @@ import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
 import com.ruoyi.flowable.service.task.IBpmTaskService;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysUserService;
+import liquibase.pro.packaged.L;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.common.engine.impl.db.SuspensionState;
 import org.flowable.engine.HistoryService;
@@ -148,8 +150,8 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         Map<String, HistoricProcessInstance> historicProcessInstanceMap = convertMap(historicProcessInstances, HistoricProcessInstance::getId);
         // 获得 User Map
         List<Long> starUserIds = convertList(historicProcessInstanceMap.values(), instance -> Long.valueOf(instance.getStartUserId()));
-        List<SysUser> userList = sysUserService.getUserList(starUserIds);
-        Map<Long, SysUser> userMap = convertMap(userList, SysUser::getUserId);
+        List<SysUserSimpleVo> userList = sysUserService.selectBatchIds(starUserIds);
+        Map<Long, SysUserSimpleVo> userMap = convertMap(userList, SysUserSimpleVo::getId);
         // 拼接结果
         return convertList(tasks, task -> {
             BpmTaskItemRespVO respVO = convert2(task);
@@ -163,7 +165,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             }
             HistoricProcessInstance processInstance = historicProcessInstanceMap.get(task.getProcessInstanceId());
             if (processInstance != null) {
-                SysUser sysUser = userMap.get(StrUtil.isNotEmpty(processInstance.getStartUserId()) ? Long.valueOf(processInstance.getStartUserId()) : null);
+                SysUserSimpleVo sysUser = userMap.get(StrUtil.isNotEmpty(processInstance.getStartUserId()) ? Long.valueOf(processInstance.getStartUserId()) : null);
                 respVO.setProcessInstance(convert(processInstance, sysUser));
             }
             return respVO;
@@ -183,7 +185,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         bpmTaskDonePageItemRespVO.setDurationInMillis( task.getDurationInMillis() );
         return bpmTaskDonePageItemRespVO;
     }
-    public BpmTaskItemRespVO.ProcessInstance convert(HistoricProcessInstance processInstance, SysUser startUser) {
+    public BpmTaskItemRespVO.ProcessInstance convert(HistoricProcessInstance processInstance, SysUserSimpleVo startUser) {
         if ( processInstance == null && startUser == null ) {
             return null;
         }
@@ -199,7 +201,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             processInstance1.setProcessDefinitionId( processInstance.getProcessDefinitionId() );
         }
         if ( startUser != null ) {
-            processInstance1.setStartUserNickname( startUser.getNickName() );
+            processInstance1.setStartUserNickname( startUser.getName() );
         }
 
         return processInstance1;
@@ -230,31 +232,33 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         Map<String, BpmTaskExt> bpmTaskExtDOMap = convertMap(bpmTaskExtDOs, BpmTaskExt::getTaskId);
         // 获得 ProcessInstance Map
         HistoricProcessInstance processInstance = processInstanceService.getHistoricProcessInstance(processInstanceId);
-        // 获得 User Map
+        // 获得 处理人和候选人 user map信息
+        //候选人信息
+        List<String> userlists = convertList(bpmTaskExtDOs, taskExt -> taskExt.getUserList());
+        //所有候选人list
+
+
         List<Long> userIds = convertList(tasks, task -> parseLong(task.getAssignee()));
         userIds.add(parseLong(processInstance.getStartUserId()));
-        List<SysUser> userList = sysUserService.getUserList(userIds);
-        Map<Long, SysUser> userMap = convertMap(userList, SysUser::getUserId);
-        // 获得 Dept Map
-        List<Long> deptIds = convertList(userMap.values(), SysUser::getDeptId);
-        List<SysDept> sysDepts = deptService.selectBatchIds(deptIds);
-        Map<Long, SysDept> deptMap = convertMap(sysDepts, SysDept::getDeptId);
+        List<SysUserSimpleVo> userList = sysUserService.selectBatchIds(userIds);
+        Map<Long, SysUserSimpleVo> userMap = convertMap(userList, SysUserSimpleVo::getId);
         // 拼接数据
         return convertList(tasks, task -> {
+            System.out.println(task.getName());;
             BpmTaskItemRespVO respVO = convert3(task);
             BpmTaskExt taskExtDO = bpmTaskExtDOMap.get(task.getId());
-            copyTo(taskExtDO, respVO);
+            respVO.setName( taskExtDO.getName() );
+            respVO.setCreateTime( taskExtDO.getCreateTime() );
+            respVO.setEndTime( taskExtDO.getEndTime() );
+            respVO.setResult( taskExtDO.getResult() );
+            respVO.setReason( taskExtDO.getReason() );
             if (processInstance != null) {
-                SysUser startUser = userMap.get(parseLong(processInstance.getStartUserId()));
+                SysUserSimpleVo startUser = userMap.get(parseLong(processInstance.getStartUserId()));
                 respVO.setProcessInstance(convert(processInstance, startUser));
             }
-            SysUser assignUser = userMap.get(parseLong(task.getAssignee()));
+            SysUserSimpleVo assignUser = userMap.get(parseLong(task.getAssignee()));
             if (assignUser != null) {
-                respVO.setAssigneeUser(convert3(assignUser));
-                SysDept dept = deptMap.get(assignUser.getDeptId());
-                if (dept != null) {
-                    respVO.getAssigneeUser().setDeptName(dept.getDeptName());
-                }
+                respVO.setAssigneeUser(assignUser);
             }
             return respVO;
         });
@@ -272,18 +276,6 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         bpmTaskRespVO.setEndTime(  bean.getEndTime() ) ;
         bpmTaskRespVO.setDurationInMillis( bean.getDurationInMillis() );
         return bpmTaskRespVO;
-    }
-    public BpmTaskItemRespVO.User convert3(SysUser bean) {
-        if ( bean == null ) {
-            return null;
-        }
-
-        BpmTaskItemRespVO.User user = new BpmTaskItemRespVO.User();
-
-        user.setId( bean.getDeptId() );
-        user.setNickname( bean.getNickName() );
-        user.setDeptId( bean.getDeptId() );
-        return user;
     }
     public void copyTo(BpmTaskExt from, BpmTaskItemRespVO to) {
         if ( from == null ) {

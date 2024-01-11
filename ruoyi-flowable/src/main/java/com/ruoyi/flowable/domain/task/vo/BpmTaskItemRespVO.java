@@ -3,11 +3,13 @@ package com.ruoyi.flowable.domain.task.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.annotation.Excel;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /*
  *  管理后台 - 流程任务的 Running 进行中的分页项 Response VO
@@ -67,16 +69,10 @@ public class BpmTaskItemRespVO {
     /**
      * 审核的用户信息
      */
-    private User assigneeUser;
-    @Data
-    public static class User {
+    private SysUserSimpleVo assigneeUser;
 
-        private Long id;
-        private String nickname;
-
-        private Long deptId;
-        private String deptName;
-
-    }
-
+    /**
+     * 候选用户信息
+     */
+    private List<SysUserSimpleVo> candidateUsers;
 }

@@ -50,7 +50,9 @@ public class BpmParallelMultiInstanceBehavior extends ParallelMultiInstanceBehav
         super.collectionElementVariable = FlowableUtils.formatCollectionElementVariable(execution.getCurrentActivityId());
 
         // 第二步，获取任务的所有处理人
-        Set<Long> assigneeUserIds = bpmTaskRuleService.calculateTaskCandidateUsers(execution);
+//        Set<Long> assigneeUserIds = bpmTaskRuleService.calculateTaskCandidateUsers(execution);
+        Set<Long> assigneeUserIds =   bpmTaskRuleService.calculateTaskCandidateUsers2(execution.getEventName(),execution.getProcessDefinitionId(),execution.getCurrentActivityId());
+
         execution.setVariable(super.collectionVariable, assigneeUserIds);
         return assigneeUserIds.size();
     }
