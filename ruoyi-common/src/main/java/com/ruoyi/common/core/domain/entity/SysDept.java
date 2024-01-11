@@ -47,7 +47,7 @@ public class SysDept extends BaseEntity{
     /**
      * 负责人
      */
-    private String leader;
+    private Long leader;
     /**
      * 负责人姓名
      */
@@ -81,6 +81,14 @@ public class SysDept extends BaseEntity{
      * 子部门
      */
     private List<SysDept> children = new ArrayList<SysDept>();
+
+    public Long getLeader(){
+        return leader;
+    }
+
+    public void setLeader(Long leader){
+        this.leader = leader;
+    }
 
     public String getLeaderName(){
         return leaderName;
@@ -131,14 +139,6 @@ public class SysDept extends BaseEntity{
 
     public void setOrderNum(Integer orderNum){
         this.orderNum = orderNum;
-    }
-
-    public String getLeader(){
-        return leader;
-    }
-
-    public void setLeader(String leader){
-        this.leader = leader;
     }
 
     @Size(min = 0, max = 11, message = "联系电话长度不能超过11个字符")

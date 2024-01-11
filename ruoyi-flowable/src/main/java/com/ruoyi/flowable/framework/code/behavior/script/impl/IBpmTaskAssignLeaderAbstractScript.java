@@ -6,7 +6,6 @@ import com.ruoyi.flowable.framework.code.behavior.script.IBpmTaskAssignScript;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysUserService;
-import org.flowable.engine.delegate.DelegateExecution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.util.Assert;
@@ -64,9 +63,7 @@ public abstract class IBpmTaskAssignLeaderAbstractScript implements IBpmTaskAssi
                 dept = parentDept;
             }
         }
-        return asSet(0L);
-        //TODO 这里需要优化，需要修改系统部门负责人 保存为用户id ,并进行选择
-//        return dept.getLeader() != null ? asSet(dept.getLeader()) : emptySet();
+        return dept.getLeader() != null ? asSet(dept.getLeader()) : emptySet();
     }
 
 

@@ -501,7 +501,14 @@ public class SysUserServiceImpl implements ISysUserService{
     public List<SelectMoreVo> getSimpleList(String keywords){
         return userMapper.getSimpleList(keywords);
     }
-
+    @Override
+    public List<SysUserSimpleVo> selectBatchDeptIds(List<Long> ids){
+        return userMapper.selectBatchDeptIds(ids);
+    }
+    @Override
+    public List<SysUserSimpleVo> selectBatchPostIds(List<Long> ids){
+        return userMapper.selectBatchPostIds(ids);
+    }
     @Override
     public List<SysUserSimpleVo> selectBatchIds(List<Long> ids){
         return userMapper.selectBatchIds(ids);

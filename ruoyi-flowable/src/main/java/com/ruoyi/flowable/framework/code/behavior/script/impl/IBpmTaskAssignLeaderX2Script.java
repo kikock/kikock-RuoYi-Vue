@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.framework.code.behavior.script.impl;
 
+import com.ruoyi.flowable.enums.BpmTaskRuleScriptEnum;
 import org.flowable.engine.delegate.DelegateExecution;
 import org.springframework.stereotype.Component;
 
@@ -16,5 +17,9 @@ public class IBpmTaskAssignLeaderX2Script extends IBpmTaskAssignLeaderAbstractSc
     @Override
     public Set<Long> calculateTaskCandidateUsers(String processInstanceId) {
         return calculateTaskCandidateUsers(processInstanceId, 2);
+    }
+    @Override
+    public BpmTaskRuleScriptEnum getEnum() {
+        return BpmTaskRuleScriptEnum.LEADER_X2;
     }
 }

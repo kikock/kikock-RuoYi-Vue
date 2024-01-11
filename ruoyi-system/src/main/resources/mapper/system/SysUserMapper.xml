@@ -337,7 +337,7 @@
     <select id="getSimpleList" parameterType="String" resultType="SelectMoreVo">
         select user_id as id,nick_name as name, phonenumber as code from sys_user u
         <where>
-            u.status = 0
+            u.status = '0' and u.del_flag = '0'
             <if test="keywords != null and keywords != ''">
                 AND u.user_name like concat('%', #{keywords}, '%')
             </if>
@@ -357,12 +357,46 @@
         from sys_user u
         left join sys_dept d on u.dept_id = d.dept_id
         <where>
-            u.user_id in
+            u.status = '0' and u.del_flag = '0'
+            and  u.user_id in
             <foreach item="id" collection="list" open="(" separator="," close=")">
                 #{id}
             </foreach>
         </where>
 
     </select>
+
+    <select id="selectBatchDeptIds"  resultMap="SysUserSimpleResult">
+        select user_id id,nick_name name ,u.`status`,d.dept_id,d.dept_name,d.leader as dept_leader
+        from sys_user u
+        left join sys_dept d on u.dept_id = d.dept_id
+        <where>
+            u.status = '0' and u.del_flag = '0'
+            and  d.status = '0' and d.del_flag = '0'
+            and u.dept_id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+    <select id="selectBatchPostIds"  resultMap="SysUserSimpleResult">
+        SELECT p.post_name as postName,
+               p.`status`,
+               sup.user_id as id
+        FROM sys_post AS p
+                 LEFT JOIN
+             sys_user_post as sup
+             ON p.post_id = sys_user_post.post_id
+        <where>
+            p.`status` = 0
+            and
+                u.post_id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
 
 </mapper>

@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.framework.code.behavior.script;
 
+import com.ruoyi.flowable.enums.BpmTaskRuleScriptEnum;
 import org.flowable.engine.delegate.DelegateExecution;
 
 import java.util.Set;
@@ -23,5 +24,11 @@ public interface IBpmTaskAssignScript{
      */
     Set<Long> calculateTaskCandidateUsers(String processInstanceId);
 
+    /**
+     * 获得枚举值
+     *
+     * @return 枚举值
+     */
+    BpmTaskRuleScriptEnum getEnum();
 }
 

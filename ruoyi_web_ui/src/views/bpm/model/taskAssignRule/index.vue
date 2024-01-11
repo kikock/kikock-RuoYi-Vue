@@ -27,7 +27,7 @@
       </el-table-column>
       <el-table-column label="规则范围" align="center" prop="optionName">
         <template v-slot="scope">
-          <el-tag style="margin-right: 10Px" v-if="scope.row.selectMoreVos" :key="item.id" v-for="item in scope.row.selectMoreVos">
+          <el-tag style="margin-right: 10Px" v-if="scope.row.type!=50" :key="item.id" v-for="item in scope.row.selectMoreVos">
             {{ item.name }}
           </el-tag>
           <el-tag style="margin-right: 10Px" v-if="scope.row.optionName" >

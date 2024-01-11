@@ -74,7 +74,8 @@ public class BpmUserTaskActivityBehavior extends UserTaskActivityBehavior {
         // 情况二，如果非多实例的任务，则计算任务处理人
         // 第一步，先计算可处理该任务的处理人们返回
 //        return  bpmTaskRuleService.calculateTaskCandidateUsers(execution);
-        return  bpmTaskRuleService.calculateTaskCandidateUsers2(execution.getEventName(),execution.getProcessDefinitionId(),execution.getCurrentActivityId());
+        return  bpmTaskRuleService.calculateTaskCandidateUsers(execution.getEventName(),
+                execution.getProcessDefinitionId(),execution.getCurrentActivityId(),execution.getProcessInstanceId());
     }
 
 }

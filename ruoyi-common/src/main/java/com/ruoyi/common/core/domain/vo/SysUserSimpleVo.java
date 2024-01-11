@@ -40,6 +40,10 @@ public class SysUserSimpleVo implements Serializable{
      */
     private String deptLeader;
     /**
+     * 岗位名称
+     */
+    private String postName;
+    /**
      * 状态
      */
     private String status;
