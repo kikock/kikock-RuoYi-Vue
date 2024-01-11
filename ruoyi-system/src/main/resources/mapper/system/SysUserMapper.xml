@@ -335,7 +335,7 @@
         </foreach>
     </delete>
     <select id="getSimpleList" parameterType="String" resultType="SelectMoreVo">
-        select user_id id,nick_name name from sys_user u
+        select user_id as id,nick_name as name, phonenumber as code from sys_user u
         <where>
             u.status = 0
             <if test="keywords != null and keywords != ''">

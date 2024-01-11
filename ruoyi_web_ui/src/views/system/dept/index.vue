@@ -109,13 +109,7 @@
                </el-col>
                <el-col :span="12">
                   <el-form-item label="负责人" prop="leader">
-<!--                    修改负责人从用户中选择   -->
-<!--                     <el-input v-model="form.leader" placeholder="请输入负责人" maxlength="20" />-->
-                    <select-more v-model="form.leader" url="/system/user/selectMoreList"
-                                 @change="setLader" label="name" searchText="请选择负责人"
-                                 :otherParams="user_Params"
-                                 searchPldText="请输入负责人名称或电话号码模糊查询"></select-more>
-
+                    <select-more v-model="form.leaderName"   @change="setLader" :showId="false" value="id" label="name"  url="/system/user/simpleList" ></select-more>
                   </el-form-item>
                </el-col>
                <el-col :span="12">
@@ -183,17 +177,16 @@ const data = reactive({
 });
 
 const { queryParams, form, rules } = toRefs(data);
-// 选择负责人参数
-const user_Params = ref({
-  "params": ""
-});
+
 /** 选择负责人 */
 function setLader(data) {
   form.value.leader = undefined
+  form.value.leaderName = undefined
   form.value.phone = undefined
   if (data) {
-    form.value.leader = data.name
-    form.value.phone = data.phonenumber
+    form.value.leaderName = data.name
+    form.value.leader = data.id
+    form.value.phone = data.code
   }
 }
 /** 查询部门列表 */
@@ -261,6 +254,7 @@ function handleUpdate(row) {
   });
   getDept(row.deptId).then(response => {
     form.value = response.data;
+    form.value.leaderName = response.data.leaderName
     open.value = true;
     title.value = "修改部门";
   });
