@@ -43,9 +43,7 @@ public class BpmTaskController extends BaseController {
         return getDataTable(bpmTaskService.getDonetask(getUserId(),pageReqVO));
     }
     @GetMapping("/list-by-process-instance-id")
-    @Operation(summary = "获得指定流程实例的任务列表", description = "包括完成的、未完成的")
-    @Parameter(name = "processInstanceId", description = "流程实例的编号", required = true)
-    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
+//    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public AjaxResult getTaskListByProcessInstanceId(
             @RequestParam("processInstanceId") String processInstanceId) {
         return success(bpmTaskService.getTaskListByProcessInstanceId(processInstanceId));

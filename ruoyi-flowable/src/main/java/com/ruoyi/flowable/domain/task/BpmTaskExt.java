@@ -29,8 +29,7 @@ public class BpmTaskExt extends BaseEntity{
     /**
      * 任务的审批候选人
      */
-    private List<Long> userList;
-
+    private String userList;
 
     /**
      * 任务的名字

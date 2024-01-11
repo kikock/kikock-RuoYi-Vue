@@ -7,14 +7,18 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.alibaba.excel.util.NumberUtils;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
 import com.ruoyi.flowable.domain.task.BpmTaskExt;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskItemRespVO;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
 import com.ruoyi.flowable.enums.BpmProcessInstanceResultEnum;
+import com.ruoyi.flowable.mapper.definition.BpmTaskAssignRuleMapper;
 import com.ruoyi.flowable.mapper.task.BpmTaskExtMapper;
+import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
 import com.ruoyi.flowable.service.task.IBpmTaskService;
 import com.ruoyi.system.service.ISysDeptService;
@@ -55,6 +59,9 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
     private ISysDeptService deptService;
     @Resource
     private BpmTaskExtMapper taskExtMapper;
+    @Resource
+    private IBpmTaskAssignRuleService taskAssignRuleService;
+
     @Override
     public List<?> getToDotask(Long userId, BpmTaskReqVO pageVO) {
         // 查询待办任务
@@ -299,12 +306,16 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
     @Override
     public void createTaskExt(Task task) {
         BpmTaskExt taskExt =new BpmTaskExt();
+//        创建任务拓展
         taskExt.setTaskId(task.getId());
         taskExt.setName(task.getName());
         taskExt.setProcessDefinitionId(task.getProcessDefinitionId());
         taskExt.setProcessInstanceId(task.getProcessInstanceId());
         taskExt.setCreateTime(task.getCreateTime());
         taskExt.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult());
+       //拓展表保存候选用户集合
+        Set<Long> set = taskAssignRuleService.calculateTaskCandidateUsers2(task.getName(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
+        taskExt.setUserList(Joiner.on(",").join(set));
         taskExtMapper.insertBpmTaskExt(taskExt);
     }
 

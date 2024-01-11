@@ -18,10 +18,10 @@ public interface IBpmTaskAssignScript{
     /**
      * 基于执行任务，获得任务的候选用户们
      *
-     * @param execution 执行任务
+     * @param processInstanceId 执行id
      * @return 候选人用户的编号数组
      */
-    Set<Long> calculateTaskCandidateUsers(DelegateExecution execution);
+    Set<Long> calculateTaskCandidateUsers(String processInstanceId);
 
 }
 

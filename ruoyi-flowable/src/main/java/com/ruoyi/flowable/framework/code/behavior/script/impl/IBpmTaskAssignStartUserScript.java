@@ -25,8 +25,8 @@ public class IBpmTaskAssignStartUserScript implements IBpmTaskAssignScript{
     private IBpmProcessInstanceService bpmProcessInstanceService;
 
     @Override
-    public Set<Long> calculateTaskCandidateUsers(DelegateExecution execution) {
-        ProcessInstance processInstance = bpmProcessInstanceService.getProcessInstance(execution.getProcessInstanceId());
+    public Set<Long> calculateTaskCandidateUsers(String processInstanceId) {
+        ProcessInstance processInstance = bpmProcessInstanceService.getProcessInstance(processInstanceId);
         String startUserId = processInstance.getStartUserId();
         return SetUtils.asSet(Long.valueOf(startUserId));
     }

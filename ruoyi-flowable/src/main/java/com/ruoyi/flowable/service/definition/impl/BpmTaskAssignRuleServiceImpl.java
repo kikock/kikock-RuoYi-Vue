@@ -32,6 +32,7 @@ import org.flowable.bpmn.model.BpmnModel;
 import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.api.FlowableException;
 import org.flowable.engine.delegate.DelegateExecution;
+import org.flowable.task.api.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -333,7 +334,49 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         }
         return assigneeUserIds;
     }
-
+    @Override
+    public Set<Long> calculateTaskCandidateUsers2(String name, String processDefinitionId, String taskDefinitionKey){
+        List<BpmTaskAssignRule> taskRules = bpmTaskAssignRuleMapper.getTaskAssignRuleListByProcessDefinitionId(
+                processDefinitionId, taskDefinitionKey);
+        if (CollUtil.isEmpty(taskRules)) {
+            throw new FlowableException(format("流程任务({}/{}/{}) 找不到符合的任务规则",
+                    name, processDefinitionId, taskDefinitionKey));
+        }
+        if (taskRules.size() > 1) {
+            throw new FlowableException(format("流程任务({}/{}/{}) 找到过多任务规则({})",
+                    name, processDefinitionId, taskDefinitionKey));
+        }
+        BpmTaskAssignRule bpmTaskAssignRule = taskRules.get(0);
+        return calculateTaskCandidateUsers2(name,processDefinitionId,taskDefinitionKey, bpmTaskAssignRule);
+    }
+    @VisibleForTesting
+    Set<Long> calculateTaskCandidateUsers2(String name , String  processDefinitionId,String taskDefinitionKey, BpmTaskAssignRule rule) {
+        Set<Long> assigneeUserIds = null;
+        if (Objects.equals(BpmTaskAssignRuleTypeEnum.ROLE.getType(), rule.getType())) {
+            assigneeUserIds = calculateTaskCandidateUsersByRole(rule);
+        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.DEPT_MEMBER.getType(), rule.getType())) {
+            assigneeUserIds = calculateTaskCandidateUsersByDeptMember(rule);
+        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.DEPT_LEADER.getType(), rule.getType())) {
+            assigneeUserIds = calculateTaskCandidateUsersByDeptLeader(rule);
+        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.POST.getType(), rule.getType())) {
+            assigneeUserIds = calculateTaskCandidateUsersByPost(rule);
+        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.USER.getType(), rule.getType())) {
+            assigneeUserIds = calculateTaskCandidateUsersByUser(rule);
+        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.USER_GROUP.getType(), rule.getType())) {
+            assigneeUserIds = calculateTaskCandidateUsersByUserGroup(rule);
+        } else if (Objects.equals(BpmTaskAssignRuleTypeEnum.SCRIPT.getType(), rule.getType())) {
+            assigneeUserIds =null;
+        }
+        // 移除被禁用的用户
+        removeDisableUsers(assigneeUserIds);
+        // 如果候选人为空，抛出异常
+        if (CollUtil.isEmpty(assigneeUserIds)) {
+            log.error("[calculateTaskCandidateUsers][流程任务({}/{}/{}) 任务规则({}) 找不到候选人]", name,
+                    processDefinitionId, taskDefinitionKey, JSONUtil.toJsonStr(rule));
+            throw new ServiceException("操作失败，原因：找不到任务的审批人！" ,HttpStatus.ERROR);
+        }
+        return assigneeUserIds;
+    }
     private Set<Long> calculateTaskCandidateUsersByRole(BpmTaskAssignRule rule) {
         List<String> list = Arrays.asList(rule.getOptions().split(","));
         Set<Long> ids = list.stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toSet());
@@ -504,6 +547,7 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
         } else {
             throw new ServiceException(String.format("未知的规则类型【%s】", type), HttpStatus.ERROR);
         }
+        //返回 逗号分隔字符串
         String result = Joiner.on(",").join(optionIds);
         return result;
     }

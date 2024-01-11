@@ -257,12 +257,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         instanceExtDO.setProcessInstanceId(instance.getId());
         instanceExtDO.setProcessDefinitionId(definition.getId());
         instanceExtDO.setName(instance.getProcessDefinitionName());
-        String startUserId = instance.getStartUserId();
-        Long id = SecurityUtils.getUserId();
-        if (StringUtils.isNotEmpty(startUserId)) {
-            id = Long.valueOf(startUserId);
-        }
-        instanceExtDO.setStartUserId(id);
+        instanceExtDO.setStartUserId(Long.valueOf(instance.getStartUserId()));
         instanceExtDO.setCategory(definition.getCategory());
         instanceExtDO.setStatus(BpmProcessInstanceStatusEnum.RUNNING.getStatus());
         instanceExtDO.setResult(BpmProcessInstanceResultEnum.PROCESS.getResult());

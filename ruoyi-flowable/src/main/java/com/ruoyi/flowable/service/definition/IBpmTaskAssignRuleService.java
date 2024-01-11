@@ -89,5 +89,14 @@ public interface IBpmTaskAssignRuleService{
      * @return 处理人的编号数组
      */
     Set<Long> calculateTaskCandidateUsers(DelegateExecution execution);
-
+    /**
+     * 计算当前执行任务的处理人
+     *
+     * @param name 执行名称
+     * @param processDefinitionId 任务id
+     * @param taskDefinitionKey 任务标识
+     *
+     * @return 处理人的编号数组
+     */
+    Set<Long> calculateTaskCandidateUsers2(String name, String processDefinitionId, String taskDefinitionKey);
 }

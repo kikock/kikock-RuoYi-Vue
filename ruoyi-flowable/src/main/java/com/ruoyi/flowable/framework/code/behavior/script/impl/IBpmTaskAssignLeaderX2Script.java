@@ -14,7 +14,7 @@ import java.util.Set;
 public class IBpmTaskAssignLeaderX2Script extends IBpmTaskAssignLeaderAbstractScript{
 
     @Override
-    public Set<Long> calculateTaskCandidateUsers(DelegateExecution execution) {
-        return calculateTaskCandidateUsers(execution, 2);
+    public Set<Long> calculateTaskCandidateUsers(String processInstanceId) {
+        return calculateTaskCandidateUsers(processInstanceId, 2);
     }
 }
