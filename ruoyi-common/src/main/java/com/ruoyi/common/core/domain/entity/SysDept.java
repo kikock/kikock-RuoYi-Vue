@@ -48,7 +48,10 @@ public class SysDept extends BaseEntity{
      * 负责人
      */
     private String leader;
-
+    /**
+     * 负责人姓名
+     */
+    private String leaderName;
     /**
      * 联系电话
      */
@@ -78,6 +81,14 @@ public class SysDept extends BaseEntity{
      * 子部门
      */
     private List<SysDept> children = new ArrayList<SysDept>();
+
+    public String getLeaderName(){
+        return leaderName;
+    }
+
+    public void setLeaderName(String leaderName){
+        this.leaderName = leaderName;
+    }
 
     public Long getDeptId(){
         return deptId;

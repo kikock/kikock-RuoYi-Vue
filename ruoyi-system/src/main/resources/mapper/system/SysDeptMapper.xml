@@ -10,6 +10,7 @@
         <result property="deptName" column="dept_name"/>
         <result property="orderNum" column="order_num"/>
         <result property="leader" column="leader"/>
+        <result property="leaderName" column="leader_name"/>
         <result property="phone" column="phone"/>
         <result property="email" column="email"/>
         <result property="status" column="status"/>
@@ -71,7 +72,8 @@
 
     <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResult">
         select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.phone, d.email, d.status,
-        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name,
+        (select nick_name from sys_user where user_id = d.leader) leader_name
         from sys_dept d
         where d.dept_id = #{deptId}
     </select>
