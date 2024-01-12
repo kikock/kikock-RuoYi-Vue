@@ -1,30 +1,21 @@
 package com.ruoyi.flowable.service.task.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.LocalDateTimeUtil;
-import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
-import com.alibaba.excel.util.NumberUtils;
-import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Lists;
-import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
-import com.ruoyi.flowable.domain.definition.BpmTaskAssignRule;
+import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.flowable.domain.task.BpmTaskExt;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskItemRespVO;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
 import com.ruoyi.flowable.enums.BpmProcessInstanceResultEnum;
-import com.ruoyi.flowable.mapper.definition.BpmTaskAssignRuleMapper;
 import com.ruoyi.flowable.mapper.task.BpmTaskExtMapper;
 import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceService;
 import com.ruoyi.flowable.service.task.IBpmTaskService;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysUserService;
-import liquibase.pro.packaged.L;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.common.engine.impl.db.SuspensionState;
 import org.flowable.engine.HistoryService;
@@ -73,7 +64,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             taskQuery.taskNameLike("%" + pageVO.getName() + "%");
         }
         // 执行查询
-        List<Task> tasks = taskQuery.listPage((pageVO.getPageNum()-1)*pageVO.getPageSize(), pageVO.getPageSize());
+        List<Task> tasks = taskQuery.list();
         if (CollUtil.isEmpty(tasks)) {
             tasks = taskService.createTaskQuery().taskCandidateUser(String.valueOf(userId)).list();
         }
@@ -136,7 +127,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             taskQuery.taskNameLike("%" + pageVO.getName() + "%");
         }
         // 执行查询
-        List<HistoricTaskInstance> tasks = taskQuery.listPage((pageVO.getPageNum()-1)*pageVO.getPageSize(), pageVO.getPageSize());
+        List<HistoricTaskInstance> tasks = taskQuery.list();
         if (CollUtil.isEmpty(tasks)) {
             return Collections.emptyList();
         }
@@ -234,12 +225,24 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         HistoricProcessInstance processInstance = processInstanceService.getHistoricProcessInstance(processInstanceId);
         // 获得 处理人和候选人 user map信息
         //候选人信息
-
         List<String> userlists = convertList(bpmTaskExtDOs, taskExt -> taskExt.getUserList());
         //所有候选人list
+//        List<Long> userList=new ArrayList<>();
+        List<Long> users=new ArrayList<>();
+        userlists.forEach(userlist->{
+            String[] list = userlist.split(",");
+            List<String> strings = Arrays.asList(list);
+            strings.forEach(userid->{
+                users.add(Long.valueOf(userid));
+            });
+        });
+
+
         List<Long> userIds = convertList(tasks, task -> parseLong(task.getAssignee()));
         userIds.add(parseLong(processInstance.getStartUserId()));
-        List<SysUserSimpleVo> userList = sysUserService.selectBatchIds(userIds);
+        userIds.addAll(users);
+        List<Long> collect = userIds.stream().distinct().collect(Collectors.toList());
+        List<SysUserSimpleVo> userList = sysUserService.selectBatchIds(collect);
         Map<Long, SysUserSimpleVo> userMap = convertMap(userList, SysUserSimpleVo::getId);
         // 拼接数据
         return convertList(tasks, task -> {
@@ -260,7 +263,10 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             if (assignUser != null) {
                 respVO.setAssigneeUser(assignUser);
             }
-
+            List<String> strings = Arrays.asList(taskExtDO.getUserList().split(","));
+            List<SysUserSimpleVo> voList=new ArrayList<>();
+            strings.forEach(id-> voList.add( userMap.get( Long.valueOf(id))));
+            respVO.setCandidateUsers(voList);
             return respVO;
         });
     }
@@ -289,7 +295,6 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         to.setResult( from.getResult() );
         to.setReason( from.getReason() );
     }
-
 
     @Override
     public void updateTaskAssignee(String id, Long userId) {
