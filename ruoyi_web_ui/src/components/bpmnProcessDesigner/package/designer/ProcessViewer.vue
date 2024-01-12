@@ -18,6 +18,7 @@ import '@/components/bpmnProcessDesigner/package/theme/index.scss'
 import BpmnViewer from 'bpmn-js/lib/Viewer'
 import DefaultEmptyXML from './plugins/defaultEmpty'
 import { formatDate } from '@/components/bpmnProcessDesigner/src/utils/formatTime'
+import {getCurrentInstance} from 'vue'
 
 
 const props = defineProps({
@@ -51,9 +52,9 @@ const props = defineProps({
 provide('configGlobal', props)
 
 const emit = defineEmits(['destroy'])
-
+const {proxy} = getCurrentInstance()
+const {bpm_process_instance_result} = proxy.useDict("bpm_process_instance_result");
 let bpmnModeler
-
 const xml = ref('')
 const activityLists = ref([])
 const processInstance = ref(undefined)
@@ -88,7 +89,6 @@ const createNewDiagram = async (xml) => {
     canvas.zoom('fit-viewport', 'auto')
   } catch (e) {
     console.error(e)
-    // console.error(`[Process Designer Warn]: ${e?.message || e}`);
   }
 }
 
@@ -96,9 +96,11 @@ const createNewDiagram = async (xml) => {
 // TODO 芋艿：如果多个 endActivity 的话，目前的逻辑可能有一定的问题。https://www.jdon.com/workflow/multi-events.html
 const highlightDiagram = async () => {
   const activityList = activityLists.value
+  console.log(activityList);
   if (activityList.length === 0) {
     return
   }
+  console.log("高亮流程图开始");
   // 参考自 https://gitee.com/tony2y/RuoYi-flowable/blob/master/ruoyi-ui/src/components/Process/index.vue#L222 实现
   // 再次基础上，增加不同审批结果的颜色等等
   let canvas = bpmnModeler.get('canvas')
@@ -301,10 +303,7 @@ const elementHover = (element) => {
   !elementOverlayIds.value && (elementOverlayIds.value = {})
   !overlays.value && (overlays.value = bpmnModeler.get('overlays'))
   // 展示信息
-  console.log(activityLists.value, 'activityLists.value')
-  console.log(element.value, 'element.value')
   const activity = activityLists.value.find((m) => m.key === element.value.id)
-  console.log(activity, 'activityactivityactivityactivity')
   if (!activity) {
     return
   }
@@ -314,6 +313,7 @@ const elementHover = (element) => {
             <p>Elemet type: ${element.value.type}</p>
           </div>` // 默认值
     if (element.value.type === 'bpmn:StartEvent' && processInstance.value) {
+      console.log("流程发起人数据",processInstance.value.startUser);
       html = `<p>发起人：${processInstance.value.startUser.nickname}</p>
                   <p>部门：${processInstance.value.startUser.deptName}</p>
                   <p>创建时间：${formatDate(processInstance.value.createTime)}`
@@ -323,25 +323,36 @@ const elementHover = (element) => {
       if (!task) {
         return
       }
-      // let optionData = getIntDictOptions(DICT_TYPE.BPM_PROCESS_INSTANCE_RESULT)
-      let optionData = []
       let dataResult = ''
-      optionData.forEach((element) => {
+      bpm_process_instance_result.value.forEach((element) => {
         if (element.value == task.result) {
           dataResult = element.label
         }
       })
-      html = `<p>审批人：${task.assigneeUser.nickname}</p>
+      console.log("流程处理人数据",task);
+      if (task.assigneeUser){
+        html = `<p>审批人：${task.assigneeUser.nickname}</p>
                   <p>部门：${task.assigneeUser.deptName}</p>
                   <p>结果：${dataResult}</p>
                   <p>创建时间：${formatDate(task.createTime)}</p>`
-      // html = `<p>审批人：${task.assigneeUser.nickname}</p>
-      //             <p>部门：${task.assigneeUser.deptName}</p>
-      //             <p>结果：${getIntDictOptions(
-      //               DICT_TYPE.BPM_PROCESS_INSTANCE_RESULT,
-      //               task.result
-      //             )}</p>
-      //             <p>创建时间：${formatDate(task.createTime)}</p>`
+      }else {
+        // 判断当前用户是否候选人
+        if (task.candidateUsers.indexOf(task.userId) > -1) {
+          //当前用户可以处理流程 直接显示自己
+          const user = task.candidateUsers.filter(user => user === task.userId);
+          html = `<p>审批人：${user.name}</p>
+                  <p>部门：${user.deptName}</p>
+                  <p>结果：${dataResult}</p>
+                  <p>创建时间：${formatDate(task.createTime)}</p>`
+        }else {
+          //其他人查看 直接选第一个人
+          html = `<p>审批人：${task.candidateUsers[0].name}</p>
+                  <p>部门：${task.candidateUsers[0].deptName}</p>
+                  <p>结果：${dataResult}</p>
+                  <p>创建时间：${formatDate(task.createTime)}</p>`
+        }
+      }
+
       if (task.endTime) {
         html += `<p>结束时间：${formatDate(task.endTime)}</p>`
       }
@@ -357,10 +368,9 @@ const elementHover = (element) => {
       }
       console.log(html)
     } else if (element.value.type === 'bpmn:EndEvent' && processInstance.value) {
-      // let optionData = getIntDictOptions(DICT_TYPE.BPM_PROCESS_INSTANCE_RESULT)
       let optionData = []
       let dataResult = ''
-      optionData.forEach((element) => {
+      bpm_process_instance_result.value.forEach((element) => {
         if (element.value == processInstance.value.result) {
           dataResult = element.label
         }
@@ -374,7 +384,6 @@ const elementHover = (element) => {
         html += `<p>结束时间：${formatDate(processInstance.value.endTime)}</p>`
       }
     }
-    console.log(html, 'html111111111111111')
     elementOverlayIds.value[element.value.id] = toRaw(overlays.value)?.add(element.value, {
       position: { left: 0, bottom: 0 },
       html: `<div class="element-overlays">${html}</div>`
@@ -389,7 +398,6 @@ const elementOut = (element) => {
 
 onMounted(() => {
   xml.value = props.value
-  console.log( xml.value);
   activityLists.value = props.activityData
   // 初始化
   initBpmnModeler()

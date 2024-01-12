@@ -421,8 +421,8 @@ public class BpmTaskAssignRuleServiceImpl implements IBpmTaskAssignRuleService{
             return;
         }
 //        再查询一次  移除禁用或删除用户
-        List<SysUserSimpleVo> userSimpleVos = userService.selectBatchIds((List<Long>) assigneeUserIds);
-         userSimpleVos.stream().map(SysUserSimpleVo::getId).collect(Collectors.toSet());
+//        List<SysUserSimpleVo> userSimpleVos = userService.selectBatchIds((List<Long>) assigneeUserIds);
+//         userSimpleVos.stream().map(SysUserSimpleVo::getId).collect(Collectors.toSet());
     }
 
     private void setTaskAssignRuleOptionName(Integer type, BpmTaskAssignRule taskAssignRule){

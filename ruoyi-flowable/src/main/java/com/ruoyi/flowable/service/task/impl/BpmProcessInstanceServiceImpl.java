@@ -3,13 +3,12 @@ package com.ruoyi.flowable.service.task.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.Assert;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmProcessDefinitionExt;
 import com.ruoyi.flowable.domain.task.BpmProcessInstanceExt;
@@ -43,8 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.ruoyi.flowable.service.task.impl.BpmTaskServiceImpl.parseLong;
 
 
 @Service
@@ -136,15 +133,12 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         Assert.notNull(processDefinitionExt, "流程定义拓展({}) 不存在", id);
         String bpmnXml = processDefinitionService.getProcessDefinitionBpmnXML(processInstance.getProcessDefinitionId());
 
+        String startUserId = processInstance.getStartUserId();
         // 获得 User
-        SysUser startUser = sysUserService.selectUserById(parseLong(processInstance.getStartUserId()));
-        SysDept dept = null;
-        if (startUser != null) {
-            dept = deptService.selectDeptById(startUser.getDeptId());
-        }
+        SysUserSimpleVo sysUserSimpleVo = sysUserService.findSimpleUserById(Long.valueOf(startUserId));
         // 拼接返回结果   processInstance 流程定义 processInstanceExt 流程定义扩展 processDefinition 实例信息 processDefinitionExt 实例扩展信息
         //          bpmnXml 流程 xml数据
-        return convertToVo(processInstance, processInstanceExt, processDefinition, processDefinitionExt, bpmnXml, startUser, dept);
+        return convertToVo(processInstance, processInstanceExt, processDefinition, processDefinitionExt, bpmnXml,sysUserSimpleVo);
 
     }
 
@@ -166,7 +160,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
 
     public BpmProcessInstanceRespVO convertToVo(HistoricProcessInstance processInstance, BpmProcessInstanceExt processInstanceExt,
                                                 ProcessDefinition processDefinition, BpmProcessDefinitionExt processDefinitionExt,
-                                                String bpmnXml, SysUser startUser, SysDept dept){
+                                                String bpmnXml, SysUserSimpleVo sysUserSimpleVo){
         BpmProcessInstanceRespVO processInstanceRespVO = new BpmProcessInstanceRespVO();
 //        processInstance 流程定义设置  processDefinitionExt 实例扩展信息
         //          bpmnXml 流程 xml数据
@@ -206,14 +200,25 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
             processDefinitionVo.setId(processDefinition.getId());
             processDefinitionVo.setBpmnXml(bpmnXml);
         }
+//        processDefinitionExt 实例表单信息
+        if (Objects.nonNull(processDefinitionExt)) {
+            processDefinitionVo.setFormType( processDefinitionExt.getFormType() );
+            processDefinitionVo.setFormId( processDefinitionExt.getFormId() );
+            processDefinitionVo.setFormConf( processDefinitionExt.getFormConf() );
+            processDefinitionVo.setFormFields( processDefinitionExt.getFormFields() );
+            processDefinitionVo.setFormCustomCreatePath( processDefinitionExt.getFormCustomCreatePath() );
+            processDefinitionVo.setFormCustomViewPath( processDefinitionExt.getFormCustomViewPath() );
+
+        }
         processInstanceRespVO.setProcessDefinition(processDefinitionVo);
         //用户信息
         BpmProcessInstanceRespVO.User user = new BpmProcessInstanceRespVO.User();
 
-        if (Objects.nonNull(startUser)) {
-            user.setId(startUser.getUserId());
-            user.setNickname(startUser.getNickName());
-            user.setDeptId(startUser.getDeptId());
+        if (Objects.nonNull(sysUserSimpleVo)) {
+            user.setId(sysUserSimpleVo.getId());
+            user.setNickname(sysUserSimpleVo.getName());
+            user.setDeptId(Long.valueOf(sysUserSimpleVo.getDeptId()));
+            user.setDeptName(sysUserSimpleVo.getDeptName());
         }
         processInstanceRespVO.setStartUser(user);
         return processInstanceRespVO;
@@ -381,7 +386,7 @@ public class BpmProcessInstanceServiceImpl implements IBpmProcessInstanceService
         BpmProcessInstanceExt bpmProcessInstanceExt = new BpmProcessInstanceExt();
         bpmProcessInstanceExt.setProcessInstanceId(instance.getId());
         bpmProcessInstanceExt.setBusinessKey(businessKey);
-        bpmProcessInstanceExt.setFormVariables(variables.toString());
+        bpmProcessInstanceExt.setFormVariables(JSONUtil.toJsonStr(variables));
         processInstanceExtMapper.updateBpmProcessInstanceExtByProcessDefinitionId(bpmProcessInstanceExt);
         return instance.getId();
     }

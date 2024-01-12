@@ -184,10 +184,7 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
         ext.setFormType( vo.getFormType() );
         ext.setFormId( vo.getFormId() );
         ext.setFormConf( vo.getFormConf() );
-        List<String> list = vo.getFormFields();
-        if ( !CollUtil.isEmpty(list) && list.size()>0 ) {
-            ext.setFormFields(String.join(",", list));
-        }
+        ext.setFormFields(vo.getFormFields());
         ext.setFormCustomCreatePath( vo.getFormCustomCreatePath() );
         ext.setFormCustomViewPath( vo.getFormCustomViewPath() );
     }
@@ -319,9 +316,7 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
                 if ( vo.getFormFields() != null ) {
                     String formFields = definitionDO.getFormFields();
                     if ( StringUtils.isNotBlank(formFields) ) {
-                        List<String> list1 = Arrays.asList(formFields.split(","));
-                        vo.getFormFields().clear();
-                        vo.getFormFields().addAll(list1);
+                        vo.setFormFields(formFields);
                     }else {
                         vo.setFormFields( null );
                     }
@@ -329,8 +324,7 @@ public class BpmProcessDefinitionServiceImpl implements IBpmProcessDefinitionSer
                 else {
                     String formFields = definitionDO.getFormFields();
                     if ( StringUtils.isNotBlank(formFields) ) {
-                    List<String> list2 = Arrays.asList(formFields.split(","));
-                        vo.setFormFields( new ArrayList<String>( list2 ) );
+                        vo.setFormFields( formFields );
                     }
                 }
                 vo.setFormCustomCreatePath( definitionDO.getFormCustomCreatePath() );

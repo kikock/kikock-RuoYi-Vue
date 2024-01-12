@@ -3,7 +3,6 @@ package com.ruoyi.flowable.service.definition.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ArrayUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.PageResult;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
@@ -22,7 +21,6 @@ import com.ruoyi.flowable.service.definition.IBpmModelService;
 import com.ruoyi.flowable.service.definition.IBpmProcessDefinitionService;
 import com.ruoyi.flowable.service.definition.IBpmTaskAssignRuleService;
 import com.ruoyi.flowable.service.task.IBpmProcessInstanceExtService;
-import liquibase.pro.packaged.S;
 import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.converter.BpmnXMLConverter;
 import org.flowable.bpmn.model.BpmnModel;
@@ -37,13 +35,11 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.alibaba.fastjson2.JSON.copyTo;
 import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 
@@ -86,13 +82,13 @@ public class BpmModelServiceImpl implements IBpmModelService{
         // 执行查询
         List<Model> models = modelQuery.orderByCreateTime().desc()
                 .listPage(pageNum - 1, pageSize);
-       // 获得表单id集合
+        // 获得表单id集合
         Set<Long> formIds = CollectionUtils.convertSet(models, model -> {
             BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
             return metaInfo != null ? metaInfo.getFormId() : null;
         });
         // 获得流程表单参数
-        List<Long> formIdsList =  formIds.stream().collect(Collectors.toList());
+        List<Long> formIdsList = formIds.stream().collect(Collectors.toList());
         Map<Long,BpmForm> formMap = bpmFormService.getFormMap(formIdsList);
 //        // 获得 Deployment Map
         Set<String> deploymentIds = new HashSet<>();
@@ -100,7 +96,7 @@ public class BpmModelServiceImpl implements IBpmModelService{
         Map<String,Deployment> deploymentMap = processDefinitionService.getDeploymentMap(deploymentIds);
 //        // 获得 ProcessDefinition Map 流程定义数据
         List<ProcessDefinition> processDefinitions = processDefinitionService.getProcessDefinitionListByDeploymentIds(deploymentIds);
-        Map<String, ProcessDefinition> processDefinitionMap = convertMap(processDefinitions, ProcessDefinition::getDeploymentId);
+        Map<String,ProcessDefinition> processDefinitionMap = convertMap(processDefinitions, ProcessDefinition::getDeploymentId);
 //
 //        // 拼接结果
         return convertList(models, formMap, deploymentMap, processDefinitionMap);
@@ -152,10 +148,10 @@ public class BpmModelServiceImpl implements IBpmModelService{
         }
         model.setCategory(modelVO.getCategory());
         //            将BpmModelVo 转换成 Model
-        if(modelVO.getFormType()==10){
+        if (modelVO.getFormType() == 10) {
             model.setMetaInfo(buildMetaInfoStr(null, modelVO.getDescription(), modelVO.getFormType(), modelVO.getFormId(),
                     null, null));
-        }else {
+        } else {
             model.setMetaInfo(buildMetaInfoStr(null, modelVO.getDescription(), modelVO.getFormType(), null,
                     modelVO.getFormCustomCreatePath(), modelVO.getFormCustomViewPath()));
         }
@@ -174,20 +170,20 @@ public class BpmModelServiceImpl implements IBpmModelService{
             return modelVO;
         }
 //        model 参数
-        modelToBpmModel(model, modelVO,id);
+        modelToBpmModel(model, modelVO, id);
         return modelVO;
     }
 
     @Override
     public AjaxResult updateFlowChart(BpmModel bpmModel){
-        AjaxResult result =AjaxResult.success();
+        AjaxResult result = AjaxResult.success();
         // 校验流程模型存在
         Model model = repositoryService.getModel(bpmModel.getId());
         if (model == null) {
             throw new ServiceException("流程模型不存在!", HttpStatus.ERROR);
         }
         //保存参数构建
-        bpmModelToModel(model,bpmModel);
+        bpmModelToModel(model, bpmModel);
         // 更新模型
         repositoryService.saveModel(model);
         System.out.println(JSONUtil.toJsonStr(bpmModel));
@@ -208,7 +204,7 @@ public class BpmModelServiceImpl implements IBpmModelService{
 //        // TODO 校验流程图的有效性；例如说，是否有开始的元素，是否有结束的元素；
         byte[] bpmnBytes = repositoryService.getModelEditorSource(model.getId());
         if (bpmnBytes == null) {
-               throw new ServiceException("部署流程失败，原因：流程模型不存在!", HttpStatus.ERROR);
+            throw new ServiceException("部署流程失败，原因：流程模型不存在!", HttpStatus.ERROR);
         }
 //        // 1.3 校验表单已配
         BpmForm form = checkFormConfig(model.getMetaInfo());
@@ -338,9 +334,9 @@ public class BpmModelServiceImpl implements IBpmModelService{
         return JSONUtil.toJsonStr(metaInfo);
     }
 
-    private List<BpmModel> convertList(List<Model> list, Map<Long, BpmForm> formMap,
-                                                     Map<String, Deployment> deploymentMap,
-                                                     Map<String, ProcessDefinition> processDefinitionMap) {
+    private List<BpmModel> convertList(List<Model> list, Map<Long,BpmForm> formMap,
+                                       Map<String,Deployment> deploymentMap,
+                                       Map<String,ProcessDefinition> processDefinitionMap){
         return CollectionUtils.convertList(list, model -> {
             BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
             BpmForm form = metaInfo != null ? formMap.get(metaInfo.getFormId()) : null;
@@ -348,9 +344,9 @@ public class BpmModelServiceImpl implements IBpmModelService{
             ProcessDefinition processDefinition = model.getDeploymentId() != null ? processDefinitionMap.get(model.getDeploymentId()) : null;
             return convert(model, form, deployment, processDefinition);
         });
-     }
+    }
 
-   private BpmModel convert(Model model, BpmForm form, Deployment deployment, ProcessDefinition processDefinition) {
+    private BpmModel convert(Model model, BpmForm form, Deployment deployment, ProcessDefinition processDefinition){
         BpmModel modelVO = new BpmModel();
 //        model 参数
         modelVO.setId(model.getId());
@@ -359,11 +355,11 @@ public class BpmModelServiceImpl implements IBpmModelService{
         modelVO.setKey(model.getKey());
         modelVO.setCategory(model.getCategory());
         BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
-        modelVO.setDescription( metaInfo.getDescription() );
-        modelVO.setFormType( metaInfo.getFormType() );
-        modelVO.setFormId( metaInfo.getFormId() );
-        modelVO.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
-        modelVO.setFormCustomViewPath( metaInfo.getFormCustomViewPath() );
+        modelVO.setDescription(metaInfo.getDescription());
+        modelVO.setFormType(metaInfo.getFormType());
+        modelVO.setFormId(metaInfo.getFormId());
+        modelVO.setFormCustomCreatePath(metaInfo.getFormCustomCreatePath());
+        modelVO.setFormCustomViewPath(metaInfo.getFormCustomViewPath());
 
         // Form 参数
         if (form != null) {
@@ -380,63 +376,66 @@ public class BpmModelServiceImpl implements IBpmModelService{
     }
 
 
-    public BpmModel.ProcessDefinition convertToBpmModelProcessDefinition(ProcessDefinition bean) {
-        if ( bean == null ) {
+    public BpmModel.ProcessDefinition convertToBpmModelProcessDefinition(ProcessDefinition bean){
+        if (bean == null) {
             return null;
         }
         BpmModel.ProcessDefinition processDefinition = new BpmModel.ProcessDefinition();
-        processDefinition.setId( bean.getId() );
-        processDefinition.setVersion( bean.getVersion() );
+        processDefinition.setId(bean.getId());
+        processDefinition.setVersion(bean.getVersion());
         return processDefinition;
     }
+
     /**
      * flowable-model参数转 bpmModel 参数
      */
-    private void modelToBpmModel(Model model, BpmModel modelVO,String id) {
+    private void modelToBpmModel(Model model, BpmModel modelVO, String id){
         modelVO.setId(model.getId());
         modelVO.setCreateTime(model.getCreateTime());
         modelVO.setName(model.getName());
         modelVO.setKey(model.getKey());
         modelVO.setCategory(model.getCategory());
         BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
-        modelVO.setDescription( metaInfo.getDescription() );
-        modelVO.setFormType( metaInfo.getFormType() );
-        modelVO.setFormId( metaInfo.getFormId() );
+        modelVO.setDescription(metaInfo.getDescription());
+        modelVO.setFormType(metaInfo.getFormType());
+        modelVO.setFormId(metaInfo.getFormId());
         //
-        if( Objects.nonNull(metaInfo.getFormId())) {
+        if (Objects.nonNull(metaInfo.getFormId())) {
             BpmForm bpmForm = bpmFormService.selectBpmFormById(metaInfo.getFormId());
             modelVO.setFormName(bpmForm.getName());
         }
-        modelVO.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
-        modelVO.setFormCustomViewPath( metaInfo.getFormCustomViewPath());
+        modelVO.setFormCustomCreatePath(metaInfo.getFormCustomCreatePath());
+        modelVO.setFormCustomViewPath(metaInfo.getFormCustomViewPath());
         // 拼接 bpmn XML
         byte[] bpmnBytes = repositoryService.getModelEditorSource(StringUtils.isNotEmpty(id) ? id : model.getId());
         modelVO.setBpmnXml(StrUtil.utf8Str(bpmnBytes));
     }
+
     /**
      * bpmModel参数转 flowable-model 参数
      */
-    private void bpmModelToModel(Model model, BpmModel bpmModel) {
+    private void bpmModelToModel(Model model, BpmModel bpmModel){
         model.setName(bpmModel.getName());
         model.setCategory(bpmModel.getCategory());
         model.setMetaInfo(buildMetaInfoStr(JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class),
                 bpmModel.getDescription(), bpmModel.getFormType(), bpmModel.getFormId(),
                 bpmModel.getFormCustomCreatePath(), bpmModel.getFormCustomViewPath()));
     }
+
     /**
      * 校验流程表单已配置
      *
      * @param metaInfoStr 流程模型 metaInfo 字段
      * @return 流程表单
      */
-    private BpmForm checkFormConfig(String  metaInfoStr) {
+    private BpmForm checkFormConfig(String metaInfoStr){
         BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(metaInfoStr, BpmModelMetaInfoVo.class);
         if (metaInfo == null || metaInfo.getFormType() == null) {
 //            部署流程失败，原因：流程表单未配置，请点击【修改流程】按钮进行配置
             throw new ServiceException("部署流程失败，原因：流程表单未配置，请点击【修改流程】按钮进行配置!", HttpStatus.ERROR);
         }
         // 校验表单存在
-        if(metaInfo.getFormType()==10){
+        if (metaInfo.getFormType() == 10) {
             BpmForm form = bpmFormService.selectBpmFormById(metaInfo.getFormId());
             if (form == null) {
 //                动态表单不存在
@@ -447,7 +446,7 @@ public class BpmModelServiceImpl implements IBpmModelService{
         return null;
     }
 
-    private BpmProcessDefinitionVo convertToBPDVO(Model model, BpmForm form) {
+    private BpmProcessDefinitionVo convertToBPDVO(Model model, BpmForm form){
         BpmProcessDefinitionVo bpmProcessDefinitionVo = new BpmProcessDefinitionVo();
         bpmProcessDefinitionVo.setModelId(model.getId());
         bpmProcessDefinitionVo.setName(model.getName());
@@ -455,17 +454,17 @@ public class BpmModelServiceImpl implements IBpmModelService{
         bpmProcessDefinitionVo.setCategory(model.getCategory());
         BpmModelMetaInfoVo metaInfo = JSONUtil.toBean(model.getMetaInfo(), BpmModelMetaInfoVo.class);
         // metaInfo
-        if ( Objects.nonNull(metaInfo) ) {
-            bpmProcessDefinitionVo.setDescription( metaInfo.getDescription() );
-            bpmProcessDefinitionVo.setFormType( metaInfo.getFormType() );
-            bpmProcessDefinitionVo.setFormId( metaInfo.getFormId() );
-            bpmProcessDefinitionVo.setFormCustomCreatePath( metaInfo.getFormCustomCreatePath() );
-            bpmProcessDefinitionVo.setFormCustomViewPath( metaInfo.getFormCustomViewPath() );
+        if (Objects.nonNull(metaInfo)) {
+            bpmProcessDefinitionVo.setDescription(metaInfo.getDescription());
+            bpmProcessDefinitionVo.setFormType(metaInfo.getFormType());
+            bpmProcessDefinitionVo.setFormId(metaInfo.getFormId());
+            bpmProcessDefinitionVo.setFormCustomCreatePath(metaInfo.getFormCustomCreatePath());
+            bpmProcessDefinitionVo.setFormCustomViewPath(metaInfo.getFormCustomViewPath());
         }
         // form
         if (form != null) {
             bpmProcessDefinitionVo.setFormConf(form.getConf());
-//            bpmProcessDefinitionVo.setFormFields(form.getFields());
+            bpmProcessDefinitionVo.setFormFields(form.getFields());
         }
         return bpmProcessDefinitionVo;
     }

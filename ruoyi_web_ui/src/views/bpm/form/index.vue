@@ -153,6 +153,8 @@ function handleUpdate(row) {
 /** 详情按钮*/
 function handleDetail(row) {
   getForm(row.id).then(respose=>{
+    console.log(respose.data.conf);
+    console.log(respose.data.fields);
     setConfAndFields2(detailData,respose.data.conf, respose.data.fields);
     console.log(detailData.value)
     title.value=respose.data.name;

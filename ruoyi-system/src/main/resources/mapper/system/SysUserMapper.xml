@@ -398,5 +398,14 @@
         </where>
     </select>
 
+    <select id="findSimpleUserById"  resultMap="SysUserSimpleResult">
+        select user_id id,nick_name name ,u.`status`,d.dept_id,d.dept_name,d.leader as dept_leader
+        from sys_user u
+        left join sys_dept d on u.dept_id = d.dept_id
+        <where>
+            u.user_id =#{id}
+        </where>
+
+    </select>
 
 </mapper>
