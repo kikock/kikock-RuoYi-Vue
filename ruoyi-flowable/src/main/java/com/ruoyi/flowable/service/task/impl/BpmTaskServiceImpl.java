@@ -227,7 +227,6 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
         //候选人信息
         List<String> userlists = convertList(bpmTaskExtDOs, taskExt -> taskExt.getUserList());
         //所有候选人list
-//        List<Long> userList=new ArrayList<>();
         List<Long> users=new ArrayList<>();
         userlists.forEach(userlist->{
             String[] list = userlist.split(",");
@@ -267,6 +266,7 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             List<SysUserSimpleVo> voList=new ArrayList<>();
             strings.forEach(id-> voList.add( userMap.get( Long.valueOf(id))));
             respVO.setCandidateUsers(voList);
+            respVO.setUserId(SecurityUtils.getUserId());
             return respVO;
         });
     }

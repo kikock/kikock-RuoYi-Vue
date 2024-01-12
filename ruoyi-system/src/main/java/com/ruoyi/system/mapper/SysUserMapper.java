@@ -138,6 +138,5 @@ public interface SysUserMapper{
     public List<SysUserSimpleVo> selectBatchDeptIds(List<Long> ids);
     public List<SysUserSimpleVo> selectBatchPostIds(List<Long> ids);
     public List<SysUser> getUserList(List<Long> ids);
-
-
+    public SysUserSimpleVo findSimpleUserById(Long id);
 }

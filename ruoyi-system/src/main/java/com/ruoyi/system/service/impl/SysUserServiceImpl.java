@@ -505,6 +505,12 @@ public class SysUserServiceImpl implements ISysUserService{
     public List<SysUserSimpleVo> selectBatchDeptIds(List<Long> ids){
         return userMapper.selectBatchDeptIds(ids);
     }
+
+    @Override
+    public SysUserSimpleVo findSimpleUserById(Long id){
+        return userMapper.findSimpleUserById(id);
+    }
+
     @Override
     public List<SysUserSimpleVo> selectBatchPostIds(List<Long> ids){
         return userMapper.selectBatchPostIds(ids);

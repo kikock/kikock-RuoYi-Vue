@@ -75,4 +75,8 @@ public class BpmTaskItemRespVO {
      * 候选用户信息
      */
     private List<SysUserSimpleVo> candidateUsers;
+    /**
+     * 当前 用户id
+     */
+    private Long userId;
 }

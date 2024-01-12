@@ -218,7 +218,7 @@ public interface ISysUserService{
     public  List<SelectMoreVo> getSimpleList(String keywords);
 
     public List<SysUserSimpleVo> selectBatchDeptIds(List<Long> ids);
-
+    public SysUserSimpleVo findSimpleUserById(Long id);
     public List<SysUserSimpleVo> selectBatchPostIds(List<Long> ids);
 
     public List<SysUserSimpleVo> selectBatchIds(List<Long> ids);

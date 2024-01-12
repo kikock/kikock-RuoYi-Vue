@@ -51,9 +51,9 @@ public class BpmProcessDefinitionVo {
      */
     private String formConf;
     /**
-     * 表单项的数组
+     * 表单项数据
      */
-    private List<String> formFields;
+    private String formFields;
 
     /**
      * 自定义表单的提交路径，使用 Vue 的路由地址
@@ -71,7 +71,7 @@ public class BpmProcessDefinitionVo {
         if (!Objects.equals(formType, 10)) {
             return true;
         }
-        return formId != null && StrUtil.isNotEmpty(formConf) && CollUtil.isNotEmpty(formFields);
+        return formId != null && StrUtil.isNotEmpty(formConf) && StrUtil.isNotEmpty(formFields);
     }
 
     public boolean isNormalCustomTypeValid(){

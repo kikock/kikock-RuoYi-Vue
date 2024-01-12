@@ -59,7 +59,7 @@ public class BpmProcessInstanceRespVO {
         private Integer formType;
         private Long formId;
         private String formConf;
-        private List<String> formFields;
+        private String formFields;
         private String formCustomCreatePath;
         private String formCustomViewPath;
         private String bpmnXml;

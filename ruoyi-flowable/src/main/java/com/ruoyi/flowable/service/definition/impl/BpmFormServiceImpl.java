@@ -2,6 +2,8 @@ package com.ruoyi.flowable.service.definition.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.common.utils.collection.CollectionUtils;
 import com.ruoyi.flowable.domain.definition.BpmForm;
