@@ -34,7 +34,7 @@ public class BpmProcessInstanceController extends BaseController{
     @PreAuthorize("@ss.hasPermi('bpm:process:query')")
     @Anonymous
     public TableDataInfo getMyProcessInstancePage(@Valid BpmTaskReqVO pageReqVO){
-//        startPage();
+        startPage();
         pageReqVO.setUserId(getUserId());
         return getDataTable(processInstanceService.getMyProcessInstancePage(pageReqVO));
     }

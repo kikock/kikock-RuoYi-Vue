@@ -41,22 +41,26 @@
             <el-icon><Close /></el-icon>
             不通过
           </el-button>
+          <el-button type="primary" @click="handleStopProcess(item)">
+            <el-icon><Edit /></el-icon>
+            终止
+          </el-button>
           <el-button type="primary" @click="openTaskUpdateAssigneeForm(item.id)">
             <el-icon><Edit /></el-icon>
             转办
           </el-button>
-          <el-button type="primary" @click="handleDelegate(item)">
-            <el-icon><Position /></el-icon>
-            委派
-          </el-button>
-          <el-button type="primary" @click="handleSign(item)">
-            <el-icon><Plus /></el-icon>
-            加签
-          </el-button>
-          <el-button type="warning" @click="handleBack(item)">
-            <el-icon><Back /></el-icon>
-            回退
-          </el-button>
+<!--          <el-button type="primary" @click="openTaskUpdateDelegateForm(item.id)">-->
+<!--            <el-icon><Position /></el-icon>-->
+<!--            委派-->
+<!--          </el-button>-->
+<!--          <el-button type="primary" @click="handleSign(item)">-->
+<!--            <el-icon><Plus /></el-icon>-->
+<!--            加签-->
+<!--          </el-button>-->
+<!--          <el-button type="warning" @click="handleBack(item)">-->
+<!--            <el-icon><Back /></el-icon>-->
+<!--            回退-->
+<!--          </el-button>-->
         </div>
       </el-col>
     </el-card>
@@ -95,7 +99,7 @@
               >
 
                 <p style="font-weight: 700;display: flex; align-items: center;">
-                    任务：{{ item.name }}
+                    任务：{{ item.name }} 审批状态:{{item.result}}
                     <dict-tag  style="margin-left: 5px" :options="bpm_process_instance_result" :value="item.result"/>
                 </p>
                 <el-card :body-style="{ padding: '10px' }">
@@ -128,8 +132,6 @@
         </div>
       </el-col>
     </el-card>
-
-
     <!--  流程图  -->
     <el-card v-loading="processInstanceLoading" class="box-card">
       <template #header>
@@ -145,6 +147,33 @@
           :taskData="tasks"/>
     </el-card>
 
+
+    <!-- 转派审批人 -->
+    <el-dialog v-model="taskUpdateAssigneeDialog" append-to-body title="转派/委派任务" width="600">
+      <el-form ref="taskUpdateAssigneeFromRef"
+               :model="taskUpdateAssigneeFrom"
+               :rules="taskUpdateAssigneeRules"
+               label-width="110px"
+               >
+        <el-form-item label="转派/委派审批人" prop="assigneeUserId">
+          <select-more
+              search-pld-text="请输入用户名称筛选"
+              select-pld-text="请选择接收人"
+              v-model="taskUpdateAssigneeFrom.assigneeUserId"
+              :showId="false"
+              url="/system/user/simpleList"
+              >
+          </select-more>
+        </el-form-item>
+        <el-form-item v-if="isDetail" label="委派理由" prop="reason">
+          <el-input v-model="taskUpdateAssigneeFrom.reason" placeholder="请输入委派理由" type="textarea"/>
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button :disabled="formLoading" type="primary" @click="taskUpdateAssigneeSubmit()">确 定</el-button>
+        <el-button @click="taskUpdateAssigneeDialog = false">取 消</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script setup name="BpmProcessInstanceDetail">
@@ -160,8 +189,8 @@ import formCreate from "@form-create/element-ui";
 import {registerComponent} from '@/utils/ruoyi'
 import MyProcessViewer from '@/components/bpmnProcessDesigner/package/designer/ProcessViewer.vue'
 import {getActivityList} from '@/api/bpm/activity'
-import {formatDate} from '@/components/bpmnProcessDesigner/src/utils/formatTime'
-import {approveTask} from '@/api/bpm/task'
+import {approveTask, rejectTask, stopProcess,doBackStep} from '@/api/bpm/task'
+import SelectMore from '@/components/SelectMore/index.vue'
 //获取 formCreate 组件
 const FormCreate = formCreate.$form();
 const {query} = useRoute() // 查询参数
@@ -201,6 +230,23 @@ const bpmnControlForm = ref({
   prefix: "flowable"
 });
 const activityList = ref([]) // 任务列表
+
+
+// ========== 转派审批人 ==========
+/** 转派审批人 */
+const taskUpdateAssigneeDialog = ref(false) // 弹窗的是否展示
+const formLoading = ref(false) // 表单的加载中
+const isDetail = ref(false) // 表单的加载中
+const taskUpdateAssigneeFromRef = ref() // 表单的加载中
+const taskUpdateAssigneeFrom = ref({
+  id: '',
+  assigneeUserId: undefined
+})
+const taskUpdateAssigneeRules = ref({
+  assigneeUserId: [{ required: true, message: '接收人不能为空', trigger: 'change' }]
+})
+
+
 /** 获得详情 */
 const getDetailData = () =>{
   // 1. 获得流程实例相关
@@ -312,8 +358,6 @@ const loadRunningTask = (tasks) => {
   })
 }
 
-
-
 /** 处理审批通过和不通过的操作 */
 const handleAudit = async (task, pass) => {
   // 1.1 获得对应表单
@@ -336,8 +380,7 @@ console.log("表单校验通过");
       proxy.$modal.msgSuccess("审批通过成功");
     })
   } else {
-
-    await approveTask(data).then(response => {
+    await rejectTask(data).then(response => {
       proxy.$modal.msgSuccess("审批不通过");
     })
   }
@@ -345,6 +388,90 @@ console.log("表单校验通过");
   getDetailData()
 }
 
+
+const handleStopProcess = async (task) => {
+  // 1.1 获得对应表单
+  const index = runningTasks.value.indexOf(task)
+  const auditFormRef = proxy.$refs['form' + index][0]
+  // 1.2 校验表单
+  const elForm = unref(auditFormRef)
+  if (!elForm) return
+  const valid = await elForm.validate()
+  if (!valid) return
+  // 2.1 提交审批
+  const data = {
+    id: task.id,
+    reason: auditForms.value[index].reason
+  }
+    await stopProcess(data).then(response => {
+      proxy.$modal.msgSuccess("终止任务成功");
+    })
+  getDetailData();
+}
+const handleBack = async (task) => {
+  // 1.1 获得对应表单
+  const index = runningTasks.value.indexOf(task)
+  const auditFormRef = proxy.$refs['form' + index][0]
+  // 1.2 校验表单
+  const elForm = unref(auditFormRef)
+  if (!elForm) return
+  const valid = await elForm.validate()
+  if (!valid) return
+  // 2.1 提交审批
+  const data = {
+    id: task.id,
+    reason: auditForms.value[index].reason
+  }
+  await doBackStep(data).then(response => {
+    proxy.$modal.msgSuccess("终止任务成功");
+  })
+  getDetailData();
+}
+
+/** 转办按钮 */
+const openTaskUpdateAssigneeForm = (id) => {
+  taskUpdateAssigneeFrom.value.id=id
+  isDetail.value=false
+  taskUpdateAssigneeDialog.value=true
+}
+/** 委派按钮 */
+const openTaskUpdateDelegateForm = (id) => {
+  taskUpdateAssigneeFrom.value.id=id
+  isDetail.value=true
+  taskUpdateAssigneeDialog.value=true
+}
+
+
+const taskUpdateAssigneeSubmit = async () => {
+  // 校验表单
+  console.log("提交表单",taskUpdateAssigneeFrom.value);
+  proxy.$refs["taskUpdateAssigneeFromRef"].validate(valid => {
+    if (valid) {
+      // 提交请求
+      formLoading.value = true
+      if (isDetail.value){
+        //任务 审批后返回审批人
+        try {
+          console.log("委派 审批后返回审批人");
+          TaskApi.delegateTask(taskUpdateAssigneeFrom.value)
+        } finally {
+          formLoading.value = false
+          taskUpdateAssigneeDialog.value=false
+        }
+      }else {
+        //转派 审批后直接下一步
+        try {
+          console.log("转派 审批后直接下一步");
+          TaskApi.updateTaskAssignee(taskUpdateAssigneeFrom.value)
+        } finally {
+          formLoading.value = false
+          taskUpdateAssigneeDialog.value=false
+        }
+      }
+      getDetailData();
+    }
+  });
+}
 
 const getTimelineItemIcon = (item) => {
   if (item.result === 1) {

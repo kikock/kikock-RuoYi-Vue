@@ -77,5 +77,17 @@ public class BpmTaskReqVO extends PageDomain {
      * 例如说，请假申请的编号。通过它，可以查询到对应的实例
      */
     private String businessKey;
+    /**
+     * 回退到的任务 Key
+     *
+     */
+    private String targetDefinitionKey;
+
+    /**
+     * 转派 委派用户id
+     *
+     */
+    private String assigneeUserId;
+
 
 }
