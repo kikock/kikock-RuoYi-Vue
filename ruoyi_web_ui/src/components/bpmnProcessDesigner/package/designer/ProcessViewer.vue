@@ -331,7 +331,7 @@ const elementHover = (element) => {
       })
       console.log("流程处理人数据",task);
       if (task.assigneeUser){
-        html = `<p>审批人：${task.assigneeUser.nickname}</p>
+        html = `<p>审批人：${task.assigneeUser.name}</p>
                   <p>部门：${task.assigneeUser.deptName}</p>
                   <p>结果：${dataResult}</p>
                   <p>创建时间：${formatDate(task.createTime)}</p>`

@@ -4,6 +4,7 @@ import com.ruoyi.flowable.domain.task.vo.BpmTaskItemRespVO;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
 import org.flowable.task.api.Task;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public interface IBpmTaskService {
@@ -102,6 +103,19 @@ public interface IBpmTaskService {
      */
     void updateTaskExtAssign(Task task);
 
+    /**
+     * 通过任务
+     *
+     * @param reqVO  通过请求
+     */
+    void approveTask(BpmTaskReqVO reqVO);
+
+    /**
+     * 不通过任务
+     *
+     * @param reqVO  不通过请求
+     */
+    void rejectTask( BpmTaskReqVO reqVO);
     /**
      * 获取当前任务的可回退的流程集合
      *

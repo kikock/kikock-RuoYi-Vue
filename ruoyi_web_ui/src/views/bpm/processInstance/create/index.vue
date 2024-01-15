@@ -20,7 +20,6 @@
             <el-button
                 link
                 type="primary"
-                v-hasPermi="['bpm:process:cancel']"
                 @click="handleSelect(scope.row)"
             >
               选择
