@@ -10,11 +10,11 @@
       <template v-slot="scope">
         <div v-if="scope.row.status===0">
           未绑定
-          <el-button size="large" type="text" @click="bind(scope.row)">(绑定)</el-button>
+          <el-button size="large" link   @click="bind(scope.row)">(绑定)</el-button>
         </div>
         <div v-else>
           已绑定
-          <el-button size="large" type="text" @click="unbind(scope.row)">(解绑)</el-button>
+          <el-button size="large" link  @click="unbind(scope.row)">(解绑)</el-button>
         </div>
       </template>
     </el-table-column>
@@ -33,7 +33,10 @@ const {proxy} = getCurrentInstance();
 const router = useRouter();
 const props = defineProps({
   socialUserApp: {
-    type: []
+    type: Array,
+    default: function() {
+      return []
+    }
   },
   user: {
     type: Object

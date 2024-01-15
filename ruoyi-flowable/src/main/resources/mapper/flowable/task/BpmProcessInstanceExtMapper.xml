@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.flowable.mapper.task.BpmProcessInstanceExtMapper">
+    <resultMap type="BpmProcessInstanceExt" id="BpmProcessInstanceExtResult">
+        <result property="id" column="id"/>
+        <result property="startUserId" column="start_user_id"/>
+        <result property="businessKey" column="business_key"/>
+        <result property="name" column="name"/>
+        <result property="processInstanceId" column="process_instance_id"/>
+        <result property="processDefinitionId" column="process_definition_id"/>
+        <result property="category" column="category"/>
+        <result property="status" column="status"/>
+        <result property="result" column="result"/>
+        <result property="endTime" column="end_time"/>
+        <result property="formVariables" column="form_variables"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectBpmProcessInstanceExtVo">
+        select id,
+               start_user_id,
+               business_key,
+               name,
+               process_instance_id,
+               process_definition_id,
+               category,
+               status,
+               result,
+               end_time,
+               form_variables,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from bpm_process_instance_ext
+    </sql>
+
+    <select id="selectBpmProcessInstanceExtList" parameterType="BpmProcessInstanceExt"
+            resultMap="BpmProcessInstanceExtResult">
+        <include refid="selectBpmProcessInstanceExtVo"/>
+        <where>
+            <if test="startUserId != null">
+                and start_user_id =
+                #{startUserId}
+            </if>
+            <if test="name != null  and name != ''">
+                and name
+                like concat('%', #{name}, '%')
+            </if>
+            <if test="processInstanceId != null  and processInstanceId != ''">
+                and process_instance_id =
+                #{processInstanceId}
+            </if>
+            <if test="processDefinitionId != null  and processDefinitionId != ''">
+                and process_definition_id =
+                #{processDefinitionId}
+            </if>
+            <if test="category != null  and category != ''">
+                and category =
+                #{category}
+            </if>
+            <if test="status != null">
+                and status =
+                #{status}
+            </if>
+            <if test="result != null">
+                and result =
+                #{result}
+            </if>
+            <if test="endTime != null">
+                and end_time =
+                #{endTime}
+            </if>
+            <if test="formVariables != null  and formVariables != ''">
+                and form_variables =
+                #{formVariables}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBpmProcessInstanceExtById" parameterType="Long" resultMap="BpmProcessInstanceExtResult">
+        <include refid="selectBpmProcessInstanceExtVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectBpmProcessInstanceExtByProcessDefinitionId" parameterType="String" resultMap="BpmProcessInstanceExtResult">
+        <include refid="selectBpmProcessInstanceExtVo"/>
+        where process_instance_id = #{processDefinitionId}
+    </select>
+    <select id="selectPage"  resultMap="BpmProcessInstanceExtResult">
+        <include refid="selectBpmProcessInstanceExtVo"/>
+        <where>
+            <if test="userId != null">
+                and start_user_id =#{userId}
+            </if>
+            <if test="name != null  and name != ''">
+                and name like concat('%', #{name}, '%')
+            </if>
+            <if test="processDefinitionId != null  and processDefinitionId != ''">
+                and process_definition_id =#{processDefinitionId}
+            </if>
+            <if test="category != null  and category != ''">
+                and category = #{category}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="result != null">
+                and result =#{result}
+            </if>
+            <if test="createTime != null">
+                and create_time between #{starTime} and #{endTime}
+            </if>
+        </where>
+        order by id desc
+    </select>
+
+    <insert id="insertBpmProcessInstanceExt" parameterType="BpmProcessInstanceExt" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bpm_process_instance_ext
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="startUserId != null">
+                start_user_id,
+            </if>
+            <if test="businessKey != null">
+                 business_key,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="processInstanceId != null and processInstanceId != ''">
+                process_instance_id,
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id,
+            </if>
+            <if test="category != null">
+                category,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+            <if test="result != null">
+                result,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="formVariables != null">
+                form_variables,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="startUserId != null">
+                #{startUserId},
+            </if>
+            <if test="businessKey != null">
+               #{businessKey},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="processInstanceId != null and processInstanceId != ''">
+                #{processInstanceId},
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                #{processDefinitionId},
+            </if>
+            <if test="category != null">
+                #{category},
+            </if>
+            <if test="status != null">
+                #{status},
+            </if>
+            <if test="result != null">
+                #{result},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            <if test="formVariables != null">
+                #{formVariables},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBpmProcessInstanceExt" parameterType="BpmProcessInstanceExt">
+        update bpm_process_instance_ext
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="startUserId != null">
+                start_user_id = #{startUserId},
+            </if>
+            <if test="businessKey != null">
+                business_key =#{businessKey}
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="processInstanceId != null and processInstanceId != ''">
+                process_instance_id = #{processInstanceId},
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id = #{processDefinitionId},
+            </if>
+            <if test="category != null">
+                category = #{category},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="result != null">
+                result = #{result},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+            <if test="formVariables != null">
+                form_variables = #{formVariables},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBpmProcessInstanceExtById" parameterType="Long">
+        delete from bpm_process_instance_ext where id = #{id}
+    </delete>
+
+    <delete id="deleteBpmProcessInstanceExtByIds" parameterType="String">
+        delete from bpm_process_instance_ext where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="updateBpmProcessInstanceExtByProcessDefinitionId" parameterType="BpmProcessInstanceExt">
+    update bpm_process_instance_ext
+    <trim prefix="SET" suffixOverrides=",">
+        <if test="businessKey != null">
+            business_key =#{businessKey},
+        </if>
+        <if test="formVariables != null">
+            form_variables = #{formVariables},
+        </if>
+    </trim>
+    where process_instance_id = #{processInstanceId}
+</update>
+</mapper>

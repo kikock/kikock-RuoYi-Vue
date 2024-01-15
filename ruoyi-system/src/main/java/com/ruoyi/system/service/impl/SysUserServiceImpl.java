@@ -1,9 +1,13 @@
 package com.ruoyi.system.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.ruoyi.common.annotation.DataScope;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
@@ -25,7 +29,10 @@ import org.springframework.util.CollectionUtils;
 import javax.validation.Validator;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 用户 业务层处理
@@ -485,5 +492,58 @@ public class SysUserServiceImpl implements ISysUserService{
         return successMsg.toString();
     }
 
+    @Override
+    public List<SysUserSimpleVo> selectUserSimpleVoList() {
+        return userMapper.selectUserSimpleVoList();
+    }
+
+    @Override
+    public List<SelectMoreVo> getSimpleList(String keywords){
+        return userMapper.getSimpleList(keywords);
+    }
+    @Override
+    public List<SysUserSimpleVo> selectBatchDeptIds(List<Long> ids){
+        return userMapper.selectBatchDeptIds(ids);
+    }
+
+    @Override
+    public SysUserSimpleVo findSimpleUserById(Long id){
+        return userMapper.findSimpleUserById(id);
+    }
+
+    @Override
+    public List<SysUserSimpleVo> selectBatchPostIds(List<Long> ids){
+        return userMapper.selectBatchPostIds(ids);
+    }
+    @Override
+    public List<SysUserSimpleVo> selectBatchIds(List<Long> ids){
+        return userMapper.selectBatchIds(ids);
+    }
+
+
+    @Override
+    public void validateUserList(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        // 获得角色信息
+        List<SysUserSimpleVo> users = selectBatchIds(ids);
+        Map<Long, SysUserSimpleVo> userMap = convertMap(users, SysUserSimpleVo::getId);
+        // 校验
+        ids.forEach(id -> {
+            SysUserSimpleVo user = userMap.get(id);
+            if (user == null) {
+                throw new ServiceException(String.format("id为【%s】的用户不存在",id), HttpStatus.ERROR);
+            }
+            if (!"0".equals(user.getStatus())) {
+                throw new ServiceException(String.format("名字为【%s】的用户已被禁用",user.getName()), HttpStatus.ERROR);
+            }
+        });
+    }
+
+    @Override
+    public List<SysUser> getUserList(List<Long> ids) {
+        return userMapper.getUserList(ids);
+    }
 
 }

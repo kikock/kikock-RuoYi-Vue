@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.flowable.mapper.definition.BpmProcessDefinitionExtMapper">
+    <resultMap type="BpmProcessDefinitionExt" id="BpmProcessDefinitionExtResult">
+        <result property="id" column="id"/>
+        <result property="processDefinitionId" column="process_definition_id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="description" column="description"/>
+        <result property="formType" column="form_type"/>
+        <result property="formId" column="form_id"/>
+        <result property="formConf" column="form_conf"/>
+        <result property="formFields" column="form_fields"/>
+        <result property="formCustomCreatePath" column="form_custom_create_path"/>
+        <result property="formCustomViewPath" column="form_custom_view_path"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectBpmProcessDefinitionExtVo">
+        select id,
+               process_definition_id,
+               model_id,
+               description,
+               form_type,
+               form_id,
+               form_conf,
+               form_fields,
+               form_custom_create_path,
+               form_custom_view_path,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from bpm_process_definition_ext
+    </sql>
+
+    <select id="selectBpmProcessDefinitionExtList" parameterType="BpmProcessDefinitionExt"
+            resultMap="BpmProcessDefinitionExtResult">
+        <include refid="selectBpmProcessDefinitionExtVo"/>
+        <where>
+            <if test="processDefinitionId != null  and processDefinitionId != ''">
+                and process_definition_id =
+                #{processDefinitionId}
+            </if>
+            <if test="modelId != null  and modelId != ''">
+                and model_id =
+                #{modelId}
+            </if>
+            <if test="description != null  and description != ''">
+                and description =
+                #{description}
+            </if>
+            <if test="formType != null">
+                and form_type =
+                #{formType}
+            </if>
+            <if test="formId != null">
+                and form_id =
+                #{formId}
+            </if>
+            <if test="formConf != null  and formConf != ''">
+                and form_conf =
+                #{formConf}
+            </if>
+            <if test="formFields != null  and formFields != ''">
+                and form_fields =
+                #{formFields}
+            </if>
+            <if test="formCustomCreatePath != null  and formCustomCreatePath != ''">
+                and form_custom_create_path =
+                #{formCustomCreatePath}
+            </if>
+            <if test="formCustomViewPath != null  and formCustomViewPath != ''">
+                and form_custom_view_path =
+                #{formCustomViewPath}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBpmProcessDefinitionExtById" parameterType="Long"
+            resultMap="BpmProcessDefinitionExtResult">
+        <include refid="selectBpmProcessDefinitionExtVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBpmProcessDefinitionExt" parameterType="BpmProcessDefinitionExt" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bpm_process_definition_ext
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id,
+            </if>
+            <if test="modelId != null and modelId != ''">
+                model_id,
+            </if>
+            <if test="description != null">
+                description,
+            </if>
+            <if test="formType != null">
+                form_type,
+            </if>
+            <if test="formId != null">
+                form_id,
+            </if>
+            <if test="formConf != null">
+                form_conf,
+            </if>
+            <if test="formFields != null">
+                form_fields,
+            </if>
+            <if test="formCustomCreatePath != null">
+                form_custom_create_path,
+            </if>
+            <if test="formCustomViewPath != null">
+                form_custom_view_path,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                #{processDefinitionId},
+            </if>
+            <if test="modelId != null and modelId != ''">
+                #{modelId},
+            </if>
+            <if test="description != null">
+                #{description},
+            </if>
+            <if test="formType != null">
+                #{formType},
+            </if>
+            <if test="formId != null">
+                #{formId},
+            </if>
+            <if test="formConf != null">
+                #{formConf},
+            </if>
+            <if test="formFields != null">
+                #{formFields},
+            </if>
+            <if test="formCustomCreatePath != null">
+                #{formCustomCreatePath},
+            </if>
+            <if test="formCustomViewPath != null">
+                #{formCustomViewPath},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBpmProcessDefinitionExt" parameterType="BpmProcessDefinitionExt">
+        update bpm_process_definition_ext
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id = #{processDefinitionId},
+            </if>
+            <if test="modelId != null and modelId != ''">
+                model_id = #{modelId},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+            <if test="formType != null">
+                form_type = #{formType},
+            </if>
+            <if test="formId != null">
+                form_id = #{formId},
+            </if>
+            <if test="formConf != null">
+                form_conf = #{formConf},
+            </if>
+            <if test="formFields != null">
+                form_fields = #{formFields},
+            </if>
+            <if test="formCustomCreatePath != null">
+                form_custom_create_path = #{formCustomCreatePath},
+            </if>
+            <if test="formCustomViewPath != null">
+                form_custom_view_path = #{formCustomViewPath},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBpmProcessDefinitionExtById" parameterType="Long">
+        delete from bpm_process_definition_ext where id = #{id}
+    </delete>
+
+    <delete id="deleteBpmProcessDefinitionExtByIds" parameterType="String">
+        delete from bpm_process_definition_ext where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectListByProcessDefinitionIds" parameterType="String"
+            resultMap="BpmProcessDefinitionExtResult">
+        <include refid="selectBpmProcessDefinitionExtVo"/>
+        <where>
+            process_definition_id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+    </select>
+
+    <select id="selectByProcessDefinitionId" parameterType="String"
+            resultMap="BpmProcessDefinitionExtResult">
+        <include refid="selectBpmProcessDefinitionExtVo"/>
+        <where>
+            process_definition_id = #{processDefinitionId}
+        </where>
+    </select>
+</mapper>

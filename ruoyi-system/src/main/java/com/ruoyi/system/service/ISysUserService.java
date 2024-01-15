@@ -1,8 +1,13 @@
 package com.ruoyi.system.service;
 
+import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 
 import java.util.List;
+
+import static com.ruoyi.common.utils.collection.CollectionUtils.convertMap;
 
 /**
  * 用户 业务层
@@ -204,4 +209,28 @@ public interface ISysUserService{
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
 
+    /**
+     * 查询用户分组的精简用户信息
+     * @return
+     */
+    public List<SysUserSimpleVo> selectUserSimpleVoList();
+
+    public  List<SelectMoreVo> getSimpleList(String keywords);
+
+    public List<SysUserSimpleVo> selectBatchDeptIds(List<Long> ids);
+    public SysUserSimpleVo findSimpleUserById(Long id);
+    public List<SysUserSimpleVo> selectBatchPostIds(List<Long> ids);
+
+    public List<SysUserSimpleVo> selectBatchIds(List<Long> ids);
+
+    public void validateUserList(List<Long> ids);
+
+    /**
+     *2024.1.4 新增
+     * 通过用户ID集合查询用户们
+     *
+     * @param ids 用户ID
+     * @return 用户对象信息
+     */
+    List<SysUser> getUserList(List<Long> ids);
 }

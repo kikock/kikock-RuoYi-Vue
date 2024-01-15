@@ -47,13 +47,11 @@ public class SocialEnvironmentPostProcessor implements EnvironmentPostProcessor{
                 //判断是否读取第三方数据库配置
                 if (source.containsProperty("social.enabled") && (Boolean) source.getProperty("social.enabled")) {
                     isline = true;
-                    source.toString();
-                    JSONObject defaultSourceJSONObject = JSONObject.parseObject(JSONObject.toJSONString(source.getSource()));
-                    Set<Map.Entry<String,Object>> configEntrySet = defaultSourceJSONObject.entrySet();
-                    for (Map.Entry<String,Object> entry : configEntrySet) {
+                    Map<String,Object> sourceData = source.getSource();
+                    for (Map.Entry<String, Object> entry : sourceData.entrySet()) {
                         if (entry.getValue() != null && propertiesTmp.get(entry.getKey()) == null) {
                             if (entry.getValue().getClass() != String.class) {
-                                String value = JSONObject.parseObject(JSONObject.toJSONString(entry.getValue())).getString("value");
+                                Object value = entry.getValue();
                                 propertiesTmp.put(entry.getKey(), value);
                             } else {
                                 propertiesTmp.put(entry.getKey(), entry.getValue());

@@ -23,6 +23,7 @@ export const useDirectivesEffect = () => {
   // 监听滚动到底部时，执行
   const vLoadMoreDirective = {
     mounted(el, binding) {
+      console.log("监听滚动到底部时");
       const selectDropDownWrap = document.querySelector(`.el-popper.${onlyId} .el-select-dropdown .el-select-dropdown__wrap`)
       selectDropDownWrap?.addEventListener('scroll', function () {
         const scrollToBottom = Math.floor(this.scrollHeight - this.scrollTop) <= this.clientHeight
@@ -36,6 +37,7 @@ export const useDirectivesEffect = () => {
   // 下拉框内插入搜索框
   const vSearchDirective = {
     mounted(el, binding) {
+      console.log("下拉框内插入搜索框");
       const selectDropDown = document.querySelector(`.el-popper.${onlyId} .el-select-dropdown`)
       const searchDom = document.querySelector(`.more-filter-${onlyId}`)
       searchDom && selectDropDown?.prepend(searchDom)
@@ -45,7 +47,9 @@ export const useDirectivesEffect = () => {
   // 显示多选选中的值
   const vShowMulTextDirective = {
     mounted(el, binding) {
+      console.log("显示多选选中的值");
       if (binding.value) {
+        console.log("进入");
         const mulSelectDom = document.querySelector(`.more-wrap-text-${onlyId} .select-trigger`)
         const textDom = document.querySelector(`.more-sel-text-${onlyId}`)
         textDom && mulSelectDom?.prepend(textDom)
@@ -86,11 +90,11 @@ export const useListEffect = (props, emit, selectMoreRef) => {
       [props.pageSizeName]: pageSize,
       [props.keyName]: keywords.value
     })
-    const result = await request({
-        url: props.url,
-        method: 'post',
-        data: params
-  })
+
+    const result = await request.post(props.url, params, {
+      signal: controller.signal
+    })
+
     if (result.code === 'ERR_CANCELED') { // 已取消不再往下执行
       return false
     }
@@ -109,6 +113,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
   // select框的值
   const selectVal = computed({
     get: function () {
+      console.log("select框的值");
       return props.modelValue
     },
     set: async function (val) {
@@ -125,6 +130,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
 
   // 多选时选中的文字
   const selectedArrText = props.multiple ? computed(() => {
+    console.log("多选时选中的文字");
     let text = []
     const selectedArr = toRaw(selectMoreRef?.value?.selected)
     selectedArr?.forEach((item) => {
@@ -136,9 +142,10 @@ export const useListEffect = (props, emit, selectMoreRef) => {
   // 重置请求数据
   const resetList = () => {
     // 重置请求状态
+    console.log("重置请求数据");
     searchSet.pageNum = 1
     searchSet.loading = false
-    searchSet.hasMore = false
+    searchSet.isFinish = false
     list.value = []
 
     // 请求数据
@@ -147,6 +154,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
 
   // 展示时请求接口
   const visibleChange = (visible) => {
+    console.log("展示时请求接口");
     emit('visibleChange', visible)
     if (visible && searchSet.init) {
       searchSet.init = false
@@ -154,19 +162,19 @@ export const useListEffect = (props, emit, selectMoreRef) => {
     }
   }
 
-
   // 搜索
   watch(keywords, debounce(resetList, 300))
 
-
   // 监听传参改变，需要把已选值置空，当再次展开时，重新请求接口
   watch(() => props.otherParams, () => {
+    console.log("监听传参改变，需要把已选值置空，当再次展开时，重新请求接口");
     searchSet.init = true
     selectVal.value = props.multiple ? [] : ''
   }, { deep: true })
 
   // 编辑回填
   watch(() => props.editData, (editData) => {
+    console.log("编辑回填");
     editData = toRaw(editData)
     if (editData?.length) { // 编辑回填的已选择的数组
       // 回填选项
@@ -185,18 +193,14 @@ export const useListEffect = (props, emit, selectMoreRef) => {
 
 // 页面配置文字
 export const useTextEffect = (props) => {
-  const optionText = (text, label) => {
-  // 【君诚食品】13600000000
-    if (text){
-      return `【${label}】${text}`
-    }
-    return `${label}`
+  console.log("页面配置文字");
+  const optionText = (id, name) => {
+    return props.showId ? `【${id}】${name}` : name
   }
 
-
-  const searchText2 = props.searchText ? props.searchText  : '请选择'
   const searchPlaceholder = computed(() => props.searchPldText ? props.searchPldText : (props.showId ? '模糊搜索ID或名称' : '模糊搜索名称'))
-  const selectPlaceholder = computed(() => props.hasAll ? '全部' : searchText2)
+
+  const selectPlaceholder = computed(() => props.selectPldText ? props.selectPldText : '请选择')
 
   return { optionText, searchPlaceholder, selectPlaceholder }
 }

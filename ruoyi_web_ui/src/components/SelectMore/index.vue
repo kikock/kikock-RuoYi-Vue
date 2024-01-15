@@ -1,29 +1,25 @@
 <template>
-  <el-select class="el-input__inner" ref="selectMoreRef" v-model="selectVal" :class="mulSelectTextCls" :multiple="multiple"
+  <div>
+  <el-select class="selectMoreCss" ref="selectMoreRef" v-model="selectVal" :class="mulSelectTextCls" :multiple="multiple"
              v-show-mul-text-directive="multipleShowText" :collapse-tags="multiple && !multipleShowText"
-             :collapse-tags-tooltip="multiple && !multipleShowText" :placeholder="selectPlaceholder"
-             :popper-class="onlyId"
+             :collapse-tags-tooltip="multiple && !multipleShowText" :placeholder="selectPlaceholder" :popper-class="onlyId"
              :disabled="disabled" v-load-more-directive="getList" v-search-directive @visible-change="visibleChange"
              clearable readonly>
-    <el-option v-for="item in list" :key="item[value]" :label="item[label]"
+    <el-option v-for="item in list" :key="item[value]" :label="optionText(item[value], item[label])"
                :value="item[value]">
-      <!-- option文字  多选-->
-      <p v-if="multiple" :title="optionText(item[text], item[label])">
+      <!-- option文字 -->
+      <p v-if="multiple" :title="optionText(item[value], item[label])">
         <label class="el-checkbox">
           <span class="el-checkbox__inner"></span>
-          <span class="option-text" v-text="optionText(item[text], item[label])"></span>
+          <span class="option-text" v-text="optionText(item[value], item[label])"></span>
         </label>
       </p>
-      <!-- option文字  单选-->
-      <p v-else class="option-text" v-text="optionText(item[text], item[label])"
-         :title="optionText(item[text], item[label])"></p>
+      <p v-else class="option-text" v-text="optionText(item[value], item[label])"
+         :title="optionText(item[value], item[label])"></p>
 
     </el-option>
     <el-option v-if="showLoading" value="" disabled>
-      <el-icon class="is-loading loading-icon">
-        <i-ep-loading/>
-      </el-icon>
-      正在加载中...
+      <el-icon  class="is-loading loading-icon" ><Loading /></el-icon>正在加载中...
     </el-option>
   </el-select>
 
@@ -46,9 +42,10 @@
       </el-input>
     </el-form-item>
   </el-form>
+  </div>
 </template>
 
-<script setup>
+<script setup name="moreSelect">
 import {useDirectivesEffect, useListEffect, useTextEffect} from './js/index'
 
 const props = defineProps({
@@ -79,10 +76,6 @@ const props = defineProps({
     type: String,
     default: 'name'
   },
-  text: { // 补充内容 中括号外面内容
-    type: String,
-    default: 'text'
-  },
   /*
    当额外传参是动态变化的，需要用响应式的方式传进来
   */
@@ -97,10 +90,6 @@ const props = defineProps({
     default: false,
   },
   multipleShowText: { // 是否把多选结果显示成文字
-    type: Boolean,
-    default: false,
-  },
-  hasAll: { // 是否有全部
     type: Boolean,
     default: false,
   },
@@ -128,12 +117,12 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  selectPldText: { // 下拉框显示文字
+      type: String,
+      default: ''
+  },
   modelValue: { // v-model的隐藏传参，无需手动传
     type: [Number, String, Array]
-  },
-  searchText: { // 下拉项显示提示文字
-    type: String,
-    default: ''
   },
 })
 
@@ -142,10 +131,10 @@ const emit = defineEmits(['change', 'visibleChange', 'update:modelValue'])
 const selectMoreRef = ref()
 
 // 动态配置项
-const {optionText,endText, searchPlaceholder, selectPlaceholder} = useTextEffect(props)
+const { optionText, searchPlaceholder, selectPlaceholder } = useTextEffect(props)
 
 // 指令
-const {onlyId, vLoadMoreDirective, vSearchDirective, vShowMulTextDirective} = useDirectivesEffect()
+const { onlyId, vLoadMoreDirective, vSearchDirective, vShowMulTextDirective } = useDirectivesEffect()
 
 // 多选样式
 const mulSelectTextCls = computed(() => {
@@ -157,15 +146,7 @@ const mulSelectTextCls = computed(() => {
 })
 
 // 搜索和列表
-const {
-  selectVal,
-  selectedArrText,
-  keywords,
-  showLoading,
-  list,
-  getList,
-  visibleChange
-} = useListEffect(props, emit, selectMoreRef)
+const { selectVal, selectedArrText, keywords, showLoading, list, getList, visibleChange } = useListEffect(props, emit, selectMoreRef)
 </script>
 
 <style lang="scss" scoped>
@@ -179,6 +160,7 @@ const {
 }
 
 .option-text {
+  margin-left: 5px;
   margin-top: 0px;
   overflow: hidden;
   white-space: nowrap;
@@ -219,11 +201,13 @@ const {
 }
 
 .tool-tip-text {
-  max-width: 400px;
+  max-width: 600px;
   max-height: 300px;
   overflow-y: auto;
 }
-
+.el-select-dropdown.is-multiple .el-select-dropdown__item{
+  height: 50px;
+}
 // 多选options样式
 .el-select-dropdown.is-multiple .el-select-dropdown__item.selected {
   &:after {
@@ -233,7 +217,6 @@ const {
   .el-checkbox .el-checkbox__inner {
     background-color: var(--el-checkbox-checked-bg-color);
     border-color: var(--el-checkbox-checked-input-border-color);
-
     &:after {
       transform: rotate(45deg) scaleY(1);
     }

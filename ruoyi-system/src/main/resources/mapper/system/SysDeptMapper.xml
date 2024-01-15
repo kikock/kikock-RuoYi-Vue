@@ -10,6 +10,7 @@
         <result property="deptName" column="dept_name"/>
         <result property="orderNum" column="order_num"/>
         <result property="leader" column="leader"/>
+        <result property="leaderName" column="leader_name"/>
         <result property="phone" column="phone"/>
         <result property="email" column="email"/>
         <result property="status" column="status"/>
@@ -71,9 +72,19 @@
 
     <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResult">
         select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.phone, d.email, d.status,
-        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name,
+        (select nick_name from sys_user where user_id = d.leader) leader_name
         from sys_dept d
         where d.dept_id = #{deptId}
+    </select>
+    <select id="selectDeptByIds" resultType="com.ruoyi.common.core.domain.entity.SysDept">
+        select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.phone, d.email, d.status,
+        (select dept_name from sys_dept where dept_id = d.parent_id) parent_name
+        from sys_dept d
+        where d.dept_id in
+        <foreach collection="deptIds" item="deptId" open="(" close=")" separator=",">
+            #{deptId}
+        </foreach>
     </select>
 
     <select id="checkDeptExistUser" parameterType="Long" resultType="int">
@@ -224,4 +235,17 @@
     <delete id="deleteDeptById" parameterType="Long">
         update sys_dept set del_flag = '2' where dept_id = #{deptId}
     </delete>
+
+
+    <select id="selectBatchIds"  resultMap="SysDeptResult">
+        <include refid="selectDeptVo"/>
+        <where>
+            dept_id in
+            <foreach item="id" collection="list" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </where>
+
+    </select>
+
 </mapper>

@@ -8,11 +8,15 @@ import com.ruoyi.common.core.domain.MoreSelect;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreRequest;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
+import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
@@ -53,9 +57,16 @@ public class SysUserController extends BaseController{
      */
     @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/list")
+
     public TableDataInfo list(SysUser user){
         startPage();
         List<SysUser> list = userService.selectUserList(user);
+        return getDataTable(list);
+    }
+    @PreAuthorize("@ss.hasPermi('system:user:list')")
+    @GetMapping("/listUserSimple")
+    public TableDataInfo listSimple(){
+        List<SysUserSimpleVo> list = userService.selectUserSimpleVoList();
         return getDataTable(list);
     }
 
@@ -218,5 +229,13 @@ public class SysUserController extends BaseController{
     public AjaxResult deptTree(SysDept dept){
         return success(deptService.selectDeptTreeList(dept));
     }
-
+    /**
+     * 分页获取组件下拉数据
+     */
+    @PostMapping("/simpleList")
+    public TableDataInfo simpleList(@RequestBody SelectMoreRequest request){
+        PageHelper.startPage(request.getPageNum(), request.getPageSize());
+        List<SelectMoreVo> list = userService.getSimpleList(request.getKeywords());
+        return getDataTable(list);
+    }
 }

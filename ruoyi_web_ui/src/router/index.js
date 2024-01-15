@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 /* Layout */
 import Layout from '@/layout'
 
@@ -162,9 +162,89 @@ export const dynamicRoutes = [
         meta: { title: '修改生成配置', activeMenu: '/tool/gen' }
       }
     ]
+  },
+  {
+    path: '/flowable',
+    component: Layout,
+    hidden: true,
+    permissions: ['bpm:form:add'],
+    children: [
+      {
+        path: 'bpmFrom/index',
+        component: () => import('@/views/bpm/form/editor/index'),
+        name: 'BpmFromIndex',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '自定义流程表单',
+          activeMenu: '/bpm/bpmForm/processform' }
+      },
+      {
+        path: 'bpmModel/editor',
+        component: () => import('@/views/bpm/model/editor/index.vue'),
+        name: 'BpmModelEditor',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '设计流程',
+          activeMenu: '/bpm/manager/model'
+        }
+      },
+      {
+        path: 'bpmModel/taskAssignRule',
+        component: () => import('@/views/bpm/model/taskAssignRule/index.vue'),
+        name: 'BpmModelTaskAssignRule',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '分配规则',
+          activeMenu: '/bpm/manager/model'
+        }
+      },
+      {
+        path: 'bpmModel/definition',
+        component: () => import('@/views/bpm/model/definition/index.vue'),
+        name: 'BpmModelDefinition',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '流程定义',
+          activeMenu: '/bpm/manager/model'
+        }
+      },
+    ]
+  },
+  {
+    path: '/task',
+    component: Layout,
+    hidden: true,
+    permissions: ['bpm:process:query'],
+    children: [
+      {
+        path: 'bpmprocessInstance/create',
+        component: () => import('@/views/bpm/processInstance/create/index.vue'),
+        name: 'BpmProcessInstanceCreate',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '发起流程',
+          activeMenu: '/bpm/task/processform'
+        }
+      },
+      {
+        path: 'bpmprocessInstance/detail',
+        component: () => import('@/views/bpm/processInstance/detail/index.vue'),
+        name: 'BpmProcessInstanceDetail',
+        meta: {
+          noCache: true,
+          hidden: true,
+          title: '流程详情',
+          activeMenu: '/bpm/task/processform'
+        }
+      }
+    ]
   }
 ]
-
 const router = createRouter({
   history: createWebHistory(),
   routes: constantRoutes,

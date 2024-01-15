@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.flowable.mapper.task.BpmTaskExtMapper">
+    <resultMap type="BpmTaskExt" id="BpmTaskExtResult">
+        <result property="id" column="id"/>
+        <result property="assigneeUserId" column="assignee_user_id"/>
+        <result property="userList" column="user_list"/>
+        <result property="name" column="name"/>
+        <result property="taskId" column="task_id"/>
+        <result property="result" column="result"/>
+        <result property="reason" column="reason"/>
+        <result property="endTime" column="end_time"/>
+        <result property="processInstanceId" column="process_instance_id"/>
+        <result property="processDefinitionId" column="process_definition_id"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectBpmTaskExtVo">
+        select id,
+               assignee_user_id,
+               user_list,
+               name,
+               task_id,
+               result,
+               reason,
+               end_time,
+               process_instance_id,
+               process_definition_id,
+               del_flag,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from bpm_task_ext
+    </sql>
+
+    <select id="selectBpmTaskExtList" parameterType="BpmTaskExt" resultMap="BpmTaskExtResult">
+        <include refid="selectBpmTaskExtVo"/>
+        <where>
+            <if test="assigneeUserId != null">
+                and assignee_user_id =
+                #{assigneeUserId}
+            </if>
+            <if test="name != null  and name != ''">
+                and name
+                like concat('%', #{name}, '%')
+            </if>
+            <if test="taskId != null  and taskId != ''">
+                and task_id =
+                #{taskId}
+            </if>
+            <if test="result != null">
+                and result =
+                #{result}
+            </if>
+            <if test="reason != null  and reason != ''">
+                and reason =
+                #{reason}
+            </if>
+            <if test="endTime != null">
+                and end_time =
+                #{endTime}
+            </if>
+            <if test="processInstanceId != null  and processInstanceId != ''">
+                and process_instance_id =
+                #{processInstanceId}
+            </if>
+            <if test="processDefinitionId != null  and processDefinitionId != ''">
+                and process_definition_id =
+                #{processDefinitionId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBpmTaskExtById" parameterType="Long"
+            resultMap="BpmTaskExtResult">
+        <include refid="selectBpmTaskExtVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectListByTaskIds" resultMap="BpmTaskExtResult">
+        <include refid="selectBpmTaskExtVo"/>
+        WHERE task_id IN
+        <foreach collection="collection" item="taskId" open="(" close=")" separator=",">
+            #{taskId}
+        </foreach>
+    </select>
+    <select id="findByTaskId" resultMap="BpmTaskExtResult">
+        <include refid="selectBpmTaskExtVo"/>
+        WHERE task_id  = #{taskId}
+    </select>
+    <insert id="insertBpmTaskExt" parameterType="BpmTaskExt" useGeneratedKeys="true"
+            keyProperty="id">
+        insert into bpm_task_ext
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="assigneeUserId != null">
+                assignee_user_id,
+            </if>
+            <if test="userList != null and userList != ''">
+                user_list,
+            </if>
+            <if test="name != null">
+                name,
+            </if>
+            <if test="taskId != null and taskId != ''">
+                task_id,
+            </if>
+            <if test="result != null">
+                result,
+            </if>
+            <if test="reason != null">
+                reason,
+            </if>
+            <if test="endTime != null">
+                end_time,
+            </if>
+            <if test="processInstanceId != null and processInstanceId != ''">
+                process_instance_id,
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="remark != null">
+                remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="assigneeUserId != null">
+                #{assigneeUserId},
+            </if>
+            <if test="userList != null and userList != ''">
+                #{userList},
+            </if>
+            <if test="name != null">
+                #{name},
+            </if>
+            <if test="taskId != null and taskId != ''">
+                #{taskId},
+            </if>
+            <if test="result != null">
+                #{result},
+            </if>
+            <if test="reason != null">
+                #{reason},
+            </if>
+            <if test="endTime != null">
+                #{endTime},
+            </if>
+            <if test="processInstanceId != null and processInstanceId != ''">
+                #{processInstanceId},
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                #{processDefinitionId},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="remark != null">
+                #{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBpmTaskExt" parameterType="BpmTaskExt">
+        update bpm_task_ext
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="assigneeUserId != null">
+                assignee_user_id = #{assigneeUserId},
+            </if>
+            <if test="userList != null and userList != ''">
+                user_list = #{userList},
+            </if>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="taskId != null and taskId != ''">
+                task_id = #{taskId},
+            </if>
+            <if test="result != null">
+                result = #{result},
+            </if>
+            <if test="reason != null">
+                reason = #{reason},
+            </if>
+            <if test="endTime != null">
+                end_time = #{endTime},
+            </if>
+            <if test="processInstanceId != null and processInstanceId != ''">
+                process_instance_id = #{processInstanceId},
+            </if>
+            <if test="processDefinitionId != null and processDefinitionId != ''">
+                process_definition_id = #{processDefinitionId},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBpmTaskExtById" parameterType="Long">
+        delete from bpm_task_ext where id = #{id}
+    </delete>
+
+    <delete id="deleteBpmTaskExtByIds" parameterType="String">
+        delete from bpm_task_ext where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

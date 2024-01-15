@@ -18,7 +18,7 @@ ruoyi:
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
-  port: 8080
+  port: 8086
   servlet:
     # 应用的访问路径
     context-path: /
@@ -70,15 +70,15 @@ spring:
   # redis 配置
   redis:
     # 本地环境
-#    host: localhost
-#    port: 6379
-#    database: 0
-#    password:
-    #测试环境 打包redis地址
     host: 211.149.159.61
     port: 6380
     database: 6
     password: gKnouKDyVE7E4yOyv7EbnFfeRejesQnJyES3iTyDrVSmwhow59
+    #开发环境 内网redis地址
+#    host: 172.20.0.6
+#    port: 6380
+#    database: 6
+#    password: gKnouKDyVE7E4yOyv7EbnFfeRejesQnJyES3iTyDrVSmwhow59
     #生产环境
     #    host: 211.149.159.61
     #    port: 6381

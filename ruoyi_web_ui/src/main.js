@@ -42,7 +42,8 @@ import ImagePreview from "@/components/ImagePreview"
 import TreeSelect from '@/components/TreeSelect'
 // 字典标签组件
 import DictTag from '@/components/DictTag'
-
+// 下拉框组件
+import SelectMore from '@/components/SelectMore';
 const app = createApp(App)
 
 // 全局方法挂载
@@ -55,16 +56,26 @@ app.config.globalProperties.addDateRange = addDateRange
 app.config.globalProperties.selectDictLabel = selectDictLabel
 app.config.globalProperties.selectDictLabels = selectDictLabels
 
+// 流程页面组件
+import ProcessDesigner from '@/components/bpmnProcessDesigner/package/designer/ProcessDesigner.vue'
+import PropertiesPanel from '@/components/bpmnProcessDesigner/package/penal/PropertiesPanel.vue'
+import ProcessPalette from '@/components/bpmnProcessDesigner/package/palette/ProcessPalette.vue'
+import ProcessViewer from '@/components/bpmnProcessDesigner/package/designer/ProcessViewer.vue'
+
+app.component('MyProcessDesigner', ProcessDesigner)
+app.component('MyPropertiesPanel', PropertiesPanel)
+app.component('MyProcessPalette', ProcessPalette)
+app.component('MyProcessViewer', ProcessViewer)
 // 全局组件挂载
 app.component('DictTag', DictTag)
 app.component('Pagination', Pagination)
+app.component('SelectMore', SelectMore)
 app.component('TreeSelect', TreeSelect)
 app.component('FileUpload', FileUpload)
 app.component('ImageUpload', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('RightToolbar', RightToolbar)
 app.component('Editor', Editor)
-
 app.use(router)
 app.use(store)
 app.use(plugins)
@@ -72,7 +83,6 @@ app.use(elementIcons)
 app.component('svg-icon', SvgIcon)
 
 directive(app)
-
 // 使用element-plus 并且设置全局的大小
 app.use(ElementPlus, {
   locale: locale,
