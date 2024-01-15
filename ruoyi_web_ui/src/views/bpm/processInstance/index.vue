@@ -77,7 +77,6 @@
             type="primary"
             icon="Plus"
             plain
-            v-hasPermi="['bpm:process:query']"
             @click="handleCreate"
         >发起流程
         </el-button>
@@ -115,7 +114,6 @@
           <el-button
               link
               type="primary"
-              v-hasPermi="['bpm:process:cancel']"
               @click="handleDetail(scope.row)"
           >
             详情
@@ -124,7 +122,6 @@
               link
               type="primary"
               v-if="scope.row.result === 1"
-              v-hasPermi="['bpm:process:query']"
               @click="handleCancel(scope.row)"
           >
             取消

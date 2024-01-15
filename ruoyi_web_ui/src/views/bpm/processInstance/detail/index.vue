@@ -34,27 +34,27 @@
         </el-form>
         <div style="margin-bottom: 20px; margin-left: 10%; font-size: 14px">
           <el-button type="success" @click="handleAudit(item, true)">
-            <!--            <Icon icon="ep:select" />-->
+            <el-icon><Select /></el-icon>
             通过
           </el-button>
           <el-button type="danger" @click="handleAudit(item, false)">
-            <!--            <Icon icon="ep:close" />-->
+            <el-icon><Close /></el-icon>
             不通过
           </el-button>
           <el-button type="primary" @click="openTaskUpdateAssigneeForm(item.id)">
-            <!--            <Icon icon="ep:edit" />-->
+            <el-icon><Edit /></el-icon>
             转办
           </el-button>
           <el-button type="primary" @click="handleDelegate(item)">
-            <!--            <Icon icon="ep:position" />-->
+            <el-icon><Position /></el-icon>
             委派
           </el-button>
           <el-button type="primary" @click="handleSign(item)">
-            <!--            <Icon icon="ep:plus" />-->
+            <el-icon><Plus /></el-icon>
             加签
           </el-button>
           <el-button type="warning" @click="handleBack(item)">
-            <!--            <Icon icon="ep:back" />-->
+            <el-icon><Back /></el-icon>
             回退
           </el-button>
         </div>
@@ -100,7 +100,7 @@
                 </p>
                 <el-card :body-style="{ padding: '10px' }">
                   <label v-if="item.assigneeUser" style="font-weight: normal; margin-right: 30px;">
-                    审批人：{{ item.assigneeUser.nickname }}
+                    审批人：{{ item.assigneeUser.name }}
                     <el-tag type="info" size="small">{{ item.assigneeUser.deptName }}</el-tag>
                   </label>
                   <label v-else style="font-weight: normal; margin-right: 30px;">
@@ -118,7 +118,7 @@
                     }}</label>
                   <label v-if="item.durationInMillis" style="margin-left: 30px;font-weight: normal">耗时：</label>
                   <label v-if="item.durationInMillis" style="color:#8a909c;font-weight: normal">
-                    {{ getDateStar(item.durationInMillis) }} </label>
+                    {{ getDate(item.durationInMillis) }} </label>
                   <p v-if="item.reason">
                     <el-tag :type="getTimelineItemType(item)">{{ item.reason }}</el-tag>
                   </p>
@@ -154,12 +154,14 @@ import * as ProcessInstanceApi from '@/api/bpm/processInstance'
 import * as TaskApi from '@/api/bpm/task'
 import {setConfAndFields2} from "@/utils/formCreate";
 import {getProcessDefinitionBpmnXML} from '@/api/bpm/definition'
+import {getDate} from "@/utils/dateUtils";
 //导入 form-create
 import formCreate from "@form-create/element-ui";
 import {registerComponent} from '@/utils/ruoyi'
 import MyProcessViewer from '@/components/bpmnProcessDesigner/package/designer/ProcessViewer.vue'
 import {getActivityList} from '@/api/bpm/activity'
 import {formatDate} from '@/components/bpmnProcessDesigner/src/utils/formatTime'
+import {approveTask} from '@/api/bpm/task'
 //获取 formCreate 组件
 const FormCreate = formCreate.$form();
 const {query} = useRoute() // 查询参数
@@ -200,7 +202,7 @@ const bpmnControlForm = ref({
 });
 const activityList = ref([]) // 任务列表
 /** 获得详情 */
-function getDetailData() {
+const getDetailData = () =>{
   // 1. 获得流程实例相关
   getProcessInstanceData()
   // 2. 获得流程任务列表（审批记录）
@@ -283,8 +285,6 @@ const getTaskListData = async () => {
     tasksLoad.value = false
   }
 }
-
-
 /**
  * 设置 runningTasks 中的任务
  */
@@ -299,19 +299,54 @@ const loadRunningTask = (tasks) => {
       return
     }
 
-    // 判断当前用户是否候选人
-    if (task.candidateUsers.indexOf(task.userId) == -1) {
-        return
-    }
-    // 2.4 添加到处理任务
-    runningTasks.value.push({...task})
+    task.candidateUsers.forEach(item => {
+      if(item.id === task.userId){
+        // 2.4 添加到处理任务
+        runningTasks.value.push({...task})
+      }
+
+    })
     auditForms.value.push({
       reason: ''
     })
   })
 }
 
-function getTimelineItemIcon(item) {
+
+
+/** 处理审批通过和不通过的操作 */
+const handleAudit = async (task, pass) => {
+  // 1.1 获得对应表单
+  const index = runningTasks.value.indexOf(task)
+  const auditFormRef = proxy.$refs['form' + index][0]
+  // 1.2 校验表单
+  const elForm = unref(auditFormRef)
+  if (!elForm) return
+  const valid = await elForm.validate()
+  if (!valid) return
+console.log("表单校验通过");
+  // 2.1 提交审批
+  const data = {
+    id: task.id,
+    reason: auditForms.value[index].reason
+  }
+  if (pass) {
+
+    await approveTask(data).then(response => {
+      proxy.$modal.msgSuccess("审批通过成功");
+    })
+  } else {
+
+    await approveTask(data).then(response => {
+      proxy.$modal.msgSuccess("审批不通过");
+    })
+  }
+
+  getDetailData()
+}
+
+
+const getTimelineItemIcon = (item) => {
   if (item.result === 1) {
     return 'el-icon-time';
   }
@@ -326,8 +361,7 @@ function getTimelineItemIcon(item) {
   }
   return '';
 }
-
-function getTimelineItemType(item) {
+const getTimelineItemType = (item) => {
   if (item.result === 1) {
     return 'primary';
   }
@@ -343,17 +377,7 @@ function getTimelineItemType(item) {
   return '';
 }
 
-function stringToObject(str) {
-  // 替换等号
-  let formattedStr = str.replace(/=/g, ':');
-  let formattedStrArray = formattedStr.split(',');
-  let obj = {};
-  for (let i = 0; i < formattedStrArray.length; i++) {
-    let keyVal = formattedStrArray[i].trim().split('=');
-    obj[keyVal[0].trim()] = keyVal[1].trim();
-  }
-  return obj;
-}
+
 
 getDetailData()
 </script>

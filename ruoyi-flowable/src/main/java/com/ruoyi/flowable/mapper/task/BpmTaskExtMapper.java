@@ -2,6 +2,7 @@ package com.ruoyi.flowable.mapper.task;
 
 
 import com.ruoyi.flowable.domain.task.BpmTaskExt;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Set;
@@ -67,5 +68,7 @@ public interface BpmTaskExtMapper{
      * @param ids 工作流的流程任务的拓展主键
      * @return 工作流的流程任务的拓展
      */
-    List<BpmTaskExt> selectListByTaskIds(Set<String> ids);
+    public List<BpmTaskExt> selectListByTaskIds(Set<String> ids);
+
+    public BpmTaskExt findByTaskId(@Param("taskId") String taskId);
 }

@@ -2,9 +2,13 @@ package com.ruoyi.flowable.service.task.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.excel.util.NumberUtils;
 import com.google.common.base.Joiner;
+import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
+import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.flowable.domain.task.BpmTaskExt;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskItemRespVO;
@@ -22,18 +26,25 @@ import org.flowable.engine.HistoryService;
 import org.flowable.engine.TaskService;
 
 import org.flowable.engine.history.HistoricProcessInstance;
+import org.flowable.engine.impl.util.TaskHelper;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.flowable.task.api.TaskInfo;
 import org.flowable.task.api.TaskQuery;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.api.history.HistoricTaskInstanceQuery;
+import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static cn.hutool.core.compiler.CompilerUtil.getTask;
 import static com.ruoyi.common.utils.collection.CollectionUtils.*;
 
 
@@ -262,6 +273,13 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
             if (assignUser != null) {
                 respVO.setAssigneeUser(assignUser);
             }
+            if (taskExtDO.getAssigneeUserId() != null) {
+                assignUser = userMap.get(taskExtDO.getAssigneeUserId());
+                respVO.setAssigneeUser(assignUser);
+                respVO.setAssigneeUserId(taskExtDO.getAssigneeUserId());
+            }
+
+
             List<String> strings = Arrays.asList(taskExtDO.getUserList().split(","));
             List<SysUserSimpleVo> voList=new ArrayList<>();
             strings.forEach(id-> voList.add( userMap.get( Long.valueOf(id))));
@@ -334,7 +352,132 @@ public class BpmTaskServiceImpl implements IBpmTaskService {
 
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void approveTask(BpmTaskReqVO reqVO) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (Objects.isNull(loginUser)){
+            throw new ServiceException("审批人不存在请重新登录再试!", HttpStatus.ERROR);
+        }
+        // 获取流程任务
+        Task task = getTask(reqVO.getId());
+        if (task == null) {
+            throw new ServiceException("审批任务失败，原因：该任务不处于未审批状态!", HttpStatus.ERROR);
+        }
+//        获取拓展表数据
+        BpmTaskExt bpmTaskExt   = taskExtMapper.findByTaskId(task.getId());
+        String userList = bpmTaskExt.getUserList();
+        //判断当前审批用户是否在候选人中
+        List<String> strings = Arrays.asList(bpmTaskExt.getUserList().split(","));
+        boolean isCandidates = strings.stream()
+                .anyMatch(s -> s.equals(loginUser.getUserId().toString())); // 将 id 转换为字符串并检查是否匹配
+        if (!isCandidates) {
+            throw new ServiceException("审批任务失败，原因：该任务的审批人不是你!", HttpStatus.ERROR);
+        }
+
+        // 校验流程实例存在
+        ProcessInstance instance = processInstanceService.getProcessInstance(task.getProcessInstanceId());
+        if (instance == null) {
+            throw new ServiceException("审批任务失败，原因：流程实例不存在!", HttpStatus.ERROR);
+        }
+
+        // 完成任务，审批通过
+        taskService.complete(task.getId(), instance.getProcessVariables());
+        // 更新任务拓展表为通过
+        bpmTaskExt.setResult(BpmProcessInstanceResultEnum.APPROVE.getResult());
+        bpmTaskExt.setReason(reqVO.getReason());
+        bpmTaskExt.setAssigneeUserId(loginUser.getUserId());
+        taskExtMapper.updateBpmTaskExt(bpmTaskExt);
+        TaskEntity taskEntity = (TaskEntity) taskService.createTaskQuery().taskId(task.getId()).singleResult();
+        if (taskEntity != null) {
+            TaskHelper.changeTaskAssignee(taskEntity, String.valueOf(loginUser.getUserId()));
+            //2.委派处理
+//            if (DelegationState.PENDING.equals(taskEntity.getDelegationState())) {
+//                //2.1生成历史记录
+//                TaskEntity task = this.createSubTask(taskEntity, params.getUserCode());
+//                taskService.saveTask(task);
+//                taskService.complete(task.getId());
+//                //2.2生成审批意见
+//                this.addComment(task.getId(), params.getUserCode(), params.getProcessInstanceId(),
+//                        CommentTypeEnum.SP.toString(), params.getMessage());
+//                //2.3执行委派
+//                taskService.resolveTask(params.getTaskId(), params.getVariables());
+//            } else {
+//                //3.1修改执行人 其实我这里就相当于签收了
+//                taskService.setAssignee(params.getTaskId(), params.getUserCode());
+//                //3.2执行任务
+//                taskService.complete(params.getTaskId(), params.getVariables());
+//                //3.3生成审批记录
+//                this.addComment(params.getTaskId(), params.getUserCode(), params.getProcessInstanceId(),
+//                        CommentTypeEnum.SP.toString(), params.getMessage());
+//                //4.处理加签父任务
+//                String parentTaskId = taskEntity.getParentTaskId();
+//                if (StringUtils.isNotBlank(parentTaskId)) {
+//                    String tableName = managementService.getTableName(TaskEntity.class);
+//                    String sql = "select count(1) from " + tableName + " where PARENT_TASK_ID_=#{parentTaskId}";
+//                    long subTaskCount = taskService.createNativeTaskQuery().sql(sql).parameter("parentTaskId", parentTaskId).count();
+//                    if (subTaskCount == 0) {
+//                        Task task = taskService.createTaskQuery().taskId(parentTaskId).singleResult();
+//                        //处理前后加签的任务
+//                        taskService.resolveTask(parentTaskId);
+//                        if (FlowConstant.AFTER_ADDSIGN.equals(task.getScopeType())) {
+//                            taskService.complete(parentTaskId);
+//                        }
+//                    }
+//                }
+//            }
+//        } else {
+//            returnVo = new ReturnVo<>(ReturnCode.FAIL, "没有此任务，请确认!");
+//        }
+//    } else {
+//        returnVo = new ReturnVo<>(ReturnCode.FAIL, "请输入正确的参数!");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void rejectTask(BpmTaskReqVO reqVO) {
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        if (Objects.isNull(loginUser)){
+            throw new ServiceException("审批人不存在请重新登录再试!", HttpStatus.ERROR);
+        }
+        Task task = checkTask(loginUser.getUserId(), reqVO.getId());
+        // 校验流程实例存在
+        ProcessInstance instance = processInstanceService.getProcessInstance(task.getProcessInstanceId());
+        if (instance == null) {
+            throw new ServiceException("审批任务失败，原因：流程实例不存在!", HttpStatus.ERROR);
+        }
+
+        // 更新流程实例为不通过
+        processInstanceService.updateProcessInstanceExtReject(instance.getProcessInstanceId(), reqVO.getReason());
+        // 更新任务拓展表为不通过
+        BpmTaskExt bpmTaskExt   = taskExtMapper.findByTaskId(task.getId());
+        bpmTaskExt.setResult(BpmProcessInstanceResultEnum.REJECT.getResult());
+        bpmTaskExt.setReason(reqVO.getReason());
+        taskExtMapper.updateBpmTaskExt(bpmTaskExt);
+    }
+
     public static Long parseLong(String str) {
         return StrUtil.isNotEmpty(str) ? Long.valueOf(str) : null;
+    }
+    /**
+     * 校验任务是否存在， 并且是否是分配给自己的任务
+     *
+     * @param userId 用户 id
+     * @param taskId task id
+     */
+    private Task checkTask(Long userId, String taskId) {
+        Task task = getTask(taskId);
+        if (task == null) {
+            throw new ServiceException("审批任务失败，原因：该任务不处于未审批状态!", HttpStatus.ERROR);
+        }
+//        if (!Objects.equals(userId, NumberUtils.parseLong(task.getAssignee()))) {
+//            throw new ServiceException("审批任务失败，原因：该任务的审批人不是你!", HttpStatus.ERROR);
+//        }
+        return task;
+    }
+
+    private Task getTask(String id) {
+        return taskService.createTaskQuery().taskId(id).singleResult();
     }
 }

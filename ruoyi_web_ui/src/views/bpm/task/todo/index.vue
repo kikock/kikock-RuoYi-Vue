@@ -58,8 +58,7 @@
 <script setup name="BpmDoneTask">
 import * as TaskApi from '@/api/bpm/task'
 import {getCurrentInstance, reactive, ref, toRefs} from 'vue'
-import Router from "@/router";
-
+import router from "@/router";
 const {proxy} = getCurrentInstance();
 const {bpm_oa_leave_type} = proxy.useDict("bpm_oa_leave_type");
 const {bpm_process_instance_result} = proxy.useDict("bpm_process_instance_result");
@@ -144,7 +143,7 @@ function handleSelectionChange(selection) {
 
 /** 跳转流程详情 */
 function handleAudit(row) {
-  Router.push({path: "/task/bpmprocessInstance/detail",query: {id: row.processInstance.id}})
+  router.push({path: "/task/bpmprocessInstance/detail",query: {id: row.processInstance.id}})
 }
 
 /** 导出按钮操作 */

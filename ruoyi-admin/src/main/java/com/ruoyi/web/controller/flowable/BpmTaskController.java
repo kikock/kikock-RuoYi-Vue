@@ -15,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 
 @Tag(name = "管理后台 - 流程任务实例")
 @RestController
@@ -36,34 +37,28 @@ public class BpmTaskController extends BaseController {
     }
     // 获取我的已办任务
     @GetMapping("done-page")
-//    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     @Anonymous
     public TableDataInfo taskDoneList(BpmTaskReqVO pageReqVO){
         startPage();
         return getDataTable(bpmTaskService.getDonetask(getUserId(),pageReqVO));
     }
     @GetMapping("/list-by-process-instance-id")
-//    @PreAuthorize("@ss.hasPermission('bpm:task:query')")
     public AjaxResult getTaskListByProcessInstanceId(
             @RequestParam("processInstanceId") String processInstanceId) {
         return success(bpmTaskService.getTaskListByProcessInstanceId(processInstanceId));
     }
-//
-//    @PutMapping("/approve")
-//    @Operation(summary = "通过任务")
-//    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
-//    public CommonResult<Boolean> approveTask(@Valid @RequestBody BpmTaskApproveReqVO reqVO) {
-//        taskService.approveTask(getLoginUserId(), reqVO);
-//        return success(true);
-//    }
-//
-//    @PutMapping("/reject")
-//    @Operation(summary = "不通过任务")
-//    @PreAuthorize("@ss.hasPermission('bpm:task:update')")
-//    public CommonResult<Boolean> rejectTask(@Valid @RequestBody BpmTaskRejectReqVO reqVO) {
-//        taskService.rejectTask(getLoginUserId(), reqVO);
-//        return success(true);
-//    }
+
+    @PutMapping("/approve")
+    public AjaxResult approveTask(@Valid @RequestBody BpmTaskReqVO reqVO) {
+        bpmTaskService.approveTask(reqVO);
+        return success(true);
+    }
+
+    @PutMapping("/reject")
+    public AjaxResult rejectTask(@Valid @RequestBody BpmTaskReqVO reqVO) {
+        bpmTaskService.rejectTask(reqVO);
+        return success(true);
+    }
 //
 //    @PutMapping("/update-assignee")
 //    @Operation(summary = "更新任务的负责人", description = "用于【流程详情】的【转派】按钮")
