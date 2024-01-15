@@ -23,7 +23,9 @@ export function completeTask(data) {
     data: data
   })
 }
-
+/**
+ * 通过审批
+ */
 export function approveTask(data) {
   return request({
     url: '/bpm/task/approve',
@@ -31,7 +33,9 @@ export function approveTask(data) {
     data: data
   })
 }
-
+/**
+ * 不通过审批
+ */
 export function rejectTask(data) {
   return request({
     url: '/bpm/task/reject',
@@ -39,14 +43,38 @@ export function rejectTask(data) {
     data: data
   })
 }
-export function backTask(data) {
+
+/**
+ * 驳回
+ */
+export function doBackStep(data) {
   return request({
-    url: '/bpm/task/back',
+    url: '/bpm/task/doBackStep',
+    method: 'PUT',
+    data: data
+  })
+}
+/**
+ * 转办
+ */
+export const delegateTask = async (data) => {
+  return request({
+    url: '/bpm/task/delegate',
     method: 'PUT',
     data: data
   })
 }
 
+/**
+ * 委派
+ */
+export const stopProcess = async (data) => {
+  return request({
+    url: '/bpm/task/stopProcess',
+    method: 'PUT',
+    data: data
+  })
+}
 export function updateTaskAssignee(data) {
   return request({
     url: '/bpm/task/update-assignee',

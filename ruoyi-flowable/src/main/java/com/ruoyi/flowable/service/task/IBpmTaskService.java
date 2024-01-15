@@ -1,5 +1,6 @@
 package com.ruoyi.flowable.service.task;
 
+import com.ruoyi.flowable.domain.definition.vo.BpmModelVo;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskItemRespVO;
 import com.ruoyi.flowable.domain.task.vo.BpmTaskReqVO;
 import org.flowable.task.api.Task;
@@ -43,37 +44,6 @@ public interface IBpmTaskService {
      */
     List<BpmTaskItemRespVO> getTaskListByProcessInstanceId(String processInstanceId);
 
-    /**
-     * 通过任务
-     *
-     * @param userId 用户编号
-     * @param reqVO  通过请求
-     */
-//    void approveTask(Long userId, @Valid BpmTaskApproveReqVO reqVO);
-
-    /**
-     * 不通过任务
-     *
-     * @param userId 用户编号
-     * @param reqVO  不通过请求
-     */
-//    void rejectTask(Long userId, @Valid BpmTaskRejectReqVO reqVO);
-
-    /**
-     * 将流程任务分配给指定用户
-     *
-     * @param userId 用户编号
-     * @param reqVO  分配请求
-     */
-//    void updateTaskAssignee(Long userId, BpmTaskUpdateAssigneeReqVO reqVO);
-
-    /**
-     * 将流程任务分配给指定用户
-     *
-     * @param id     流程任务编号
-     * @param userId 用户编号
-     */
-    void updateTaskAssignee(String id, Long userId);
 
     /**
      * 创建 Task 拓展记录
@@ -117,17 +87,35 @@ public interface IBpmTaskService {
      */
     void rejectTask( BpmTaskReqVO reqVO);
     /**
+     * 将流程任务分配给指定用户
+     *
+     * @param reqVO  分配请求
+     */
+    void updateTaskAssignee(BpmTaskReqVO reqVO);
+    /**
      * 获取当前任务的可回退的流程集合
      *
      * @param taskId 当前的任务 ID
      * @return 可以回退的节点列表
      */
-//    List<BpmTaskSimpleRespVO> getReturnTaskList(String taskId);
+    List<BpmModelVo> getReturnTaskList(String taskId);
 
     /**
      * 将任务回退到指定的 targetDefinitionKey 位置
      *
      * @param reqVO 回退的任务key和当前所在的任务ID
      */
-//    void returnTask(BpmTaskReturnReqVO reqVO);
+    void returnTask(BpmTaskReqVO reqVO);
+    /**
+     * 终止任务
+     *
+     * @param reqVO  不通过请求
+     */
+    void stopProcess(BpmTaskReqVO reqVO);
+    /**
+     * 委派任务
+     *
+     * @param reqVO  不通过请求
+     */
+    void delegate(BpmTaskReqVO reqVO);
 }

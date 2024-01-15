@@ -18,7 +18,7 @@ public enum BpmProcessInstanceResultEnum {
     APPROVE(2, "通过"),
     REJECT(3, "不通过"),
     CANCEL(4, "已取消"),
-
+    STOP(5, "终止"),
     // ========== 流程任务独有的状态 ==========
 
     BACK(5, "退回/驳回");
