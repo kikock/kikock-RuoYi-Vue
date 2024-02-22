@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -117,4 +118,6 @@ public interface SysDeptMapper{
     public int deleteDeptById(Long deptId);
 
     public List<SysDept> selectBatchIds(List<Long> ids);
+
+    List<SelectMoreVo> getSimpleList(String keywords);
 }

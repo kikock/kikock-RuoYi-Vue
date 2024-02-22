@@ -245,7 +245,17 @@
                 #{id}
             </foreach>
         </where>
-
     </select>
-
+    <select id="getSimpleList"  parameterType="String" resultType="SelectMoreVo">
+        select dept_id as id,
+        dept_id as code,
+        dept_name as name
+        from sys_dept
+        <where>
+            status = '0' and del_flag = '0'
+            <if test="keywords != null and keywords != ''">
+                AND dept_name like concat('%', #{keywords}, '%')
+            </if>
+        </where>
+    </select>
 </mapper>

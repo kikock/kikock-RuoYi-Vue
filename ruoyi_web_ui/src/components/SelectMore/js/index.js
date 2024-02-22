@@ -113,11 +113,14 @@ export const useListEffect = (props, emit, selectMoreRef) => {
   // select框的值
   const selectVal = computed({
     get: function () {
-      console.log("select框的值");
       return props.modelValue
     },
     set: async function (val) {
       emit('update:modelValue', val)
+      if(val.length){
+        let rows = list.value.filter(item => val.includes(item.id));
+        emit('changeMultiple', rows)
+      }
       let row =null;
       list.value.forEach(item => {
         if (item.id === val) {
@@ -125,6 +128,7 @@ export const useListEffect = (props, emit, selectMoreRef) => {
         }
       })
       emit('change', row)
+
     }
   })
 

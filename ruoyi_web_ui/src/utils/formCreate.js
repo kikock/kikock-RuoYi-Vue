@@ -38,8 +38,8 @@ export const setConfAndFields = (designerRef, conf, fields) => {
     designerRef.value.setRule(JSON.parse(fields))
 }
 
-// 设置表单的 Conf 和 Fields
-export const setConfAndFields2 = (detailPreview,conf, fields,value) => {
+// 设置表单的 Conf 和 Fields 和 value 和 title
+export const setMyConfAndFields = (detailPreview,conf, fields,value,title) => {
     // @ts-ignore
     detailPreview.value.option = JSON.parse(conf)
     // @ts-ignore
@@ -48,5 +48,9 @@ export const setConfAndFields2 = (detailPreview,conf, fields,value) => {
     if (value) {
         // @ts-ignore
         detailPreview.value.value = value
+    }
+    if (title) {
+        // @ts-ignore
+        detailPreview.value.title = title
     }
 }
