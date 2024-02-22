@@ -201,6 +201,7 @@
                         value-key="id"
                         placeholder="请选择归属部门"
                         check-strictly
+                        @change="checkedDeptChange"
                      />
                   </el-form-item>
                </el-col>
@@ -513,6 +514,13 @@ function handleSelectionChange(selection) {
   single.value = selection.length != 1;
   multiple.value = !selection.length;
 };
+
+function checkedDeptChange(checkedIds) {
+  console.log("部门选择", checkedIds);
+  console.log("选择部门id:",form.value.deptId);
+}
+
+
 /** 导入按钮操作 */
 function handleImport() {
   upload.title = "用户导入";

@@ -8,6 +8,7 @@ import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.SecurityUtils;
@@ -296,6 +297,10 @@ public class SysDeptServiceImpl implements ISysDeptService{
         });
     }
 
+    @Override
+    public List<SelectMoreVo> getSimpleList(String keywords){
+        return deptMapper.getSimpleList(keywords);
+    }
 
 
     /**

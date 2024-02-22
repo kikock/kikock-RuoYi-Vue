@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.workflow.mapper.WfCopyMapper">
+
+    <resultMap type="WfCopy" id="WfCopyResult">
+        <result property="copyId" column="copy_id"/>
+        <result property="title" column="title"/>
+        <result property="processId" column="process_id"/>
+        <result property="processName" column="process_name"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="deploymentId" column="deployment_id"/>
+        <result property="instanceId" column="instance_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="originatorId" column="originator_id"/>
+        <result property="originatorName" column="originator_name"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <sql id="selectWfCopyVo">
+        select copy_id, title, process_id, process_name, category_id, deployment_id, instance_id, task_id, user_id, originator_id, originator_name, create_by, create_time, update_by, update_time, del_flag from
+        wf_copy
+    </sql>
+
+    <select id="selectWfCopyList" parameterType="WfCopy" resultMap="WfCopyResult">
+        <include refid="selectWfCopyVo"/>
+        <where>
+            <if test="title != null  and title != ''"> and title =
+                #{title}
+            </if>
+            <if test="processId != null  and processId != ''"> and process_id =
+                #{processId}
+            </if>
+            <if test="processName != null  and processName != ''"> and process_name
+                like concat('%', #{processName}, '%')
+            </if>
+            <if test="categoryId != null  and categoryId != ''"> and category_id =
+                #{categoryId}
+            </if>
+            <if test="deploymentId != null  and deploymentId != ''"> and deployment_id =
+                #{deploymentId}
+            </if>
+            <if test="instanceId != null  and instanceId != ''"> and instance_id =
+                #{instanceId}
+            </if>
+            <if test="taskId != null  and taskId != ''"> and task_id =
+                #{taskId}
+            </if>
+            <if test="userId != null "> and user_id =
+                #{userId}
+            </if>
+            <if test="originatorId != null "> and originator_id =
+                #{originatorId}
+            </if>
+            <if test="originatorName != null  and originatorName != ''"> and originator_name
+                like concat('%', #{originatorName}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectWfCopyByCopyId" parameterType="Long"
+            resultMap="WfCopyResult">
+        <include refid="selectWfCopyVo"/>
+        where copy_id = #{copyId}
+    </select>
+
+    <insert id="insertWfCopy" parameterType="WfCopy"  useGeneratedKeys="true"
+            keyProperty="copyId" >
+        insert into wf_copy
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="title != null">
+                title,
+            </if>
+            <if test="processId != null">
+                process_id,
+            </if>
+            <if test="processName != null">
+                process_name,
+            </if>
+            <if test="categoryId != null">
+                category_id,
+            </if>
+            <if test="deploymentId != null">
+                deployment_id,
+            </if>
+            <if test="instanceId != null">
+                instance_id,
+            </if>
+            <if test="taskId != null">
+                task_id,
+            </if>
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="originatorId != null">
+                originator_id,
+            </if>
+            <if test="originatorName != null">
+                originator_name,
+            </if>
+            <if test="createBy != null">
+                create_by,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateBy != null">
+                update_by,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="title != null">
+                #{title},
+            </if>
+            <if test="processId != null">
+                #{processId},
+            </if>
+            <if test="processName != null">
+                #{processName},
+            </if>
+            <if test="categoryId != null">
+                #{categoryId},
+            </if>
+            <if test="deploymentId != null">
+                #{deploymentId},
+            </if>
+            <if test="instanceId != null">
+                #{instanceId},
+            </if>
+            <if test="taskId != null">
+                #{taskId},
+            </if>
+            <if test="userId != null">
+                #{userId},
+            </if>
+            <if test="originatorId != null">
+                #{originatorId},
+            </if>
+            <if test="originatorName != null">
+                #{originatorName},
+            </if>
+            <if test="createBy != null">
+                #{createBy},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateBy != null">
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+        </trim>
+    </insert>
+
+
+    <!--批量插入-->
+    <insert id="insertBatchWfCopy">
+        insert into wf_copy(title, process_id, process_name,
+        category_id, deployment_id, instance_id,
+        task_id, user_id, originator_id,
+        originator_name,create_by, create_time) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.title},#{item.processId},#{item.processName},
+            #{item.categoryId},#{item.deploymentId},#{item.instanceId},
+            #{item.taskId},#{item.userId},#{item.originatorId},
+            #{item.originatorName},#{item.createBy},#{item.createTime})
+        </foreach>
+    </insert>
+    <update id="updateWfCopy" parameterType="WfCopy">
+        update wf_copy
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">
+                title = #{title},
+            </if>
+            <if test="processId != null">
+                process_id = #{processId},
+            </if>
+            <if test="processName != null">
+                process_name = #{processName},
+            </if>
+            <if test="categoryId != null">
+                category_id = #{categoryId},
+            </if>
+            <if test="deploymentId != null">
+                deployment_id = #{deploymentId},
+            </if>
+            <if test="instanceId != null">
+                instance_id = #{instanceId},
+            </if>
+            <if test="taskId != null">
+                task_id = #{taskId},
+            </if>
+            <if test="userId != null">
+                user_id = #{userId},
+            </if>
+            <if test="originatorId != null">
+                originator_id = #{originatorId},
+            </if>
+            <if test="originatorName != null">
+                originator_name = #{originatorName},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+        </trim>
+        where copy_id = #{copyId}
+    </update>
+
+    <delete id="deleteWfCopyByCopyId" parameterType="Long">
+        delete from wf_copy where copy_id = #{copyId}
+    </delete>
+
+    <delete id="deleteWfCopyByCopyIds" parameterType="String">
+        delete from wf_copy where copy_id in
+        <foreach item="copyId" collection="array" open="(" separator="," close=")">
+            #{copyId}
+        </foreach>
+    </delete>
+</mapper>

@@ -164,83 +164,51 @@ export const dynamicRoutes = [
     ]
   },
   {
-    path: '/flowable',
+    path: '/workflow',
     component: Layout,
     hidden: true,
-    permissions: ['bpm:form:add'],
+    permissions: ['workflow:model:designer'],
     children: [
       {
         path: 'bpmFrom/index',
-        component: () => import('@/views/bpm/form/editor/index'),
+        component: () => import('@/views/workflow/form/editor/index'),
         name: 'BpmFromIndex',
         meta: {
           noCache: true,
           hidden: true,
-          title: '自定义流程表单',
-          activeMenu: '/bpm/bpmForm/processform' }
+          title: '流程表单设计',
+          activeMenu: '/workflow/bpmFrom/processform' }
       },
       {
-        path: 'bpmModel/editor',
-        component: () => import('@/views/bpm/model/editor/index.vue'),
-        name: 'BpmModelEditor',
+        path: 'bpmModel/index',
+        component: () => import('@/views/workflow/model/editor/index.vue'),
+        name: 'BpmModelIndex',
         meta: {
           noCache: true,
           hidden: true,
           title: '设计流程',
-          activeMenu: '/bpm/manager/model'
-        }
-      },
-      {
-        path: 'bpmModel/taskAssignRule',
-        component: () => import('@/views/bpm/model/taskAssignRule/index.vue'),
-        name: 'BpmModelTaskAssignRule',
-        meta: {
-          noCache: true,
-          hidden: true,
-          title: '分配规则',
-          activeMenu: '/bpm/manager/model'
-        }
-      },
-      {
-        path: 'bpmModel/definition',
-        component: () => import('@/views/bpm/model/definition/index.vue'),
-        name: 'BpmModelDefinition',
-        meta: {
-          noCache: true,
-          hidden: true,
-          title: '流程定义',
-          activeMenu: '/bpm/manager/model'
+          activeMenu: '/workflow/bpmModel/processModel'
         }
       },
     ]
   },
   {
-    path: '/task',
+    path: '/workflow/process',
     component: Layout,
     hidden: true,
-    permissions: ['bpm:process:query'],
+    permissions: ['workflow:process:query'],
     children: [
       {
-        path: 'bpmprocessInstance/create',
-        component: () => import('@/views/bpm/processInstance/create/index.vue'),
-        name: 'BpmProcessInstanceCreate',
-        meta: {
-          noCache: true,
-          hidden: true,
-          title: '发起流程',
-          activeMenu: '/bpm/task/processform'
-        }
+        path: 'start/:deployId([\\w|\\-]+)',
+        component: () => import('@/views/workflow/work/start.vue'),
+        name: 'WorkStart',
+        meta: { title: '发起流程', icon: '' }
       },
       {
-        path: 'bpmprocessInstance/detail',
-        component: () => import('@/views/bpm/processInstance/detail/index.vue'),
-        name: 'BpmProcessInstanceDetail',
-        meta: {
-          noCache: true,
-          hidden: true,
-          title: '流程详情',
-          activeMenu: '/bpm/task/processform'
-        }
+        path: 'detail/:procInsId([\\w|\\-]+)',
+        component: () => import('@/views/workflow/work/detail.vue'),
+        name: 'WorkDetail',
+        meta: { title: '流程详情', activeMenu: '/work/own' }
       }
     ]
   }

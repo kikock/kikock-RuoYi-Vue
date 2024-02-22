@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.workflow.mapper.WfDeployFormMapper">
+
+    <resultMap type="WfDeployForm" id="WfDeployFormResult">
+        <result property="deployId" column="deploy_id"/>
+        <result property="formKey" column="form_key"/>
+        <result property="nodeKey" column="node_key"/>
+        <result property="formName" column="form_name"/>
+        <result property="nodeName" column="node_name"/>
+        <result property="content" column="content"/>
+        <result property="conf" column="conf"/>
+        <result property="fields" column="fields"/>
+    </resultMap>
+
+    <sql id="selectWfDeployFormVo">
+        select deploy_id, form_key, node_key, form_name, node_name, content ,conf, fields
+        from
+        wf_deploy_form
+    </sql>
+
+    <select id="selectWfDeployFormList" parameterType="WfDeployForm" resultMap="WfDeployFormResult">
+        <include refid="selectWfDeployFormVo"/>
+        <where>
+            <if test="formName != null  and formName != ''"> and form_name
+                like concat('%', #{formName}, '%')
+            </if>
+            <if test="nodeName != null  and nodeName != ''"> and node_name
+                like concat('%', #{nodeName}, '%')
+            </if>
+            <if test="content != null  and content != ''"> and content =
+                #{content}
+            </if>
+
+            /**
+            * 流程部署主键
+            */
+            private String deployId;
+
+            /**
+            * 表单Key
+            */
+            private String formKey;
+
+            /**
+            * 节点Key
+            */
+            private String nodeKey;
+
+
+        </where>
+    </select>
+
+    <select id="selectWfDeployFormByDeployId" parameterType="String"
+            resultMap="WfDeployFormResult">
+        <include refid="selectWfDeployFormVo"/>
+        where deploy_id = #{deployId}
+    </select>
+    <resultMap type="WfDeployFormVo" id="WfDeployFormResultVo">
+        <result property="deployId" column="deploy_id"/>
+        <result property="formKey" column="form_key"/>
+        <result property="nodeKey" column="node_key"/>
+        <result property="formName" column="form_name"/>
+        <result property="nodeName" column="node_name"/>
+        <result property="content" column="content"/>
+        <result property="conf" column="conf"/>
+        <result property="fields" column="fields"/>
+    </resultMap>
+    <select id="selectVoOneWfDeployForm" parameterType="WfDeployForm" resultMap="WfDeployFormResultVo">
+        <include refid="selectWfDeployFormVo"/>
+        <where>
+            <if test="deployId != null  and deployId != ''">
+                and deploy_id = #{deployId}
+            </if>
+            <if test="formKey != null  and formKey != ''">
+                and form_key =  #{formKey}
+            </if>
+            <if test="nodeKey != null  and nodeKey != ''">
+                and node_key =   #{nodeKey}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertWfDeployForm" parameterType="WfDeployForm" >
+        insert into wf_deploy_form
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="deployId != null">
+                deploy_id,
+            </if>
+            <if test="formKey != null">
+                form_key,
+            </if>
+            <if test="nodeKey != null">
+                node_key,
+            </if>
+            <if test="formName != null">
+                form_name,
+            </if>
+            <if test="nodeName != null">
+                node_name,
+            </if>
+            <if test="content != null">
+                content,
+            </if>
+            <if test="conf != null">
+                conf,
+            </if>
+            <if test="fields != null">
+                fields,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="deployId != null">
+                #{deployId},
+            </if>
+            <if test="formKey != null">
+                #{formKey},
+            </if>
+            <if test="nodeKey != null">
+                #{nodeKey},
+            </if>
+            <if test="formName != null">
+                #{formName},
+            </if>
+            <if test="nodeName != null">
+                #{nodeName},
+            </if>
+            <if test="content != null">
+                #{content},
+            </if>
+            <if test="conf != null">
+                #{conf},
+            </if>
+            <if test="fields != null">
+                #{fields},
+            </if>
+        </trim>
+    </insert>
+
+    <!--批量插入-->
+    <insert id="insertBatchWfCopy">
+        insert into wf_deploy_form(deploy_id, form_key, node_key,
+        form_name, node_name, content, conf, fields) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.deployId},#{item.formKey},#{item.nodeKey},
+            #{item.formName},#{item.nodeName},#{item.content},#{item.conf},#{item.fields})
+        </foreach>
+    </insert>
+
+    <update id="updateWfDeployForm" parameterType="WfDeployForm">
+        update wf_deploy_form
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="formKey != null">
+                form_key = #{formKey},
+            </if>
+            <if test="nodeKey != null">
+                node_key = #{nodeKey},
+            </if>
+            <if test="formName != null">
+                form_name = #{formName},
+            </if>
+            <if test="nodeName != null">
+                node_name = #{nodeName},
+            </if>
+            <if test="content != null">
+                content = #{content},
+            </if>
+            <if test="conf != null">
+                conf = #{conf},
+            </if>
+            <if test="fields != null">
+                fields = #{fields},
+            </if>
+        </trim>
+        where deploy_id = #{deployId}
+    </update>
+
+    <delete id="deleteWfDeployFormByDeployId" parameterType="String">
+        delete from wf_deploy_form where deploy_id = #{deployId}
+    </delete>
+
+    <delete id="deleteWfDeployFormByDeployIds" parameterType="String">
+        delete from wf_deploy_form where deploy_id in
+        <foreach item="deployId" collection="array" open="(" separator="," close=")">
+            #{deployId}
+        </foreach>
+    </delete>
+</mapper>

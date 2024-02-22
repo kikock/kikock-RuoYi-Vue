@@ -1,10 +1,14 @@
 package com.ruoyi.web.controller.system;
 
+import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.constant.UserConstants;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.vo.SelectMoreRequest;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.service.ISysDeptService;
@@ -108,4 +112,15 @@ public class SysDeptController extends BaseController{
         deptService.checkDeptDataScope(deptId);
         return toAjax(deptService.deleteDeptById(deptId));
     }
+
+    /**
+     * 分页获取组件下拉数据
+     */
+    @PostMapping("/simpleList")
+    public TableDataInfo simpleList(@RequestBody SelectMoreRequest request){
+        PageHelper.startPage(request.getPageNum(), request.getPageSize());
+        List<SelectMoreVo> list = deptService.getSimpleList(request.getKeywords());
+        return getDataTable(list);
+    }
+
 }
