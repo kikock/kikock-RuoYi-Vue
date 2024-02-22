@@ -57,10 +57,11 @@ app.config.globalProperties.selectDictLabel = selectDictLabel
 app.config.globalProperties.selectDictLabels = selectDictLabels
 
 // 流程页面组件
-import ProcessDesigner from '@/components/bpmnProcessDesigner/package/designer/ProcessDesigner.vue'
-import PropertiesPanel from '@/components/bpmnProcessDesigner/package/penal/PropertiesPanel.vue'
-import ProcessPalette from '@/components/bpmnProcessDesigner/package/palette/ProcessPalette.vue'
-import ProcessViewer from '@/components/bpmnProcessDesigner/package/designer/ProcessViewer.vue'
+// 流程页面组件
+import ProcessDesigner from '@/components/workflow/package/designer/ProcessDesigner.vue'
+import PropertiesPanel from '@/components/workflow/package/penal/PropertiesPanel.vue'
+import ProcessPalette from '@/components/workflow/package/palette/ProcessPalette.vue'
+import ProcessViewer from '@/components/workflow/package/designer/ProcessViewer.vue'
 
 app.component('MyProcessDesigner', ProcessDesigner)
 app.component('MyPropertiesPanel', PropertiesPanel)

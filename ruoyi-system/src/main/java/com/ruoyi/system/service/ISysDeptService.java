@@ -2,6 +2,7 @@ package com.ruoyi.system.service;
 
 import com.ruoyi.common.core.domain.TreeSelect;
 import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 
 import java.util.List;
 import java.util.Set;
@@ -123,5 +124,11 @@ public interface ISysDeptService{
      */
     public int deleteDeptById(Long deptId);
 
-    List<SysDept> selectDeptByIds(Set<Long> deptIds);
+   public List<SysDept> selectBatchIds(List<Long> ids);
+
+    public void validateDeptList(List<Long> ids);
+    /**
+     * 分页获取组件下拉数据
+     */
+    public List<SelectMoreVo> getSimpleList(String keywords);
 }
