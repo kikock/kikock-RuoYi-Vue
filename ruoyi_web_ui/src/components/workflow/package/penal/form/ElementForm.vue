@@ -14,13 +14,7 @@
       </el-form-item>
 
       <el-form-item label="节点表单" prop="localScope" >
-        <span slot="label">
-          <el-tooltip content="若为节点表单，则表单信息仅在此节点可用，默认为全局表单，表单信息在整个流程实例中可用" placement="top-start">
-          <el-icon class="mr5">
-            <InfoFilled/>
-          </el-icon>
-          </el-tooltip>
-        </span>
+
         <el-switch :disabled="type === 'StartEvent'" v-model="localScope" active-value="true" inactive-value="false" active-text="是" inactive-text="否" @change="updateElementFormScope()" />
       </el-form-item>
     </el-form>
