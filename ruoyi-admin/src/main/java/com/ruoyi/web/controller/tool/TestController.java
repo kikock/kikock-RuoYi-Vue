@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * @author ruoyi
  */
-@Api("用户信息管理")
+@Api(value = "接口测试",tags = "接口测试")
 @RestController
 @RequestMapping("/test/user")
 public class TestController extends BaseController{
