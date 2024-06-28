@@ -60,7 +60,8 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="Edit"
               v-hasPermi="['workflow:process:approval']"
               @click.native="handleProcess(scope.row)"

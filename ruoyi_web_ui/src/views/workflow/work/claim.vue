@@ -48,7 +48,7 @@
       <el-table-column label="任务节点" align="center" prop="taskName"/>
       <el-table-column label="流程版本" align="center">
        <template #default="scope">
-          <el-tag size="medium" >v{{scope.row.procDefVersion}}</el-tag>
+          <el-tag >v{{scope.row.procDefVersion}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="流程发起人" align="center">
@@ -60,7 +60,8 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
        <template #default="scope">
          <el-button
-             type="text"
+             link
+             type="primary"
              icon="Edit"
              v-hasPermi="['workflow:process:claim']"
              @click.native="handleClaim(scope.row)"

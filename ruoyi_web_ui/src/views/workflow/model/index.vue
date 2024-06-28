@@ -68,7 +68,7 @@
       <el-table-column label="模型标识" align="center" prop="modelKey" :show-overflow-tooltip="true"/>
       <el-table-column label="模型名称" align="center" :show-overflow-tooltip="true">
         <template #default="scope">
-          <el-button type="text" @click="handleProcessView(scope.row)">
+          <el-button link type="primary" @click="handleProcessView(scope.row)">
             <span>{{ scope.row.modelName }}</span>
           </el-button>
         </template>
@@ -88,42 +88,48 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template #default="scope">
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="Edit"
               @click="handleUpdate(scope.row)"
               v-hasPermi="['workflow:model:edit']"
           >修改
           </el-button>
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="EditPen"
               @click="handleDesigner(scope.row)"
               v-hasPermi="['workflow:model:designer']"
           >设计
           </el-button>
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="VideoPlay"
               v-hasPermi="['workflow:model:deploy']"
               @click.native="handleDeploy(scope.row)"
           >部署
           </el-button>
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="View"
               v-hasPermi="['workflow:model:query']"
               @click.native="handleProcessView(scope.row)"
           >流程图
           </el-button>
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="PriceTag"
               v-hasPermi="['workflow:model:list']"
               @click.native="handleHistory(scope.row)"
           >历史
           </el-button>
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="Delete"
               v-hasPermi="['workflow:model:remove']"
               @click.native="handleDelete(scope.row)"
@@ -161,10 +167,12 @@
                     show-word-limit/>
         </el-form-item>
       </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
-        <el-button @click="cancel()">取 消</el-button>
-      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel()">取 消</el-button>
+        </div>
+      </template>
     </el-dialog>
 
     <!-- 流程模型图的预览 -->
@@ -179,7 +187,11 @@
         <el-table-column label="模型标识" align="center" prop="modelKey" :show-overflow-tooltip="true"/>
         <el-table-column label="模型名称" align="center" :show-overflow-tooltip="true">
           <template #default="scope">
-            <el-button type="text" @click="handleProcessView(scope.row)">
+            <el-button
+                link
+                type="primary"
+                @click="handleProcessView(scope.row)"
+            >
               <span>{{ scope.row.modelName }}</span>
             </el-button>
           </template>
@@ -187,7 +199,7 @@
         <el-table-column label="流程分类" align="center" prop="categoryName" :formatter="categoryFormat"/>
         <el-table-column label="模型版本" align="center">
           <template #default="scope">
-            <el-tag size="medium">v{{ scope.row.version }}</el-tag>
+            <el-tag >v{{ scope.row.version }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column label="描述" align="center" prop="description" :show-overflow-tooltip="true"/>
@@ -195,14 +207,16 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button
-                type="text"
+                link
+                type="primary"
                 icon="VideoPlay"
                 v-hasPermi="['workflow:model:deploy']"
                 @click.native="handleDeploy(scope.row)"
             >部署
             </el-button>
             <el-button
-                type="text"
+                link
+                type="primary"
                 icon="Star"
                 v-hasPermi="['workflow:model:save']"
                 @click.native="handleLatest(scope.row)"

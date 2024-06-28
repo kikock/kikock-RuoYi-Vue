@@ -62,14 +62,14 @@
       <right-toolbar v-model:showSearch="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="ownProcessList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="ownProcessList" >
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>
+<!--      <el-table-column label="流程编号" align="center" prop="procInsId" :show-overflow-tooltip="true"/>-->
       <el-table-column label="流程名称" align="center" prop="procDefName" :show-overflow-tooltip="true"/>
       <el-table-column label="流程类别" align="center" prop="category" :formatter="categoryFormat" />
       <el-table-column label="流程版本" align="center" width="80px">
        <template #default="scope">
-          <el-tag size="medium" >v{{ scope.row.procDefVersion }}</el-tag>
+          <el-tag>v{{ scope.row.procDefVersion }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="当前节点" align="center" prop="taskName"/>
@@ -83,29 +83,33 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
        <template #default="scope">
          <el-button
-             type="text"
+             link
+             type="primary"
              icon="View"
              v-hasPermi="['workflow:process:query']"
              @click.native="handleFlowRecord(scope.row)"
          >详情
          </el-button>
          <el-button
-             type="text"
-             icon="View"
+             link
+             type="primary"
+             icon="Delete"
              v-hasPermi="['workflow:process:remove']"
              @click.native="handleDelete(scope.row)"
          >删除
          </el-button>
          <el-button
-             type="text"
-             icon="View"
+             link
+             type="primary"
+             icon="CircleClose"
              v-hasPermi="['workflow:process:cancel']"
              @click.native="handleStop(scope.row)"
-         >取消
+         >终止
          </el-button>
           <el-button
-            type="text"
-            icon="View"
+              link
+              type="primary"
+            icon="RefreshRight"
             v-hasPermi="['workflow:process:start']"
             @click.native="handleAgain(scope.row)"
           >重新发起</el-button>
@@ -126,10 +130,9 @@
 
 <script setup  name="WorkOwn">
 // wf_process_status
-import {listOwnProcess, stopProcess, delProcess, listProcess} from '@/api/workflow/process';
+import {listOwnProcess, stopProcess, delProcess} from '@/api/workflow/process';
 import { listCategory } from '@/api/workflow/category';
 import {reactive} from 'vue'
-import {delLogininfor} from '@/api/monitor/logininfor'
 const {proxy} = getCurrentInstance();
 const { wf_process_status } = proxy.useDict('wf_process_status');
 const router = useRouter();
@@ -203,11 +206,7 @@ function resetQuery() {
   proxy.resetForm("queryRef");
   handleQuery();
 }
-// 多选框选中数据
-function handleSelectionChange(selection) {
-  ids.value = selection.map(item => item.procInsId);
-  multiple.value = !selection.length;
-}
+
    function handleAgain(row) {
      router.push({
        path: '/workflow/process/start/' + row.deployId,
@@ -223,8 +222,8 @@ function handleSelectionChange(selection) {
         procInsId: row.procInsId
       }
       stopProcess(params).then( res => {
-        this.$modal.msgSuccess(res.msg);
-        this.getList();
+        proxy.$modal.msgSuccess(res.msg);
+        getList();
       });
     }
     /** 流程流转记录 */
