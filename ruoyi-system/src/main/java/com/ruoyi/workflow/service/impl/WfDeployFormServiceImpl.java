@@ -181,6 +181,9 @@ public class WfDeployFormServiceImpl implements IWfDeployFormService{
         deployForm.setDeployId(deployId);
         deployForm.setFormKey(formKey);
         deployForm.setNodeKey(node.getId());
+        deployForm.setFormType(wfForm.getFormType());
+        deployForm.setFormViewPath(wfForm.getFormViewPath());
+        deployForm.setFormCreatePath(wfForm.getFormCreatePath());
         deployForm.setFormName(wfForm.getFormName());
         deployForm.setNodeName(node.getName());
         deployForm.setContent(wfForm.getContent());
