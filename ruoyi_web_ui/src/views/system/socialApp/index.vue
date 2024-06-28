@@ -110,7 +110,7 @@
         </el-form-item>
         <el-form-item label="应用编码" prop="code">
           <el-input v-model="form.code" placeholder="请输入应用编码"
-          :readonly="form.id"
+          :readonly="form.id!=null"
           />
         </el-form-item>
         <el-form-item label="社交平台" prop="type">

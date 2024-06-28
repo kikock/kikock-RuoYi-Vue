@@ -60,7 +60,10 @@
         <el-table-column label="流程标识" align="center" prop="processKey" :show-overflow-tooltip="true"/>
         <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
           <template #default="scope">
-            <el-button type="text" @click="handleProcessView(scope.row)">
+            <el-button
+                link
+                type="primary"
+                @click="handleProcessView(scope.row)">
               <span>{{ scope.row.processName }}</span>
             </el-button>
           </template>
@@ -83,14 +86,16 @@
         <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
           <template #default="scope">
             <el-button
-                type="text"
+                link
+                type="primary"
                 icon="PriceTag"
                 @click.native="handlePublish(scope.row)"
                 v-hasPermi="['workflow:deploy:list']"
             >版本管理
             </el-button>
             <el-button
-                type="text"
+                link
+                type="primary"
                 icon="Delete"
                 @click="handleDelete(scope.row)"
                 v-hasPermi="['workflow:deploy:remove']"
@@ -121,7 +126,10 @@
         <el-table-column label="流程标识" align="center" prop="processKey" :show-overflow-tooltip="true"/>
         <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
           <template #default="scope">
-            <el-button type="text" @click="handleProcessView(scope.row)">
+            <el-button
+                link
+                type="primary"
+                @click="handleProcessView(scope.row)">
               <span>{{ scope.row.processName }}</span>
             </el-button>
           </template>
@@ -141,7 +149,8 @@
           <template #default="scope">
             <el-button
                 v-if="!scope.row.suspended"
-                type="text"
+                link
+                type="primary"
                 icon="VideoPause"
                 @click="handleChangeState(scope.row, 'suspended')"
                 v-hasPermi="['workflow:deploy:status']"
@@ -149,14 +158,16 @@
             </el-button>
             <el-button
                 v-if="scope.row.suspended"
-                type="text"
+                link
+                type="primary"
                 icon="VideoPlay"
                 @click="handleChangeState(scope.row, 'active')"
                 v-hasPermi="['workflow:deploy:status']"
             >激活
             </el-button>
             <el-button
-                type="text"
+                link
+                type="primary"
                 icon="Delete"
                 @click="handleDelete(scope.row)"
                 v-hasPermi="['workflow:deploy:remove']"

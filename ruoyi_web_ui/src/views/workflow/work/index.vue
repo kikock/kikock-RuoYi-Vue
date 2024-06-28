@@ -58,7 +58,7 @@
       <el-table-column label="流程标识" align="center" prop="processKey" :show-overflow-tooltip="true"/>
       <el-table-column label="流程名称" align="center" :show-overflow-tooltip="true">
         <template #default="scope">
-          <el-button type="text" @click="handleProcessView(scope.row)">
+          <el-button   link type="primary" @click="handleProcessView(scope.row)">
             <span>{{ scope.row.processName }}</span>
           </el-button>
         </template>
@@ -66,7 +66,7 @@
       <el-table-column label="流程分类" align="center" prop="categoryName" :formatter="categoryFormat"/>
       <el-table-column label="流程版本" align="center">
         <template #default="scope">
-          <el-tag size="success">v{{scope.row.version }}</el-tag>
+          <el-tag >v{{scope.row.version }}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="状态" align="center">
@@ -79,7 +79,8 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
        <template #default="scope">
           <el-button
-              type="text"
+              link
+              type="primary"
               icon="VideoPlay"
               v-hasPermi="['workflow:process:start']"
               @click.native="handleStart(scope.row)"
