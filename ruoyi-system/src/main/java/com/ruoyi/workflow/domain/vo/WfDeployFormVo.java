@@ -25,7 +25,18 @@ public class WfDeployFormVo {
      * 表单Key
      */
     private String formKey;
-
+    /**
+     * 表单类型 0 流程表单(自定义设计表单) 1 业务表单(路由链接表单)
+     */
+    private Integer formType;
+    /**
+     * 表单提交链接
+     */
+    private String formCreatePath;
+    /**
+     * 表单查看链接
+     */
+    private String formViewPath;
     /**
      * 节点Key
      */

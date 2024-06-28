@@ -16,25 +16,26 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-<!--      <el-col :span="1.5">-->
-<!--        <el-button-->
-<!--            type="primary"-->
-<!--            plain-->
-<!--            icon="Plus"-->
-<!--            @click="handleAdd"-->
-<!--            v-hasPermi="['workflow:form:add']"-->
-<!--        >新增-->
-<!--        </el-button>-->
-<!--      </el-col>-->
       <el-col :span="1.5">
         <el-button
             type="primary"
             plain
             icon="Plus"
-            @click="handleAddNew"
+            @click="handleAdd"
             v-hasPermi="['workflow:form:add']"
         >新增
         </el-button>
+      </el-col>
+      <el-col :span="1.5">
+<!--        <el-button-->
+<!--            type="success"-->
+<!--            plain-->
+<!--            icon="Edit"-->
+<!--            :disabled="single"-->
+<!--            @click="handleUpdate"-->
+<!--            v-hasPermi="['workflow:form:edit']"-->
+<!--        >修改-->
+<!--        </el-button>-->
       </el-col>
       <el-col :span="1.5">
         <el-button
@@ -54,11 +55,6 @@
       <el-table-column type="selection" width="55" align="center"/>
       <el-table-column label="表单主键" align="center" prop="formId"/>
       <el-table-column label="表单名称" align="center" prop="formName"/>
-      <el-table-column label="表单类型" align="center" prop="formType">
-        <template #default="scope">
-          <dict-tag :options="bpm_model_form_type" :value="scope.row.formType"/>
-        </template>
-      </el-table-column>
       <el-table-column label="开启状态" align="center" prop="status">
         <template #default="scope">
           <dict-tag :options="sys_normal_disable" :value="scope.row.status"/>
@@ -96,57 +92,22 @@
     />
 
     <!-- 添加或修改流程表单对话框 -->
-    <el-dialog :title="title" v-model="open" width="40%" append-to-body>
-      <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="表单类型" prop="formType">
-          <el-radio-group v-model="form.formType">
-            <el-radio v-for="dict in bpm_model_form_type" :key="parseInt(dict.value)" :label="parseInt(dict.value)">
-              {{dict.label}}
-            </el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <div v-if="form.formType === 1">
-        <el-form-item  label="表单名称" prop="formName">
+    <el-dialog :title="title" v-model="open" width="500px" append-to-body>
+      <el-form ref="formRef" :model="form" :rules="rules" label-width="80px">
+        <el-form-item label="表单名称" prop="formName">
           <el-input v-model="form.formName" placeholder="请输入表单名称"/>
         </el-form-item>
-        <el-form-item  label="表单提交路由" prop="formCustomCreatePath" >
-          <el-input v-model="form.formCreatePath" placeholder="请输入表单提交路由" style="width: 95%" />
-          <el-tooltip effect="dark" content="自定义表单的提交路径，使用 Vue 的路由地址，例如：bpm/oa/leave/create" placement="top">
-            <el-icon class="ml10">
-              <InfoFilled/>
-            </el-icon>
-          </el-tooltip>
-        </el-form-item>
-        <el-form-item  label="表单查看路由" prop="formCustomViewPath">
-          <el-input v-model="form.formViewPath" placeholder="请输入表单查看路由" style="width: 95%"  />
-          <el-tooltip effect="dark" content="自定义表单的查看路径，使用 Vue 的路由地址，例如：bpm/oa/leave/view" placement="top">
-            <el-icon class="ml10">
-              <InfoFilled/>
-            </el-icon>
-          </el-tooltip>
-        </el-form-item>
-        <el-form-item label="状态" prop="status">
-          <el-radio-group v-model="form.status">
-            <el-radio
-                v-for="dict in sys_normal_disable"
-                :key="dict.value"
-                :label="parseInt(dict.value)"
-            >
-              {{ dict.label }}
-            </el-radio>
-          </el-radio-group>
+        <el-form-item label="表单内容">
+          <editor v-model="form.content" :min-height="192"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" placeholder="请输入备注" type="textarea"/>
+          <el-input v-model="form.remark" placeholder="请输入备注"/>
         </el-form-item>
-        </div>
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button v-if="form.formType === 0"  :loading="buttonLoading" type="primary" @click="submitForm">表单设计</el-button>
-          <el-button v-if="form.formType === 1"  :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
-          <el-button @click="cancel">取 消</el-button>
-        </div>
+          <el-button :loading="buttonLoading" type="primary" @click="submitForm">确 定</el-button>
+          <el-button @click="cancel">取 消</el-button>        </div>
       </template>
     </el-dialog>
 
@@ -170,7 +131,7 @@ import formCreate from "@form-create/element-ui";
 //获取 formCreate 组件
 const FormCreate = formCreate.$form();
 const {proxy} = getCurrentInstance();
-const {sys_normal_disable,bpm_model_form_type} = proxy.useDict('sys_normal_disable','bpm_model_form_type');
+const {sys_normal_disable} = proxy.useDict('sys_normal_disable');
 // 表格数据
 const formList = ref([]);
 // 按钮loading
@@ -206,6 +167,7 @@ const data = reactive({
     pageNum: 1,
     pageSize: 10,
     formName: undefined,
+    content: undefined,
   },
   rules: {
     categoryName: [
@@ -240,13 +202,13 @@ function reset() {
   form.value = {
     formId: null,
     formName: null,
-    status:0,
-    formType: 0,
-    formCreatePath: null,
-    formViewPath: null,
+    content: null,
+    createTime: null,
+    updateTime: null,
+    createBy: null,
+    updateBy: null,
     remark: null
   };
-  buttonLoading.value =false
   proxy.resetForm("formRef");
 }
 
@@ -278,13 +240,7 @@ function handleDetail(row) {
     formConfOpen.value = true
   })
 }
-/** 新增按钮操作 */
-function handleAddNew() {
-  // 初始化参数
-  reset()
- title.value="新增流程表单"
-  open.value = true
-}
+
 /** 新增按钮操作 */
 function handleAdd() {
   router.push({path: "/workflow/bpmfrom/index"});
@@ -298,29 +254,23 @@ function handleUpdate(row) {
 
 /** 提交按钮 */
 function submitForm() {
-  if(form.value.formType === 0){
-    router.push({path: "/workflow/bpmfrom/index"});
-  }
-  if(form.value.formType === 1){
-    proxy.$refs["formRef"].validate(valid => {
-      if (valid) {
-        if (form.value.formId != null) {
-          updateForm(form.value).then(response => {
-            proxy.$modal.msgSuccess("修改表单成功");
-            open.value = false;
-            getList();
-          });
-        } else {
-          addForm(form.value).then(response => {
-            proxy.$modal.msgSuccess("新增表单成功");
-            open.value = false;
-            getList();
-          });
-        }
+  proxy.$refs["formRef"].validate(valid => {
+    if (valid) {
+      if (form.value.formId != null) {
+        updateForm(form.value).then(response => {
+          proxy.$modal.msgSuccess("修改成功");
+          open.value = false;
+          getList();
+        });
+      } else {
+        addForm(form.value).then(response => {
+          proxy.$modal.msgSuccess("新增成功");
+          open.value = false;
+          getList();
+        });
       }
-    });
-  }
-
+    }
+  });
 }
 
 /** 删除按钮操作 */

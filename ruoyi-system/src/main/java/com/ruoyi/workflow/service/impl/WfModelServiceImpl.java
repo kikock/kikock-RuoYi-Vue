@@ -191,12 +191,6 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         WfMetaInfoDto metaInfo = JSONUtil.toBean(model.getMetaInfo(), WfMetaInfoDto.class);
         if (metaInfo != null) {
             modelVo.setDescription(metaInfo.getDescription());
-            modelVo.setFormType(metaInfo.getFormType());
-            modelVo.setFormId(metaInfo.getFormId());
-            if (FormType.PROCESS.getType().equals(metaInfo.getFormType())) {
-                WfForm wfForm = formService.selectWfFormByFormId(metaInfo.getFormId());
-                modelVo.setContent(wfForm.getContent());
-            }
         }
         return modelVo;
     }

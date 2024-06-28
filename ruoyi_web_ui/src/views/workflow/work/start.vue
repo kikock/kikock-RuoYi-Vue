@@ -9,28 +9,37 @@
         <!--          <parser :key="new Date().getTime()" :form-conf="formData" @submit="submit" ref="parser" @getData="getData"/>-->
         <!--        </div>-->
 
-        <div class="form-conf" v-if="formOpen">
-          <FormCreate :rule="detailForm.rule"  v-model:api="fApi" :option="detailForm.option" @submit="submitForm"/>
+        <div class="form-conf" v-if="formType === 0  ">
+          <FormCreate :rule="detailForm.rule" v-model:api="fApi" :option="detailForm.option" @submit="submitForm"/>
         </div>
 
+      </el-col>
+      <el-col>
+        <div v-if="formType === 1">
+          <BusinessFormComponent/>
+        </div>
       </el-col>
     </el-card>
   </div>
 </template>
 
 <script setup name="WorkStart">
-import {getProcessForm,startProcess} from '@/api/workflow/process'
+import {getProcessForm, startProcess} from '@/api/workflow/process'
 //导入 form-create
 import formCreate from "@form-create/element-ui";
 //获取 formCreate 组件
 const FormCreate = formCreate.$form();
 
-const router = useRouter();
+import {registerComponent} from '@/utils/ruoyi'
+
+/** 加载流程实例 */
+const BusinessFormComponent = ref(null) // 异步组件
+
 const {proxy} = getCurrentInstance();
 const deployId = ref('')
 const definitionId = ref('')
 const procInsId = ref('')
-const formOpen = ref(false);
+const formType = ref(0);
 const fApi = ref();
 const detailForm = ref({
   // 流程表单详情
@@ -43,19 +52,32 @@ function initData() {
   console.log("definitionId:" + proxy.$route.query.definitionId);
   console.log("procInsId:" + proxy.$route.query.procInsId);
   deployId.value = proxy.$route.params && proxy.$route.params.deployId;
-  definitionId.value = proxy.$route.query &&  proxy.$route.query.definitionId;
-  procInsId.value =proxy.$route.query &&  proxy.$route.query.procInsId;
+  definitionId.value = proxy.$route.query && proxy.$route.query.definitionId;
+  procInsId.value = proxy.$route.query && proxy.$route.query.procInsId;
   getProcessForm({
     definitionId: definitionId.value,
     deployId: deployId.value,
     procInsId: procInsId.value
   }).then(res => {
     if (res.data) {
-      detailForm.value.option = JSON.parse(res.data.conf);
-      detailForm.value.rule = JSON.parse(res.data.fields);
-      // 打开重置按钮
-      detailForm.value.option.resetBtn.show=true
-      formOpen.value =true
+      console.log(res.data);
+      console.log(detailForm.value);
+      if (res.data.formType === 1) {
+        console.log("路由设计页面");
+        BusinessFormComponent.value = registerComponent(res.data.formViewPath)
+        formType.value = res.data.formType
+        return
+      }
+      if (res.data.formType === 0) {
+        console.log("自定义设计页面");
+        detailForm.value.option = JSON.parse(res.data.conf);
+        detailForm.value.rule = JSON.parse(res.data.fields);
+        // 打开重置按钮
+        detailForm.value.option.resetBtn.show = true;
+        formType.value = res.data.formType
+      }
+
+
     }
   })
 }
@@ -70,7 +92,7 @@ function submitForm(formData) {
       proxy.$modal.msgSuccess(res.msg);
       //跳转到我的流程
       console.log("跳转到我的流程");
-      const obj = {path: '/work/own' };
+      const obj = {path: '/work/own'};
       proxy.$tab.closeOpenPage(obj);
     })
   }

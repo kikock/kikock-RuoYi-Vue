@@ -7,6 +7,9 @@
     <resultMap type="WfDeployForm" id="WfDeployFormResult">
         <result property="deployId" column="deploy_id"/>
         <result property="formKey" column="form_key"/>
+        <result property="formType" column="form_type"/>
+        <result property="formCreatePath" column="form_create_path"/>
+        <result property="formViewPath" column="form_view_path"/>
         <result property="nodeKey" column="node_key"/>
         <result property="formName" column="form_name"/>
         <result property="nodeName" column="node_name"/>
@@ -16,7 +19,7 @@
     </resultMap>
 
     <sql id="selectWfDeployFormVo">
-        select deploy_id, form_key, node_key, form_name, node_name, content ,conf, fields
+        select deploy_id, form_key, node_key, form_name, node_name, content ,conf, fields,form_type,form_create_path,form_view_path
         from
         wf_deploy_form
     </sql>
@@ -33,23 +36,6 @@
             <if test="content != null  and content != ''"> and content =
                 #{content}
             </if>
-
-            /**
-            * 流程部署主键
-            */
-            private String deployId;
-
-            /**
-            * 表单Key
-            */
-            private String formKey;
-
-            /**
-            * 节点Key
-            */
-            private String nodeKey;
-
-
         </where>
     </select>
 
@@ -61,6 +47,9 @@
     <resultMap type="WfDeployFormVo" id="WfDeployFormResultVo">
         <result property="deployId" column="deploy_id"/>
         <result property="formKey" column="form_key"/>
+        <result property="formType" column="form_type"/>
+        <result property="formCreatePath" column="form_create_path"/>
+        <result property="formViewPath" column="form_view_path"/>
         <result property="nodeKey" column="node_key"/>
         <result property="formName" column="form_name"/>
         <result property="nodeName" column="node_name"/>
@@ -92,6 +81,15 @@
             <if test="formKey != null">
                 form_key,
             </if>
+            <if test="formType != null ">
+                form_type,
+            </if>
+            <if test="formCreatePath != null and formCreatePath != ''">
+                form_create_path,
+            </if>
+            <if test="formViewPath != null and formViewPath != ''">
+                form_view_path,
+            </if>
             <if test="nodeKey != null">
                 node_key,
             </if>
@@ -118,6 +116,15 @@
             <if test="formKey != null">
                 #{formKey},
             </if>
+            <if test="formType != null ">
+                #{formType},
+            </if>
+            <if test="formCreatePath != null and formCreatePath != ''">
+                #{formCreatePath},
+            </if>
+            <if test="formViewPath != null and formViewPath != ''">
+                #{formViewPath},
+            </if>
             <if test="nodeKey != null">
                 #{nodeKey},
             </if>
@@ -142,10 +149,10 @@
     <!--批量插入-->
     <insert id="insertBatchWfCopy">
         insert into wf_deploy_form(deploy_id, form_key, node_key,
-        form_name, node_name, content, conf, fields) values
+        form_name, node_name, content, conf, fields,form_type,form_create_path,form_view_path) values
         <foreach item="item" index="index" collection="list" separator=",">
             (#{item.deployId},#{item.formKey},#{item.nodeKey},
-            #{item.formName},#{item.nodeName},#{item.content},#{item.conf},#{item.fields})
+            #{item.formName},#{item.nodeName},#{item.content},#{item.conf},#{item.fields},#{item.formType},#{item.formCreatePath},#{item.formViewPath})
         </foreach>
     </insert>
 
@@ -154,6 +161,15 @@
         <trim prefix="SET" suffixOverrides=",">
             <if test="formKey != null">
                 form_key = #{formKey},
+            </if>
+            <if test="formType != null ">
+                form_type=#{formType},
+            </if>
+            <if test="formCreatePath != null and formCreatePath != ''">
+                form_create_path = #{formCreatePath},
+            </if>
+            <if test="formViewPath != null and formViewPath != ''">
+                form_view_path =  #{formViewPath},
             </if>
             <if test="nodeKey != null">
                 node_key = #{nodeKey},

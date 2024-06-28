@@ -1,7 +1,7 @@
 
 import axiosJsonp from 'axios-jsonp';
 import axios from 'axios'
-const modules = import.meta.glob('../views/**/*.{vue}')
+const modules = import.meta.glob('/src/views/**/*.vue')
 /**
  * 通用js方法封装处理
  * Copyright (c) 2019 ruoyi
@@ -284,11 +284,14 @@ export const axiosGet = function (url, params) {
  * @param componentPath 例:/bpm/oa/leave/detail
  */
 export const registerComponent = (componentPath) => {
-  for (const item in modules) {
-    if (item.includes(componentPath)) {
+  console.log(modules);
+  for (const path in modules) {
+    const dir = '/'+path.split('views/')[1].split('.vue')[0];
+    if (path.includes(componentPath)) {
+      console.log(componentPath);
       // 使用异步组件的方式来动态加载组件
       // @ts-ignore
-      return defineAsyncComponent(modules[item])
+      return defineAsyncComponent(modules[path])
     }
   }
 }

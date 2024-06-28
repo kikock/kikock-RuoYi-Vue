@@ -85,17 +85,17 @@ const save = async (bpmnXml) => {
         }
       });
   }).catch(action => {
-    if (action === 'cancel') {
-      dataBody.newVersion=false;
-      saveModel(dataBody).then(response => {
-        if(response.code==200){
-          proxy.$modal.msgSuccess("保存模型成功");
-          close()
-        }else {
-          proxy.$modal.msgError("保存模型失败:",response.msg);
-        }
-      });
-    }
+  //   if (action === 'cancel') {
+  //     dataBody.newVersion=false;
+  //     saveModel(dataBody).then(response => {
+  //       if(response.code==200){
+  //         proxy.$modal.msgSuccess("保存模型成功");
+  //         close()
+  //       }else {
+  //         proxy.$modal.msgError("保存模型失败:",response.msg);
+  //       }
+  //     });
+  //   }
   })
 }
 
