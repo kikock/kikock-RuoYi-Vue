@@ -54,3 +54,20 @@ export const setMyConfAndFields = (detailPreview,conf, fields,value,title) => {
         detailPreview.value.title = title
     }
 }
+
+// 设置表单的 Conf 和 Fields 和 value 和 title
+export const setMyConfAndFields2 = (detailPreview,conf, fields,value,title) => {
+    // @ts-ignore
+    detailPreview.option = JSON.parse(conf)
+    // @ts-ignore
+    // detailPreview.value.rule = decodeFields(fields);
+    detailPreview.rule = JSON.parse(fields);
+    if (value) {
+        // @ts-ignore
+        detailPreview.value = value
+    }
+    if (title) {
+        // @ts-ignore
+        detailPreview.title = title
+    }
+}

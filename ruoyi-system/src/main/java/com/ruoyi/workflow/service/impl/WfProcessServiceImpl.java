@@ -706,7 +706,6 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             if (taskIns == null) {
                 throw new ServiceException("没有可办理的任务！");
             }
-//            detailVo.setTaskFormData(currTaskFormData(historicProcIns.getDeploymentId(), taskIns));
             detailVo.setNewTaskFormData(currNewTaskFormData(historicProcIns.getDeploymentId(), taskIns));
         }
         // 获取Bpmn模型信息
@@ -722,8 +721,13 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 .collect(Collectors.toList()).get(0));
         detailVo.setProcessFormAll(wfDeployFormVos);
 
+        if( StringUtils.isNotBlank(taskId) && ObjectUtil.isNull(detailVo.getNewTaskFormData())){
+            //获取开始节点的表单数据
+            detailVo.setNewTaskFormData(wfDeployFormVos.stream().filter(wfDeployFormVo -> wfDeployFormVo.isStart() == true)
+                    .collect(Collectors.toList()).get(0));
+        }
 
-        
+
         return detailVo;
     }
 
@@ -765,25 +769,6 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
         return taskService.getVariables(taskId);
     }
 
-    /**
-     * 获取当前任务流程表单信息
-     */
-    private FormConf currTaskFormData(String deployId, HistoricTaskInstance taskIns){
-
-        WfDeployForm wfDeployForm = new WfDeployForm(deployId, taskIns.getFormKey(), taskIns.getTaskDefinitionKey());
-
-        WfDeployFormVo deployFormVo = deployFormMapper.selectVoOneWfDeployForm(wfDeployForm);
-
-        if (ObjectUtil.isNotEmpty(deployFormVo)) {
-            FormConf currTaskFormData = JSONUtil.toBean(deployFormVo.getContent(), FormConf.class);
-            if (null != currTaskFormData) {
-                currTaskFormData.setFormBtns(false);
-                ProcessFormUtils.fillFormData(currTaskFormData, taskIns.getTaskLocalVariables());
-                return currTaskFormData;
-            }
-        }
-        return null;
-    }
 
     /**
      * 获取当前任务流程表单信息
@@ -801,7 +786,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 
 
     /**
-     * 获取历史流程表单信息
+     * 获取历史流程表单信息2
      */
     private List<FormConf> processFormList(BpmnModel bpmnModel, HistoricProcessInstance historicProcIns){
         List<FormConf> procFormList = new ArrayList<>();
@@ -871,7 +856,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 
 
     /**
-     * 获取历史流程表单信息
+     * 获取历史流程表单信息1
      */
     private List<WfDeployFormVo> processFormData(BpmnModel bpmnModel, HistoricProcessInstance historicProcIns){
         List<WfDeployFormVo> formInfo = new ArrayList<>();
@@ -889,26 +874,13 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
             if (formKey == null) {
                 continue;
             }
-            boolean localScope = Convert.toBool(ModelUtils.getElementAttributeValue(flowElement, ProcessConstants.PROCESS_FORM_LOCAL_SCOPE), false);
             Map<String,Object> variables;
-            if (localScope) {
-                // 查询任务节点参数，并转换成Map
-                variables = historyService.createHistoricVariableInstanceQuery()
-                        .processInstanceId(historicProcIns.getId())
-                        .taskId(activityInstance.getTaskId())
-                        .list()
-                        .stream()
-                        .collect(Collectors.toMap(HistoricVariableInstance::getVariableName, HistoricVariableInstance::getValue));
-            } else {
                 if (processFormKeys.contains(formKey)) {
                     //相同数据过滤
                     continue;
                 }
                 variables = historicProcIns.getProcessVariables();
                 processFormKeys.add(formKey);
-            }
-
-
             // 查询表单信息
             WfDeployForm wfDeployForm = new WfDeployForm(historicProcIns.getDeploymentId(), formKey, flowElement.getId());
             WfDeployFormVo deployFormVo = deployFormMapper.selectVoOneWfDeployForm(wfDeployForm);

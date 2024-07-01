@@ -17,6 +17,10 @@
       <el-col>
         <div v-if="formType === 1">
           <BusinessFormComponent/>
+            <div class="el-dialog--center">
+              <el-button type="primary" @click="submitForm">提交流程</el-button>
+              <el-button  @click="cancel">取 消</el-button>
+            </div>
         </div>
       </el-col>
     </el-card>
@@ -97,6 +101,15 @@ function submitForm(formData) {
     })
   }
 }
+
+/** 取消按钮 */
+function cancel() {
+      //跳转到我的流程
+      console.log("跳转到新建流程");
+      const obj = {path: '/work/create'};
+      proxy.$tab.closeOpenPage(obj);
+}
+
 
 initData();
 </script>

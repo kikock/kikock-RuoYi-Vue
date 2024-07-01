@@ -79,9 +79,6 @@ public class WfCategoryController extends BaseController{
     @Log(title = "流程分类", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody WfCategory wfCategory){
-        if (!wfCategoryService.checkCategoryCodeUnique(wfCategory)) {
-            return AjaxResult.error("修改流程分类'" + wfCategory.getCategoryName() + "'失败，流程编码已存在");
-        }
         return toAjax(wfCategoryService.updateWfCategory(wfCategory));
     }
 
