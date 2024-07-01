@@ -105,7 +105,7 @@
           <el-input v-model="form.categoryName" placeholder="请输入分类名称"/>
         </el-form-item>
         <el-form-item label="分类编码" prop="code">
-          <el-input v-model="form.code" placeholder="请输入分类编码"/>
+          <el-input :disabled = "form.categoryId"   v-model="form.code" placeholder="请输入分类编码"/>
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" placeholder="请输入内容"/>

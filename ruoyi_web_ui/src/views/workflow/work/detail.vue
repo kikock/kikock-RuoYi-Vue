@@ -9,16 +9,19 @@
       <el-tab-pane label="任务办理" name="approval" v-if="processed === true" >
         <el-card v-loading="formOpen" class="box-card" >
           <template #header>
-            <span class="el-icon-document">审批表单【{{ detailForm.title }}】</span>
+            <span class="el-icon-document">{{detailForm.nodeName}}  【{{ detailForm.title }}】</span>
           </template>
           <!-- 情况一：自定义流程表单 -->
-          <el-col :offset="6" :span="16" >
+          <el-col v-if="detailForm.formType === 0"  :offset="6" :span="16" >
             <form-create
                 v-model:api="fcApi"
                 v-model="detailForm.value"
                 :option="detailForm.option"
                 :rule="detailForm.rule"
                 @mounted="onMountedFormCreateApproval" />
+          </el-col>
+          <el-col v-if="detailForm.formType === 1" :offset="6" :span="16" >
+              <BusinessFormComponent/>
           </el-col>
         </el-card>
         <el-card class="box-card">
@@ -81,10 +84,10 @@
       <el-tab-pane label="表单信息" name="form"  >
         <el-card v-loading="formOpen" class="box-card" v-for="(formInfo, index) in processFormList" :key="index" >
           <template #header>
-            <span class="el-icon-document">审批表单【{{ formInfo.title }}】</span>
+            <span class="el-icon-document">{{formInfo.nodeName}}  【{{ formInfo.title }}】</span>
           </template>
           <!-- 情况一：自定义流程表单 -->
-          <el-col :offset="6" :span="16" >
+          <el-col v-if="formInfo.formType === 0"  :offset="6" :span="16" >
             <form-create
                 v-model:api="fApi"
                 v-model="formInfo.value"
@@ -92,6 +95,11 @@
                 :rule="formInfo.rule"
                 @mounted="onMountedFormCreate" />
           </el-col>
+          <el-col v-if="formInfo.formType === 1" :offset="6" :span="16" >
+            <component :is="formInfo.BusinessFormComponent" />
+          </el-col>
+
+
         </el-card>
       </el-tab-pane>
 
@@ -237,13 +245,14 @@
 
 <script setup name="WorkDetail">
 import {detailProcess} from '@/api/workflow/process'
-import {setMyConfAndFields} from "@/utils/formCreate";
+import {setMyConfAndFields, setMyConfAndFields2} from "@/utils/formCreate";
 import {complete, delegate, rejectTask, returnList, returnTask, transfer} from '@/api/workflow/task'
 import { listUser,deptTreeSelect } from "@/api/system/user";
 import {reactive} from 'vue'
 //导入 form-create
 import FormCreate from "@form-create/element-ui";
 import MyProcessViewer from '@/components/workflow/package/designer/ProcessViewer.vue'
+import {registerComponent} from '@/utils/ruoyi'
 //获取 formCreate 组件
 const formCreate = FormCreate.$form();
 const {proxy} = getCurrentInstance();
@@ -265,19 +274,15 @@ const approvalType = ref(false);
 const fApi = ref()
 // 自定义流程表单详情
 const detailForm = ref({
+  formType: 0,
   rule: [],
   option: {},
   value: {},
-  title:''
+  title:'',
+  nodeName:''
 })
 const fcApi = ref()
-// 自定义流程表单详情
-const detailItm = ref({
-  rule: [],
-  option: {},
-  value: {},
-  title:''
-})
+
 //############表单信息参数###############
 /** 加载流程实例 业务表单组件*/
 const BusinessFormComponent = ref(null)
@@ -400,20 +405,58 @@ function handleCheckChange(val) {
 function getProcessDetails(procInsId, taskId) {
   const params = {procInsId: procInsId, taskId: taskId}
   detailProcess(params).then(res => {
+    console.log("获取审批流程数据",res.data);
     const data = res.data;
     processData.value = data;
+    //审批节点
+    detailForm.value.nodeName = 0
     //审批表单内容
     if (data.newTaskFormData) {
-      approvalType.value = true
-      setMyConfAndFields(detailForm, data.newTaskFormData.conf, data.newTaskFormData.fields, data.newTaskFormData.variables,data.newTaskFormData.formName);
-      detailForm.value.option.form.disabled =true
-      detailForm.value.option.submitBtn.show=false
-      detailForm.value.option.resetBtn.show=false
+      //审批节点
+      detailForm.value.nodeName = data.newTaskFormData.nodeName;
+      //表单名称
+      detailForm.value.title = data.newTaskFormData.formName
+      if(data.newTaskFormData.formType === 0 ){
+        approvalType.value = true
+        detailForm.value.formType = 0
+        setMyConfAndFields(detailForm, data.newTaskFormData.conf, data.newTaskFormData.fields, data.newTaskFormData.variables,data.newTaskFormData.formName);
+        detailForm.value.option.form.disabled =true
+        detailForm.value.option.submitBtn.show=false
+        detailForm.value.option.resetBtn.show=false
+      }else if(data.newTaskFormData.formType === 1 ){
+        approvalType.value = true
+        detailForm.value.formType = 1
+        BusinessFormComponent.value = registerComponent(data.newTaskFormData.formViewPath)
+      }
+
     }
+    //历史审批表单
     if (data.processFormAll && data.processFormAll.length>0) {
       data.processFormAll.forEach(item =>{
-        setMyConfAndFields(detailItm, item.conf, item.fields, item.variables,item.formName);
-        processFormList.value.push(detailItm.value);
+        const detailData = {
+          rule: [],
+          option: {},
+          value: {},
+          title: '',
+          BusinessFormComponent: null,
+          formType : 0,
+          nodeName:'',
+        }
+        //审批节点
+        detailData.nodeName = item.nodeName;
+        //表单名称
+        detailData.title = item.formName
+        if(item.formType === 0 ) {
+          detailData.formType = 0
+          setMyConfAndFields2(detailData, item.conf, item.fields, item.variables, item.formName);
+          processFormList.value.push(detailData);
+        }else if(item.formType === 1 ){
+          /** 加载流程实例 业务表单组件*/
+          detailData.formType = 1
+          detailData.BusinessFormComponent = registerComponent(item.formViewPath)
+          processFormList.value.push(detailData);
+
+        }
       })
     }
     formOpen.value = false
@@ -545,9 +588,10 @@ function changeCurrentUser(val) {
 /** 返回页面 */
 function goBack() {
   userData.value.open = false;
-  router.push({
-    path: '/work/todo'
-  })
+  const obj = {path: '/work/todo'};
+  proxy.$tab.closeOpenPage(obj);
+
+
 }
 
 /** 接收子组件传的值 */

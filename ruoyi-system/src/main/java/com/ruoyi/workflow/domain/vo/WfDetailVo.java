@@ -17,11 +17,6 @@ import java.util.List;
 public class WfDetailVo {
 
     /**
-     * 任务表单信息
-     */
-    private FormConf taskFormData;
-
-    /**
      * 当前任务表单信息
      */
     private WfDeployFormVo newTaskFormData;
@@ -54,6 +49,6 @@ public class WfDetailVo {
      * @return true:存在；false:不存在
      */
     public Boolean isExistTaskForm() {
-        return ObjectUtil.isNotEmpty(this.taskFormData);
+        return ObjectUtil.isNotEmpty(this.newTaskFormData);
     }
 }

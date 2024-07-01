@@ -52,7 +52,7 @@
 
     <el-table v-loading="loading" fit :data="formList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center"/>
-      <el-table-column label="表单主键" align="center" prop="formId"/>
+<!--      <el-table-column label="表单主键" align="center" prop="formId"/>-->
       <el-table-column label="表单名称" align="center" prop="formName"/>
       <el-table-column label="表单类型" align="center" prop="formType">
         <template #default="scope">
@@ -94,14 +94,13 @@
         :limit.sync="queryParams.pageSize"
         @pagination="getList"
     />
-
     <!-- 添加或修改流程表单对话框 -->
     <el-dialog :title="title" v-model="open" width="40%" append-to-body>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="表单类型" prop="formType">
+        <el-form-item  v-if="!form.formId" label="表单类型" prop="formType">
           <el-radio-group v-model="form.formType">
             <el-radio v-for="dict in bpm_model_form_type" :key="parseInt(dict.value)" :label="parseInt(dict.value)">
-              {{dict.label}}
+              {{dict.label}} {{form.formId}}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -153,7 +152,10 @@
     <!--表单配置详情-->
     <!-- 表单详情的弹窗 -->
     <el-dialog   v-model="formConfOpen" title="表单详情" width="800">
-      <FormCreate :option="formData.option" :rule="formData.rule"  />
+      <FormCreate v-if="formType === 0 " :option="formData.option" :rule="formData.rule"  />
+      <div v-if="formType === 1">
+        <BusinessFormComponent/>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -167,6 +169,7 @@ import router from "@/router";
 import {setMyConfAndFields} from '@/utils/formCreate'
 //导入 form-create
 import formCreate from "@form-create/element-ui";
+import {registerComponent} from '@/utils/ruoyi'
 //获取 formCreate 组件
 const FormCreate = formCreate.$form();
 const {proxy} = getCurrentInstance();
@@ -191,6 +194,11 @@ const total = ref(0);
 const title = ref("");
 // 是否显示弹出层
 const open = ref(false);
+
+const formType = ref();
+
+/** 加载流程实例 */
+const BusinessFormComponent = ref(null) // 异步组件
 
 // 是否显示弹出表单层
 const formConfOpen = ref(false);
@@ -271,12 +279,21 @@ function handleSelectionChange(selection) {
 
 /** 表单配置信息 */
 function handleDetail(row) {
-  getForm(row.formId).then(respose=>{
-    setMyConfAndFields(formData,respose.data.conf, respose.data.fields,respose.data.name);
-    title.value=respose.data.name;
+  console.log("查看表单",row);
+  if(row.formType === 0){
+    getForm(row.formId).then(res=>{
+    setMyConfAndFields(formData,res.data.conf, res.data.fields,res.data.name);
+    title.value=res.data.name;
+      // 弹窗打开
+      formType.value =res.data.formType
+      formConfOpen.value = true
+    })
+  }else if(row.formType === 1){
+    BusinessFormComponent.value = registerComponent(row.formViewPath)
     // 弹窗打开
+    formType.value =row.formType
     formConfOpen.value = true
-  })
+  }
 }
 /** 新增按钮操作 */
 function handleAddNew() {
@@ -292,8 +309,23 @@ function handleAdd() {
 
 /** 修改按钮操作 */
 function handleUpdate(row) {
-  const _id = row.formId
-  router.push({path: "/workflow/bpmfrom/index", query: {formId: _id}});
+  console.log(row);
+  if(row.formType === 0){
+    const _id = row.formId
+    router.push({path: "/workflow/bpmfrom/index", query: {formId: _id}});
+  }else if(row.formType === 1){
+    reset();
+    form.value.formId = row.formId
+    form.value.formName = row.formName
+    form.value.formType = row.formType
+    form.value.formCreatePath = row.formCreatePath
+    form.value.formViewPath = row.formViewPath
+    form.value.remark = row.remark
+    title.value="更新流程表单"
+    open.value = true
+  }
+
+
 }
 
 /** 提交按钮 */

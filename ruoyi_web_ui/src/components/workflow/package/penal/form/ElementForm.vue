@@ -11,12 +11,15 @@
             @change="updateElementFormKey"
             url="/workflow/form/simpleList">
         </select-more>
+        <el-tooltip effect="dark" content="开始节点必须设置审批表单!,未设置将默认使用开始节点表单" placement="top">
+          <el-icon class="ml10">
+            <InfoFilled/>
+          </el-icon>
+        </el-tooltip>
       </el-form-item>
-
-      <el-form-item label="节点表单" prop="localScope" >
-
-        <el-switch :disabled="type === 'StartEvent'" v-model="localScope" active-value="true" inactive-value="false" active-text="是" inactive-text="否" @change="updateElementFormScope()" />
-      </el-form-item>
+<!--      <el-form-item label="节点表单" prop="localScope" >-->
+<!--        <el-switch :disabled="type === 'StartEvent'" v-model="localScope" active-value="true" inactive-value="false" active-text="是" inactive-text="否" @change="updateElementFormScope()" />-->
+<!--      </el-form-item>-->
     </el-form>
   </div>
 </template>
