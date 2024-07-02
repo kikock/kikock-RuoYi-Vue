@@ -35,6 +35,7 @@
         <alibaba-dingtalk-service-sdk>2.0.0</alibaba-dingtalk-service-sdk>
         <oauth.version>1.16.5</oauth.version>
         <guava.version>32.0.1-jre</guava.version>
+        <alibaba-ttl.version>2.14.2</alibaba-ttl.version>
         <!-- Bpm 工作流相关 -->
         <flowable.version>6.8.0</flowable.version>
     </properties>
@@ -175,6 +176,11 @@
                 <groupId>com.aliyun</groupId>
                 <artifactId>alibaba-dingtalk-service-sdk</artifactId>
                 <version>${alibaba-dingtalk-service-sdk}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${alibaba-ttl.version}</version>
             </dependency>
 
             <!-- 工作流相关 -->

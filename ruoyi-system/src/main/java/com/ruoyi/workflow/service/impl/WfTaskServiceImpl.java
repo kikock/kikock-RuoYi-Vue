@@ -16,9 +16,9 @@ import com.ruoyi.flowable.factory.FlowServiceFactory;
 import com.ruoyi.flowable.flow.CustomProcessDiagramGenerator;
 import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.flowable.utils.ModelUtils;
-import com.ruoyi.flowable.utils.TaskUtils;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
+import com.ruoyi.workflow.handler.TaskUtils;
 import com.ruoyi.workflow.service.IWfCopyService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
@@ -394,11 +394,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
      */
     @Override
     public void stopProcess(WfTaskBo bo) {
-        List<Task> task = taskService.createTaskQuery().processInstanceId(bo.getProcInsId()).list();
-        if (CollectionUtils.isEmpty(task)) {
+        List<Task> taskList = taskService.createTaskQuery().processInstanceId(bo.getProcInsId()).list();
+        if (CollectionUtils.isEmpty(taskList)) {
             throw new RuntimeException("流程未启动或已执行完成，取消申请失败");
         }
-
         ProcessInstance processInstance = runtimeService.createProcessInstanceQuery()
             .processInstanceId(bo.getProcInsId()).singleResult();
         BpmnModel bpmnModel = repositoryService.getBpmnModel(processInstance.getProcessDefinitionId());
@@ -407,8 +406,10 @@ public class WfTaskServiceImpl extends FlowServiceFactory implements IWfTaskServ
             List<EndEvent> endNodes = process.findFlowElementsOfType(EndEvent.class, false);
             if (CollectionUtils.isNotEmpty(endNodes)) {
                 Authentication.setAuthenticatedUserId(TaskUtils.getUserId());
-//                taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.STOP.getType(),
-//                        StringUtils.isBlank(flowTaskVo.getComment()) ? "取消申请" : flowTaskVo.getComment());
+                runtimeService.setVariable(processInstance.getId(), ProcessConstants.PROCESS_STATUS_KEY, ProcessStatus.CANCELED.getStatus());
+                for (Task task : taskList) {
+                    taskService.addComment(task.getId(), processInstance.getProcessInstanceId(), FlowComment.STOP.getType(), "取消流程");
+                }
                 // 获取当前流程最后一个节点
                 String endId = endNodes.get(0).getId();
                 List<Execution> executions = runtimeService.createExecutionQuery()

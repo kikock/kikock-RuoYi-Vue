@@ -2,6 +2,7 @@ package com.ruoyi.framework.config;
 
 import com.ruoyi.common.config.RuoYiConfig;
 import com.ruoyi.common.constant.Constants;
+import com.ruoyi.framework.interceptor.PlusWebInvokeTimeInterceptor;
 import com.ruoyi.framework.interceptor.RepeatSubmitInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -45,6 +46,8 @@ public class ResourcesConfig implements WebMvcConfigurer{
     @Override
     public void addInterceptors(InterceptorRegistry registry){
         registry.addInterceptor(repeatSubmitInterceptor).addPathPatterns("/**");
+        // 全局访问性能拦截
+        registry.addInterceptor(new PlusWebInvokeTimeInterceptor());
     }
 
     /**

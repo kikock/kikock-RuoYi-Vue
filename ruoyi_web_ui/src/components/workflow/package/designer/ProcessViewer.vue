@@ -116,6 +116,10 @@ const dlgTitle = ref(undefined)
 const selectTaskId = ref(undefined)
 // 已完成流程元素
 const processNodeInfo = ref(undefined)
+
+const elementOverlayIds = ref(null)
+const overlays = ref(null)
+
 const initBpmnModeler = () => {
   if (bpmnModeler) return
   bpmnModeler = new BpmnViewer({
@@ -148,11 +152,87 @@ const createNewDiagram = async (xml) => {
 }
 const initModelListeners = () => {
   const EventBus = bpmnModeler.get('eventBus')
+  // 注册需要的监听事件 点击事件
   EventBus.on('element.click', function(eventObj) {
     let element = eventObj ? eventObj.element : null
     elementClick(element)
   });
+  // 注册需要的监听事件 鼠标移动到图标上事件
+  EventBus.on('element.hover', function (eventObj) {
+    let element = eventObj ? eventObj.element : null
+    elementHover(element)
+  })
+  // 注册需要的监听事件 鼠标离开图标上事件
+  EventBus.on('element.out', function (eventObj) {
+    let element = eventObj ? eventObj.element : null
+    elementOut(element)
+  })
 }
+
+// 流程图的元素被 hover
+const elementHover = (element) => {
+  element.value = element
+  !elementOverlayIds.value && (elementOverlayIds.value = {})
+  !overlays.value && (overlays.value = bpmnModeler.get('overlays'))
+
+   let historyData = props.flowWorkData.historyProcNodeList
+  console.log("历史审批数据",historyData);
+  console.log("节点数据",element);
+  if (!elementOverlayIds.value[element.value.id] && element.value.type !== 'bpmn:Process') {
+    let html = `` //
+    if (element.value.type === 'bpmn:StartEvent') {
+      historyData.map(item => {
+        if (item.activityId === element.id){
+              if( item.commentList && item.commentList.length > 0){
+
+
+
+              }
+          html = `<div class="element-overlays">
+                    <p>发起人：${item.assigneeName}</p>
+                    <p>部门：${item.deptName}</p>
+                    <p>创建时间：${item.endTime}
+                  </div>`
+        }
+      })
+    } else if (element.value.type === 'bpmn:UserTask') {
+      historyData.map(item => {
+        if (item.activityId === element.id){
+          html = `<div class="element-overlays">
+                    <p>审批人：${item.assigneeName}</p>
+                    <p>部门：${item.deptName}</p>
+                    <p>处理结果：${item.deptName}</p>
+                    <p>创建时间：${item.endTime}
+                  </div>`
+        }
+      })
+    } else if (element.value.type === 'bpmn:ServiceTask' ) {
+      html = `<div class="element-overlays">
+            <p>服务节点</p>
+                </div>`
+
+    } else if (element.value.type === 'bpmn:EndEvent') {
+      html = `<div class="element-overlays">
+            <p>结束节点</p>
+                </div>`
+
+    }
+
+    elementOverlayIds.value[element.value.id] = toRaw(overlays.value)?.add(element.value, {
+      position: {left: 0, bottom: 0},
+      html: `${html}`
+    })
+  }
+}
+// 流程图的元素被 out
+const elementOut = (element) => {
+  console.log("鼠标离开元素");
+  toRaw(overlays.value).remove({ element })
+  elementOverlayIds.value[element.id] = null
+}
+
+
+
 
 const elementClick = (element) => {
   console.log("点击弹窗");

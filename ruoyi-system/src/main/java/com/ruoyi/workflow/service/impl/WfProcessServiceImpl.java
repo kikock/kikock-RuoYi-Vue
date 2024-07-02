@@ -11,6 +11,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
+import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.common.core.page.PageDomain;
 import com.ruoyi.common.core.page.TableSupport;
@@ -27,13 +28,17 @@ import com.ruoyi.flowable.flow.FlowableUtils;
 import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.flowable.utils.ProcessFormUtils;
 import com.ruoyi.flowable.utils.ProcessUtils;
-import com.ruoyi.flowable.utils.TaskUtils;
+import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.service.ISysDeptService;
+import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
 import com.ruoyi.workflow.domain.WfDeployForm;
+import com.ruoyi.workflow.domain.WfUserGroup;
 import com.ruoyi.workflow.domain.vo.*;
+import com.ruoyi.workflow.handler.TaskUtils;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
+import com.ruoyi.workflow.mapper.WfUserGroupMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
@@ -79,7 +84,14 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     @Autowired
     private ISysDeptService deptService;
     @Autowired
+    private ISysPostService postService;
+
+    @Autowired
     private WfDeployFormMapper deployFormMapper;
+    @Autowired
+    private WfUserGroupMapper userGroupMapper;
+
+
 
     /**
      * 流程定义列表
@@ -682,10 +694,10 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
     }
 
     /**
-     * 流程详情信息
+     *
      *
      * @param procInsId 流程实例ID
-     * @param taskId    任务ID
+     * @param taskId    任务ID2
      * @return
      */
     @Override
@@ -994,6 +1006,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                     if (ObjectUtil.isNotNull(sysUserSimpleVo)) {
                         elementVo.setAssigneeId(userId);
                         elementVo.setAssigneeName(sysUserSimpleVo.getName());
+                        elementVo.setDeptName(sysUserSimpleVo.getDeptName());
                     }
                 }
             } else if (BpmnXMLConstants.ELEMENT_TASK_USER.equals(activityInstance.getActivityType())) {
@@ -1002,26 +1015,39 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                     SysUserSimpleVo sysUserSimpleVo = userService.findSimpleUserById(userId);
                     elementVo.setAssigneeId(userId);
                     elementVo.setAssigneeName(sysUserSimpleVo.getName());
+                    elementVo.setDeptName(sysUserSimpleVo.getDeptName());
                 }
                 // 展示审批人员
                 List<HistoricIdentityLink> linksForTask = historyService.getHistoricIdentityLinksForTask(activityInstance.getTaskId());
                 StringBuilder stringBuilder = new StringBuilder();
                 for (HistoricIdentityLink identityLink : linksForTask) {
                     if ("candidate".equals(identityLink.getType())) {
-                        if (StringUtils.isNotBlank(identityLink.getUserId())) {
-                            Long userId = Long.parseLong(identityLink.getUserId());
-                            SysUserSimpleVo sysUserSimpleVo = userService.findSimpleUserById(userId);
-                            stringBuilder.append(sysUserSimpleVo.getName()).append(",");
-                        }
+//                        if (StringUtils.isNotBlank(identityLink.getUserId())) {
+//                            Long userId = Long.parseLong(identityLink.getUserId());
+//                            SysUserSimpleVo sysUserSimpleVo = userService.findSimpleUserById(userId);
+//                            stringBuilder.append(sysUserSimpleVo.getName()).append(",");
+//                        }
                         if (StringUtils.isNotBlank(identityLink.getGroupId())) {
-                            if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {
-                                Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLE_GROUP_PREFIX));
+                            if (identityLink.getGroupId().startsWith(TaskConstants.ROLES_GROUP_PREFIX)) {
+                                Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLES_GROUP_PREFIX));
                                 SysRole role = roleService.selectRoleById(roleId);
                                 stringBuilder.append(role.getRoleName()).append(",");
-                            } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPT_GROUP_PREFIX)) {
-                                Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPT_GROUP_PREFIX));
+                            } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPTS_GROUP_PREFIX)) {
+                                Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPTS_GROUP_PREFIX));
                                 SysDept dept = deptService.selectDeptById(deptId);
                                 stringBuilder.append(dept.getDeptName()).append(",");
+                            }else if (identityLink.getGroupId().startsWith(TaskConstants.POSTS_GROUP_PREFIX)) {
+                                Long postId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.POSTS_GROUP_PREFIX));
+                                SysPost sysPost = postService.selectPostById(postId);
+                                stringBuilder.append(sysPost.getPostName()).append(",");
+                            }else if (identityLink.getGroupId().startsWith(TaskConstants.USERS_GROUP_PREFIX)) {
+                                Long userId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.USERS_GROUP_PREFIX));
+                                SysUser sysUser = userService.selectUserById(userId);
+                                stringBuilder.append(sysUser.getNickName()).append(",");
+                            }else if (identityLink.getGroupId().startsWith(TaskConstants.USERGROUP_GROUP_PREFIX)) {
+                                Long groupId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.USERGROUP_GROUP_PREFIX));
+                                WfUserGroup group = userGroupMapper.selectWfUserGroupById(groupId);
+                                stringBuilder.append(group.getName()).append(",");
                             }
                         }
                     }

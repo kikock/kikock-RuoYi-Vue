@@ -1,17 +1,17 @@
 package com.ruoyi.workflow.service.impl;
 
 
-import cn.hutool.core.collection.CollUtil;
-import com.ruoyi.common.constant.HttpStatus;
+import cn.hutool.core.util.StrUtil;
 import com.ruoyi.common.core.domain.vo.SelectMoreVo;
-import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.workflow.domain.WfUserGroup;
 import com.ruoyi.workflow.mapper.WfUserGroupMapper;
 import com.ruoyi.workflow.service.IWfUserGroupService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -54,9 +54,18 @@ public class WfUserGroupServiceImpl implements IWfUserGroupService{
      * @return 结果
      */
     @Override
+    @Transactional
     public int insertWfUserGroup(WfUserGroup WfUserGroup){
         WfUserGroup.setCreateTime(DateUtils.getNowDate());
-        return wfUserGroupMapper.insertWfUserGroup(WfUserGroup);
+        int i = wfUserGroupMapper.insertWfUserGroup(WfUserGroup);
+        if (i > 0) {
+            //保存成功,更新关联数据
+            String memberUserIds = WfUserGroup.getMemberUserIds();
+            List<String> ids = StrUtil.split(memberUserIds, ",");
+            wfUserGroupMapper.addSysUserGroup(WfUserGroup.getId(),ids);
+        }
+        return i;
+
     }
 
     /**
@@ -68,7 +77,16 @@ public class WfUserGroupServiceImpl implements IWfUserGroupService{
     @Override
     public int updateWfUserGroup(WfUserGroup WfUserGroup){
         WfUserGroup.setUpdateTime(DateUtils.getNowDate());
-        return wfUserGroupMapper.updateWfUserGroup(WfUserGroup);
+        int i = wfUserGroupMapper.updateWfUserGroup(WfUserGroup);
+        if(i>0){
+            //先删除 再关联数据
+            wfUserGroupMapper.delSysUserGroup(WfUserGroup.getId());
+            String memberUserIds = WfUserGroup.getMemberUserIds();
+            List<String> ids = StrUtil.split(memberUserIds, ",");
+            wfUserGroupMapper.addSysUserGroup(WfUserGroup.getId(),ids);
+        }
+        return i;
+
     }
 
     /**
@@ -79,6 +97,7 @@ public class WfUserGroupServiceImpl implements IWfUserGroupService{
      */
     @Override
     public int deleteWfUserGroupByIds(Long[] ids){
+        Arrays.stream(ids).map(id ->  wfUserGroupMapper.delSysUserGroup(id));
         return wfUserGroupMapper.deleteWfUserGroupByIds(ids);
     }
 
@@ -97,9 +116,15 @@ public class WfUserGroupServiceImpl implements IWfUserGroupService{
     public List<SelectMoreVo> getSimpleList(String keywords){
         return wfUserGroupMapper.getSimpleList(keywords);
     }
+
     @Override
     public List<WfUserGroup> selectBatchIds(List<Long> ids){
         return wfUserGroupMapper.selectBatchIds(ids);
+    }
+
+    @Override
+    public List<String> getGroupIds(String userId){
+        return wfUserGroupMapper.getGroupIds(userId);
     }
 
 }

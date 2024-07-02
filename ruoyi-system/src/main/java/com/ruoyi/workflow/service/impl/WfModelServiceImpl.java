@@ -16,6 +16,7 @@ import com.ruoyi.flowable.utils.ModelUtils;
 import com.ruoyi.workflow.domain.WfForm;
 import com.ruoyi.workflow.domain.bo.WfModelBo;
 import com.ruoyi.workflow.domain.dto.WfMetaInfoDto;
+import com.ruoyi.workflow.domain.vo.WfChartUserVo;
 import com.ruoyi.workflow.domain.vo.WfModelVo;
 import com.ruoyi.workflow.service.IWfDeployFormService;
 import com.ruoyi.workflow.service.IWfFormService;
@@ -343,6 +344,23 @@ public class WfModelServiceImpl extends FlowServiceFactory implements IWfModelSe
         repositoryService.setProcessDefinitionCategory(procDef.getId(), model.getCategory());
         // 保存部署表单
         return success(deployFormService.saveInternalDeployForm(deployment.getId(), bpmnModel)).isSuccess();
+    }
+
+    @Override
+    public List<WfChartUserVo> getFlowChartUserList(String modelId){
+        // 获取流程模型
+        Model model = repositoryService.getModel(modelId);
+        if (ObjectUtil.isNull(model)) {
+            return null;
+        }
+        // 获取流程图
+        byte[] bpmnBytes = repositoryService.getModelEditorSource(modelId);
+        if (ArrayUtil.isEmpty(bpmnBytes)) {
+           return null;
+        }
+        String bpmnXml = StringUtils.toEncodedString(bpmnBytes, StandardCharsets.UTF_8);
+        BpmnModel bpmnModel = ModelUtils.getBpmnModel(bpmnXml);
+        return null;
     }
 
     /**

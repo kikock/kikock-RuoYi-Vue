@@ -107,7 +107,7 @@ public class SysConfigController extends BaseController{
      * 刷新参数缓存
      */
     @PreAuthorize("@ss.hasPermi('system:config:remove')")
-    @Log(title = "参数管理", businessType = BusinessType.CLEAN)
+    @Log(title = "刷新缓存", businessType = BusinessType.CLEAN)
     @DeleteMapping("/refreshCache")
     public AjaxResult refreshCache(){
         configService.resetConfigCache();
