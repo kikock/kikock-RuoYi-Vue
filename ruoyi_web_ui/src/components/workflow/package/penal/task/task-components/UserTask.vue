@@ -41,19 +41,28 @@
                     label="指定部门"
                     :rules="[{required: true,message: '请选择审批部门',rigger: 'blur', }]">
 
-        <el-tree-select
+<!--        <el-tree-select-->
+<!--            v-model="deptIds"-->
+<!--            :data="deptOptions"-->
+<!--            multiple-->
+<!--            :render-after-expand="false"-->
+<!--            :props="{ value: 'id', label: 'label', children: 'children' }"-->
+<!--            value-key="id"-->
+<!--            show-checkbox-->
+<!--            check-strictly-->
+<!--            check-on-click-node-->
+<!--            style="width: 240px"-->
+<!--            @change="checkedDeptChange"-->
+<!--        />-->
+        <select-more
+            search-pld-text="请输入部门名称筛选"
+            select-pld-text="请选择岗部门"
             v-model="deptIds"
-            :data="deptOptions"
-            multiple
-            :render-after-expand="false"
-            :props="{ value: 'id', label: 'label', children: 'children' }"
-            value-key="id"
-            show-checkbox
-            check-strictly
-            check-on-click-node
-            style="width: 240px"
-            @change="checkedDeptChange"
-        />
+            @changeMultiple="changeSelectDepts"
+            :showId="false"
+            url="/system/dept/simpleList"
+            multiple>
+        </select-more>
       </el-form-item>
       <el-form-item v-if="dataType === 'POSTS'"
                     label="指定岗位"
@@ -204,11 +213,11 @@ export default {
         } else {
           userTaskForm.candidateUsers = rows.map(k => k.id).join() || null;
           userTaskForm.text = rows.map(k => k.name).join() || null;
+          userTaskForm.candidateGroups = rows.map(k => `USERS${k.id}`).join() || null;
           userTaskForm.assignee = null;
           this.showMultiFlog = true;
         }
       }
-      console.log("选择审批用户:", userTaskForm);
       this.updateElementTask()
     },
     changeSelectRoles(rows) {
@@ -216,7 +225,7 @@ export default {
       this.selectedUser.text = rows.map(k => k.name) || [];
       if (rows) {
         userTaskForm.dataType = 'ROLES';
-        userTaskForm.candidateGroups = rows.map(k => k.id).join() || null;
+        userTaskForm.candidateGroups = rows.map(k => `ROLES${k.id}`).join() || null;
         userTaskForm.text = rows.map(k => k.name).join() || null;
       } else {
         userTaskForm.dataType = null;
@@ -228,12 +237,29 @@ export default {
       this.updateElementTask();
       this.changeMultiLoopType();
     },
+    changeSelectDepts(rows) {
+      console.log("选择元素:", rows);
+      this.selectedUser.text = rows.map(k => k.name) || [];
+      if (rows) {
+        userTaskForm.dataType = 'DEPTS';
+        userTaskForm.candidateGroups = rows.map(k => `DEPTS${k.id}`).join() || null;
+        userTaskForm.text = rows.map(k => k.name).join() || null;
+      } else {
+        userTaskForm.dataType = null;
+        userTaskForm.candidateGroups = null;
+        userTaskForm.text = null;
+        this.multiLoopType = 'Null';
+      }
+      console.log("选择部门:", userTaskForm);
+      this.updateElementTask();
+      this.changeMultiLoopType();
+    },
     changeSelectPosts(rows) {
       console.log("选择元素:", rows);
       this.selectedUser.text = rows.map(k => k.name) || [];
       if (rows) {
         userTaskForm.dataType = 'POSTS';
-        userTaskForm.candidateGroups = rows.map(k => k.id).join() || null;
+        userTaskForm.candidateGroups = rows.map(k => `POSTS${k.id}`).join() || null;
         userTaskForm.text = rows.map(k => k.name).join() || null;
       } else {
         userTaskForm.dataType = null;
@@ -245,12 +271,13 @@ export default {
       this.updateElementTask();
       this.changeMultiLoopType();
     },
+
     changeSelectUserGroups(rows) {
       console.log("选择元素:", rows);
       this.selectedUser.text = rows.map(k => k.name) || [];
       if (rows) {
         userTaskForm.dataType = 'USERGROUP';
-        userTaskForm.candidateGroups = rows.map(k => k.id).join() || null;
+        userTaskForm.candidateGroups = rows.map(k => `USERGROUP${k.id}`).join() || null;
         userTaskForm.text = rows.map(k => k.name).join() || null;
       } else {
         userTaskForm.dataType = null;
@@ -258,7 +285,6 @@ export default {
         userTaskForm.text = null;
         this.multiLoopType = 'Null';
       }
-      console.log("选择自定义用户组:", userTaskForm);
       this.updateElementTask();
       this.changeMultiLoopType();
     },
@@ -398,7 +424,10 @@ export default {
       let text = null;
       if (this.deptIds && this.deptIds.length > 0) {
         userTaskForm.dataType = 'DEPTS';
-        groups = this.deptIds.join() || null;
+        const groupsDeptId = numbers.map(number => {
+          return "DEPTS" + number.toString();
+        });
+        groups = groupsDeptId.join() || null;
         let textArr = []
         let treeStarkData = JSON.parse(JSON.stringify(this.deptTreeData));
         console.log("treeStarkData=>>>",treeStarkData);
@@ -415,7 +444,6 @@ export default {
             }
           }
         })
-        console.log(textArr);
         text = textArr?.map(k => k.label).join() || null;
       } else {
         userTaskForm.dataType = null;
@@ -485,6 +513,9 @@ export default {
       // 取消多实例配置
       if (this.multiLoopType === "Null") {
         window.bpmnInstances.modeling.updateProperties(this.bpmnElement, {loopCharacteristics: null, assignee: null});
+        window.bpmnInstances.modeling.updateModdleProperties(this.bpmnElement, {
+          collection: '${multiInstanceHandler.getApproverUsers(execution)}',
+        });
         return;
       }
       this.multiLoopInstance = window.bpmnInstances.moddle.create("bpmn:MultiInstanceLoopCharacteristics", {isSequential: this.isSequential});

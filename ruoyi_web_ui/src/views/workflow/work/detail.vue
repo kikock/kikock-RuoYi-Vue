@@ -121,7 +121,8 @@
                   <el-card v-if="item.activityType === 'userTask'" class="box-card" shadow="hover">
                     <el-descriptions :column="5" >
                       <el-descriptions-item label="实际办理人">{{ item.assigneeName || '-' }}</el-descriptions-item>
-                      <el-descriptions-item label="候选办理人">{{ item.candidate || '-' }}</el-descriptions-item>
+                      <el-descriptions-item v-if="!item.assigneeName" label="候选办理人">{{ item.candidate || '-' }}</el-descriptions-item>
+                      <el-descriptions-item v-if="item.assigneeName" label="办理人部门">{{ item.deptName }}</el-descriptions-item>
                       <el-descriptions-item label="接收时间">{{ item.createTime || '-' }}</el-descriptions-item>
                       <el-descriptions-item label="办结时间">{{ item.endTime || '-' }}</el-descriptions-item>
                       <el-descriptions-item label="耗时">{{ item.duration || '-' }}</el-descriptions-item>

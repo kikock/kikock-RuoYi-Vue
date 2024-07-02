@@ -65,4 +65,6 @@ public interface IWfUserGroupService{
 
     public List<WfUserGroup> selectBatchIds(List<Long> ids);
 
+    public List<String> getGroupIds(String userId);
+
 }

@@ -198,4 +198,18 @@
         </where>
 
     </select>
+
+    <insert id="addSysUserGroup" >
+        INSERT INTO `sys_user_group`(`group_id`, `user_id`) VALUES
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{groupId},#{item})
+        </foreach>
+    </insert>
+
+    <delete id="delSysUserGroup" parameterType="Long">
+        delete from sys_user_group where group_id = #{id}
+    </delete>
+    <select id="getGroupIds"  resultType="string">
+        SELECT group_id  FROM `sys_user_group` WHERE `user_id` = #{userId}
+    </select>
 </mapper>

@@ -163,12 +163,12 @@ public class WfInstanceServiceImpl extends FlowServiceFactory implements IWfInst
                             stringBuilder.append(simpleUser.getName()).append(",");
                         }
                         if (StringUtils.isNotBlank(identityLink.getGroupId())) {
-                            if (identityLink.getGroupId().startsWith(TaskConstants.ROLE_GROUP_PREFIX)) {
-                                Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLE_GROUP_PREFIX));
+                            if (identityLink.getGroupId().startsWith(TaskConstants.ROLES_GROUP_PREFIX)) {
+                                Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLES_GROUP_PREFIX));
                                 SysRole role = roleService.selectRoleById(roleId);
                                 stringBuilder.append(role.getRoleName()).append(",");
-                            } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPT_GROUP_PREFIX)) {
-                                Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPT_GROUP_PREFIX));
+                            } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPTS_GROUP_PREFIX)) {
+                                Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPTS_GROUP_PREFIX));
                                 SysDept dept = deptService.selectDeptById(deptId);
                                 stringBuilder.append(dept.getDeptName()).append(",");
                             }

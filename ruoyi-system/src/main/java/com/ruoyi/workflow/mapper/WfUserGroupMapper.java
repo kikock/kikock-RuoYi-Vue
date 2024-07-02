@@ -3,6 +3,7 @@ package com.ruoyi.workflow.mapper;
 
 import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.workflow.domain.WfUserGroup;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -65,4 +66,13 @@ public interface WfUserGroupMapper{
     public List<SelectMoreVo> getSimpleList(String keywords);
 
     public List<WfUserGroup> selectBatchIds(List<Long> ids);
+
+    public int addSysUserGroup(@Param("groupId") Long groupId, @Param("list")List<String> list);
+
+    public  int delSysUserGroup(Long id);
+
+
+    public  List<String> getGroupIds(@Param("userId") String userId);
+
+
 }

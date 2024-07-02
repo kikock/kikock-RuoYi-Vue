@@ -3,6 +3,7 @@ package com.ruoyi.workflow.service;
 
 import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.workflow.domain.bo.WfModelBo;
+import com.ruoyi.workflow.domain.vo.WfChartUserVo;
 import com.ruoyi.workflow.domain.vo.WfModelVo;
 
 import java.util.Collection;
@@ -66,4 +67,6 @@ public interface IWfModelService {
      * 部署流程模型
      */
     boolean deployModel(String modelId);
+
+    List<WfChartUserVo> getFlowChartUserList(String modelId);
 }

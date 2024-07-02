@@ -10,14 +10,14 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 工作流节点元素视图对象
+ * 流程节点信息
  *
- * @author KonBAI
+ * @author
  * @createTime 2022/9/11 22:04
  */
 @Data
 @ExcelIgnoreUnannotated
-public class WfProcNodeVo implements Serializable {
+public class WfChartUserVo implements Serializable {
     /**
      * 流程ID
      */
