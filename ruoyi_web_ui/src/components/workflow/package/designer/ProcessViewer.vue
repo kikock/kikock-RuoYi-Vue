@@ -27,6 +27,12 @@
             <el-table-column label="序号" header-align="center" align="center" type="index" width="55px" />
             <el-table-column label="候选办理" prop="candidate" width="150px" align="center"/>
             <el-table-column label="实际办理" prop="assigneeName" width="100px" align="center"/>
+            <el-table-column label="实际办理部门" prop="deptName" width="100px" align="center"/>
+            <el-table-column label="处理结果" prop="type" width="140px" align="center">
+              <template #default="scope">
+                <dict-tag :options="wf_comment_type" :value="scope.row.type" />
+              </template>
+            </el-table-column>
             <el-table-column label="处理时间" prop="createTime" width="140px" align="center"/>
             <el-table-column label="办结时间" prop="finishTime" width="140px" align="center" />
             <el-table-column label="耗时" prop="duration" width="100px" align="center"/>
@@ -102,6 +108,7 @@ provide('configGlobal', props)
 
 const emit = defineEmits(['destroy'])
 const {proxy} = getCurrentInstance()
+const {wf_comment_type} = proxy.useDict('wf_comment_type');
 let bpmnModeler
 const xml = ref('')
 const activityLists = ref([])
@@ -176,37 +183,73 @@ const elementHover = (element) => {
   !overlays.value && (overlays.value = bpmnModeler.get('overlays'))
 
    let historyData = props.flowWorkData.historyProcNodeList
-  console.log("历史审批数据",historyData);
-  console.log("节点数据",element);
   if (!elementOverlayIds.value[element.value.id] && element.value.type !== 'bpmn:Process') {
-    let html = `` //
+    let html = ``
+
     if (element.value.type === 'bpmn:StartEvent') {
+      //开始节点
       historyData.map(item => {
         if (item.activityId === element.id){
-              if( item.commentList && item.commentList.length > 0){
-
-
-
-              }
           html = `<div class="element-overlays">
                     <p>发起人：${item.assigneeName}</p>
                     <p>部门：${item.deptName}</p>
-                    <p>创建时间：${item.endTime}
+                    <p>创建时间：${item.endTime}</p>
                   </div>`
         }
       })
     } else if (element.value.type === 'bpmn:UserTask') {
+      //用户节点
       historyData.map(item => {
-        if (item.activityId === element.id){
-          html = `<div class="element-overlays">
-                    <p>审批人：${item.assigneeName}</p>
-                    <p>部门：${item.deptName}</p>
-                    <p>处理结果：${item.deptName}</p>
-                    <p>创建时间：${item.endTime}
-                  </div>`
+        if (item.activityId === element.id) {
+          selectTaskId.value = undefined;
+          dlgTitle.value = undefined;
+          //显示名称
+          const candidateNames = {
+            USERS: "候选办理人",
+            ROLES: "候选办理角色",
+            POSTS: "候选办理人岗位",
+            USERGROUP: "候选审批用户组",
+            DEPTS: "候选办理人部门",
+          };
+         const  name = candidateNames[item.candidateType] || "审批人";
+          if (processNodeInfo.value == null || processNodeInfo.value.finishedTaskSet == null) return;
+          if (element == null || processNodeInfo.value.finishedTaskSet.indexOf(element.id) === -1) {
+            console.log("选择未审批节点");
+          }
+          selectTaskId.value = element.id;
+          dlgTitle.value = element.businessObject ? element.businessObject.name : undefined;
+          const  taskCommentList2 = (props.flowWorkData.historyProcNodeList || []).filter(item => {
+            //审批意见
+            let mes = item.commentList && item.commentList[0]?item.commentList[0].fullMessage:'';
+            item.fullMessage = mes;
+            //审批结果
+            item.type = item.commentList && item.commentList[0]?item.commentList[0].type:'';
+            item.name =name;
+            return item.activityId === selectTaskId.value;
+          });
+          console.log("展示数据",taskCommentList2);
+               taskCommentList2.map(i => {
+                 let  wfCommentType = wf_comment_type.value.find(i2 => i2.value === i.type)  ? wf_comment_type.value.find(i2 => i2.value === i.type).label : "待审批";
+                 if (i.type){
+
+                   html = `<div class="element-overlays">
+                              <p>审批人：${i.assigneeName}</p>
+                              <p>部门：${i.deptName}</p>
+                              <p>结果：${wfCommentType}</p>
+                              <p>审批意见：${i.fullMessage}</p>
+                              <p>处理时间：${i.endTime}</p>
+                         </div>`
+                 }else {
+                   html = `<div class="element-overlays">
+                             <p>${i.name}：${i.candidate}</p>
+                             <p>结果：待审批</p>
+                             <p>创建时间：${i.createTime}</p>
+                        </div>`
+                 }
+               })
         }
       })
-    } else if (element.value.type === 'bpmn:ServiceTask' ) {
+    } else if (element.value.type === 'bpmn:ServiceTask') {
       html = `<div class="element-overlays">
             <p>服务节点</p>
                 </div>`
@@ -217,21 +260,20 @@ const elementHover = (element) => {
                 </div>`
 
     }
-
-    elementOverlayIds.value[element.value.id] = toRaw(overlays.value)?.add(element.value, {
-      position: {left: 0, bottom: 0},
-      html: `${html}`
-    })
+    if(html) {
+      elementOverlayIds.value[element.value.id] = toRaw(overlays.value)?.add(element.value, {
+        position: {left: 0, bottom: 0},
+        html: `${html}`
+      })
+    }
   }
 }
 // 流程图的元素被 out
 const elementOut = (element) => {
   console.log("鼠标离开元素");
-  toRaw(overlays.value).remove({ element })
+  toRaw(overlays.value).remove({element})
   elementOverlayIds.value[element.id] = null
 }
-
-
 
 
 const elementClick = (element) => {
@@ -249,6 +291,8 @@ const elementClick = (element) => {
     //审批意见
     let mes = item.commentList && item.commentList[0]?item.commentList[0].fullMessage:''
     item.fullMessage = mes;
+    //审批结果
+    item.type = item.commentList && item.commentList[0]?item.commentList[0].type:'';
     return item.activityId === selectTaskId.value;
   });
   console.log("当前审批记录",taskCommentList.value);

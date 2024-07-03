@@ -42,6 +42,7 @@ import com.ruoyi.workflow.mapper.WfUserGroupMapper;
 import com.ruoyi.workflow.service.IWfProcessService;
 import com.ruoyi.workflow.service.IWfTaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.flowable.bpmn.constants.BpmnXMLConstants;
 import org.flowable.bpmn.model.Process;
 import org.flowable.bpmn.model.*;
@@ -74,6 +75,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProcessService{
     @Autowired
     private IWfTaskService wfTaskService;
@@ -1007,6 +1009,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                         elementVo.setAssigneeId(userId);
                         elementVo.setAssigneeName(sysUserSimpleVo.getName());
                         elementVo.setDeptName(sysUserSimpleVo.getDeptName());
+                        elementVo.setCandidateType("startEvent");
                     }
                 }
             } else if (BpmnXMLConstants.ELEMENT_TASK_USER.equals(activityInstance.getActivityType())) {
@@ -1017,7 +1020,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                     elementVo.setAssigneeName(sysUserSimpleVo.getName());
                     elementVo.setDeptName(sysUserSimpleVo.getDeptName());
                 }
-                // 展示审批人员
+                // 展示审批候选人员
                 List<HistoricIdentityLink> linksForTask = historyService.getHistoricIdentityLinksForTask(activityInstance.getTaskId());
                 StringBuilder stringBuilder = new StringBuilder();
                 for (HistoricIdentityLink identityLink : linksForTask) {
@@ -1029,22 +1032,27 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
 //                        }
                         if (StringUtils.isNotBlank(identityLink.getGroupId())) {
                             if (identityLink.getGroupId().startsWith(TaskConstants.ROLES_GROUP_PREFIX)) {
+                                elementVo.setCandidateType(TaskConstants.ROLES_GROUP_PREFIX);
                                 Long roleId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.ROLES_GROUP_PREFIX));
                                 SysRole role = roleService.selectRoleById(roleId);
                                 stringBuilder.append(role.getRoleName()).append(",");
                             } else if (identityLink.getGroupId().startsWith(TaskConstants.DEPTS_GROUP_PREFIX)) {
+                                elementVo.setCandidateType(TaskConstants.DEPTS_GROUP_PREFIX);
                                 Long deptId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.DEPTS_GROUP_PREFIX));
                                 SysDept dept = deptService.selectDeptById(deptId);
                                 stringBuilder.append(dept.getDeptName()).append(",");
                             }else if (identityLink.getGroupId().startsWith(TaskConstants.POSTS_GROUP_PREFIX)) {
+                                elementVo.setCandidateType(TaskConstants.POSTS_GROUP_PREFIX);
                                 Long postId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.POSTS_GROUP_PREFIX));
                                 SysPost sysPost = postService.selectPostById(postId);
                                 stringBuilder.append(sysPost.getPostName()).append(",");
                             }else if (identityLink.getGroupId().startsWith(TaskConstants.USERS_GROUP_PREFIX)) {
+                                elementVo.setCandidateType(TaskConstants.USERS_GROUP_PREFIX);
                                 Long userId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.USERS_GROUP_PREFIX));
                                 SysUser sysUser = userService.selectUserById(userId);
                                 stringBuilder.append(sysUser.getNickName()).append(",");
                             }else if (identityLink.getGroupId().startsWith(TaskConstants.USERGROUP_GROUP_PREFIX)) {
+                                elementVo.setCandidateType(TaskConstants.USERGROUP_GROUP_PREFIX);
                                 Long groupId = Long.parseLong(StringUtils.stripStart(identityLink.getGroupId(), TaskConstants.USERGROUP_GROUP_PREFIX));
                                 WfUserGroup group = userGroupMapper.selectWfUserGroupById(groupId);
                                 stringBuilder.append(group.getName()).append(",");
@@ -1055,6 +1063,7 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 if (StringUtils.isNotBlank(stringBuilder)) {
                     elementVo.setCandidate(stringBuilder.substring(0, stringBuilder.length() - 1));
                 }
+                log.info("审批候选人员获取完成:{}",stringBuilder.toString());
                 // 获取意见评论内容
                 if (CollUtil.isNotEmpty(commentList)) {
                     List<Comment> comments = new ArrayList<>();
