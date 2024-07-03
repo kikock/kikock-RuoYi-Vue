@@ -24,16 +24,16 @@ import java.io.OutputStream;
  */
 @RestController
 @RequestMapping("/workflow/task")
-public class WfTaskController {
+public class WfTaskController{
     @Autowired
-    private  IWfTaskService flowTaskService;
+    private IWfTaskService flowTaskService;
 
     /**
      * 取消申请
      */
     @PostMapping(value = "/stopProcess")
     @PreAuthorize("@ss.hasPermi('workflow:process:cancel')")
-    public R stopProcess(@RequestBody WfTaskBo bo) {
+    public R stopProcess(@RequestBody WfTaskBo bo){
         flowTaskService.stopProcess(bo);
         return R.ok();
     }
@@ -43,18 +43,19 @@ public class WfTaskController {
      */
     @PostMapping(value = "/revokeProcess")
     @PreAuthorize("@ss.hasPermi('workflow:process:cancel')")
-    public R revokeProcess(@RequestBody WfTaskBo bo) {
+    public R revokeProcess(@RequestBody WfTaskBo bo){
         flowTaskService.revokeProcess(bo);
         return R.ok();
     }
 
     /**
      * 获取流程变量
+     *
      * @param taskId 流程任务Id
      */
     @GetMapping(value = "/processVariables/{taskId}")
     @PreAuthorize("@ss.hasPermi('workflow:process:query')")
-    public R processVariables(@PathVariable(value = "taskId") String taskId) {
+    public R processVariables(@PathVariable(value = "taskId") String taskId){
         return R.ok(flowTaskService.getProcessVariables(taskId));
     }
 
@@ -63,7 +64,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/complete")
     @PreAuthorize("@ss.hasPermi('workflow:process:approval')")
-    public R complete(@RequestBody WfTaskBo bo) {
+    public R complete(@RequestBody WfTaskBo bo){
         flowTaskService.complete(bo);
         return R.ok();
     }
@@ -73,7 +74,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/reject")
     @PreAuthorize("@ss.hasPermi('workflow:process:approval')")
-    public R taskReject(@RequestBody WfTaskBo taskBo) {
+    public R taskReject(@RequestBody WfTaskBo taskBo){
         flowTaskService.taskReject(taskBo);
         return R.ok();
     }
@@ -83,7 +84,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/return")
     @PreAuthorize("@ss.hasPermi('workflow:process:approval')")
-    public R taskReturn(@RequestBody WfTaskBo bo) {
+    public R taskReturn(@RequestBody WfTaskBo bo){
         flowTaskService.taskReturn(bo);
         return R.ok();
     }
@@ -93,7 +94,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/returnList")
     @PreAuthorize("@ss.hasPermi('workflow:process:query')")
-    public R findReturnTaskList(@RequestBody WfTaskBo bo) {
+    public R findReturnTaskList(@RequestBody WfTaskBo bo){
         return R.ok(flowTaskService.findReturnTaskList(bo));
     }
 
@@ -102,7 +103,7 @@ public class WfTaskController {
      */
     @DeleteMapping(value = "/delete")
     @PreAuthorize("@ss.hasPermi('workflow:process:approval')")
-    public R delete(@RequestBody WfTaskBo bo) {
+    public R delete(@RequestBody WfTaskBo bo){
         flowTaskService.deleteTask(bo);
         return R.ok();
     }
@@ -112,7 +113,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/claim")
     @PreAuthorize("@ss.hasPermi('workflow:process:claim')")
-    public R claim(@RequestBody WfTaskBo bo) {
+    public R claim(@RequestBody WfTaskBo bo){
         flowTaskService.claim(bo);
         return R.ok();
     }
@@ -122,7 +123,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/unClaim")
     @PreAuthorize("@ss.hasPermi('workflow:process:claim')")
-    public R unClaim(@RequestBody WfTaskBo bo) {
+    public R unClaim(@RequestBody WfTaskBo bo){
         flowTaskService.unClaim(bo);
         return R.ok();
     }
@@ -132,7 +133,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/delegate")
     @PreAuthorize("@ss.hasPermi('workflow:process:approval')")
-    public R delegate(@RequestBody WfTaskBo bo) {
+    public R delegate(@RequestBody WfTaskBo bo){
         if (ObjectUtil.hasNull(bo.getTaskId(), bo.getUserId())) {
             return R.fail("参数错误！");
         }
@@ -145,7 +146,7 @@ public class WfTaskController {
      */
     @PostMapping(value = "/transfer")
     @PreAuthorize("@ss.hasPermi('workflow:process:cancel')")
-    public R transfer(@RequestBody WfTaskBo bo) {
+    public R transfer(@RequestBody WfTaskBo bo){
         if (ObjectUtil.hasNull(bo.getTaskId(), bo.getUserId())) {
             return R.fail("参数错误！");
         }
@@ -160,7 +161,7 @@ public class WfTaskController {
      */
     @RequestMapping("/diagram/{processId}")
     public void genProcessDiagram(HttpServletResponse response,
-                                  @PathVariable("processId") String processId) {
+                                  @PathVariable("processId") String processId){
         InputStream inputStream = flowTaskService.diagram(processId);
         OutputStream os = null;
         BufferedImage image = null;
