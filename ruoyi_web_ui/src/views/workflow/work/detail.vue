@@ -5,7 +5,7 @@
         type="border-card"
         @tab-change="handleTabsClick"
         tab-position="top" >
-
+      <!-- 任务办理 -->
       <el-tab-pane label="任务办理" name="approval" v-if="processed === true" >
         <el-card v-loading="formOpen" class="box-card" >
           <template #header>
@@ -95,6 +95,7 @@
                 :rule="formInfo.rule"
                 @mounted="onMountedFormCreate" />
           </el-col>
+          <!-- 情况二：业务流程表单 -->
           <el-col v-if="formInfo.formType === 1" :offset="6" :span="16" >
             <component :is="formInfo.BusinessFormComponent" />
           </el-col>
@@ -116,13 +117,30 @@
                                   :color="setColor(item.endTime)">
                   <p style="font-weight: 700">{{ item.activityName }}</p>
                   <el-card v-if="item.activityType === 'startEvent'" class="box-card" shadow="hover">
-                    {{ item.assigneeName }} 在 {{ item.createTime }} 发起流程
+                    <el-tag type="success">{{ item.assigneeName }}</el-tag>  在 {{ item.createTime }} 发起流程
                   </el-card>
                   <el-card v-if="item.activityType === 'userTask'" class="box-card" shadow="hover">
                     <el-descriptions :column="5" >
-                      <el-descriptions-item label="实际办理人">{{ item.assigneeName || '-' }}</el-descriptions-item>
-                      <el-descriptions-item v-if="!item.assigneeName" label="候选办理人">{{ item.candidate || '-' }}</el-descriptions-item>
-                      <el-descriptions-item v-if="item.assigneeName" label="办理人部门">{{ item.deptName }}</el-descriptions-item>
+                      <el-descriptions-item label="实际办理人">
+                        <el-tag type="success">{{ item.assigneeName || '无' }}</el-tag>
+
+                      </el-descriptions-item>
+                      <el-descriptions-item v-if="item.candidateType === 'USERS'" label="候选办理人">
+                        <el-tag v-for="user in getUserName(item.candidate)" type="info">{{ user }}</el-tag>
+                      </el-descriptions-item>
+                      <el-descriptions-item v-if="item.candidateType === 'ROLES'" label="候选办理角色">
+                        <el-tag v-for="user in getUserName(item.candidate)" type="info">{{ user }}</el-tag>
+                      </el-descriptions-item>
+                      <el-descriptions-item v-if="item.candidateType === 'POSTS'" label="候选办理人岗位">
+                        <el-tag v-for="user in getUserName(item.candidate)" type="info">{{ user }}</el-tag>
+                      </el-descriptions-item>
+                      <el-descriptions-item v-if="item.candidateType === 'USERGROUP'" label="候选审批用户组">
+                        <el-tag v-for="user in getUserName(item.candidate)" type="info">{{ user }}</el-tag>
+                      </el-descriptions-item>
+                      <el-descriptions-item v-if="item.candidateType === 'DEPTS'" label="候选办理人部门">
+                        <el-tag v-for="user in getUserName(item.candidate)" type="info">{{ user }}</el-tag>
+                      </el-descriptions-item>
+
                       <el-descriptions-item label="接收时间">{{ item.createTime || '-' }}</el-descriptions-item>
                       <el-descriptions-item label="办结时间">{{ item.endTime || '-' }}</el-descriptions-item>
                       <el-descriptions-item label="耗时">{{ item.duration || '-' }}</el-descriptions-item>
@@ -155,7 +173,7 @@
         </el-card>
 
       </el-tab-pane>
-
+      <!--    流程跟踪  -->
       <el-tab-pane label="流程跟踪" name="track">
         <el-card v-loading="trackOpen" class="box-card">
           <template #header>
@@ -697,7 +715,7 @@ function handleTabsClick(e){
       formType.value = true
       formOpen.value = false
     }else if(e==="record"){
-      console.log("点击流程记录");
+      console.log("点击流程记录",processData.value.historyProcNodeList);
       //流程记录
       historyProcNodeList.value = processData.value.historyProcNodeList;
       recordOpen.value = false
@@ -737,6 +755,16 @@ function onMountedFormCreateApproval(e){
   e.resetBtn.show(false)
   e.disabled(true)
 }
+
+
+function getUserName(row) {
+  if (row) {
+    return  row.split(",");
+  }
+  return "无";
+}
+
+
 
 initData()
 </script>

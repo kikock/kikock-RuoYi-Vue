@@ -55,6 +55,10 @@ public class WfProcNodeVo implements Serializable {
      */
     private String candidate;
     /**
+     * 候选类型 用户,用户组,角色,部门,岗位
+     */
+    private String candidateType;
+    /**
      * 任务意见
      */
     private List<Comment> commentList;
