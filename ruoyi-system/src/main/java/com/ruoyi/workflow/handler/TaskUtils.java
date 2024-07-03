@@ -13,6 +13,7 @@ import com.ruoyi.common.core.domain.model.LoginUser;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.spring.SpringUtils;
 import com.ruoyi.flowable.common.constant.TaskConstants;
+import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.workflow.service.IWfUserGroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,8 +57,10 @@ public class TaskUtils{
                 user.getUser().getRoles().forEach(role -> list.add(TaskConstants.ROLES_GROUP_PREFIX + role.getRoleId()));
             }
             //     岗位候选组
-            if (ObjectUtil.isNotEmpty(user.getUser().getPostIds())) {
-                Arrays.stream(user.getUser().getPostIds()).map(post -> list.add(TaskConstants.POSTS_GROUP_PREFIX + post));
+            if (ObjectUtil.isNotEmpty(user.getUserId())) {
+                ISysPostService postService = SpringUtils.getBean(ISysPostService.class);
+                List<Long> postIds = postService.selectPostListByUserId(user.getUserId());
+                postIds.stream().forEach(postId -> list.add(TaskConstants.POSTS_GROUP_PREFIX + postId));
             }
             //     自定义用户组候选组
             if (ObjectUtil.isNotEmpty(user.getUserId())) {

@@ -2,24 +2,6 @@
   <div class="my-process-designer">
     <div class="my-process-designer__container">
       <div class="my-process-designer__canvas" style="height: 760px" ref="bpmnCanvas"></div>
-      <!-- 自定义箭头样式，用于成功状态下流程连线箭头 -->
-      <defs ref="customSuccessDefs">
-        <marker id="sequenceflow-end-white-success" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto">
-          <path class="success-arrow" d="M 1 5 L 11 10 L 1 15 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
-        </marker>
-        <marker id="conditional-flow-marker-white-success" viewBox="0 0 20 20" refX="-1" refY="10" markerWidth="10" markerHeight="10" orient="auto">
-          <path class="success-conditional" d="M 0 10 L 8 6 L 16 10 L 8 14 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
-        </marker>
-      </defs>
-      <!-- 自定义箭头样式，用于失败状态下流程连线箭头 -->
-      <defs ref="customFailDefs">
-        <marker id="sequenceflow-end-white-fail" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto">
-          <path class="fail-arrow" d="M 1 5 L 11 10 L 1 15 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
-        </marker>
-        <marker id="conditional-flow-marker-white-fail" viewBox="0 0 20 20" refX="-1" refY="10" markerWidth="10" markerHeight="10" orient="auto">
-          <path class="fail-conditional" d="M 0 10 L 8 6 L 16 10 L 8 14 Z" style="stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000, 1;"></path>
-        </marker>
-      </defs>
       <!-- 已完成节点悬浮弹窗 -->
       <el-dialog class="comment-dialog" :title="dlgTitle || '审批记录'"  v-model="dialogVisible">
         <el-row>
@@ -150,12 +132,99 @@ const createNewDiagram = async (xml) => {
     if (warnings && warnings.length) {
       warnings.forEach((warn) => console.warn(warn))
     }
-    // 高亮流程图
+    //流程图高亮显示
+    highlightDiagram();
     const canvas = bpmnModeler.get('canvas')
     canvas.zoom('fit-viewport', 'auto')
+
   } catch (e) {
     console.error(e)
   }
+}
+
+const highlightDiagram = async () => {
+  //节点数据
+  let historyData = activityLists.value
+  if (historyData.length === 0) {
+    return
+  }
+  console.log("高亮流程图开始");
+  let canvas = bpmnModeler.get('canvas')
+  let todoActivity = historyData.find((m) => !m.endTime) // 找到待办的任务
+  let findProcessTask = false //是否已经高亮了进行中的任务
+  // debugger
+  bpmnModeler.getDefinitions().rootElements[0].flowElements?.forEach((n) => {
+    let activity = historyData.find((m) => m.activityId === n.id) // 找到开始节点
+    if (!activity) {
+      return
+    }
+    if (n.$type === 'bpmn:UserTask') {
+      // 用户任务
+      let activity = historyData.find((m) => m.activityId === n.id) // 找到开始节点
+      let className = ''
+      const activityType = activity.commentList && activity.commentList[0]?activity.commentList[0].type:'';
+      //审批结果
+        className = getResultCss(activityType);
+        //处理连线高亮
+        n.outgoing?.forEach((nn) => {
+          // 获得连线是否有指向目标。如果有，则进行高亮
+          let targetActivity = historyData.find((m) => m.activityId === nn.targetRef.id);
+          if (targetActivity) {
+            canvas.addMarker(activity.activityId, className) // 高亮当前节点
+            canvas.addMarker(nn.id, getActivityHighlightCss(targetActivity)) // 高亮【bpmn:SequenceFlow】连线
+          }else {
+            canvas.addMarker(activity.activityId, getActivityHighlightCss(activity))
+          }
+        })
+    } else if (n.$type === 'bpmn:ExclusiveGateway') {
+   //排他网关处理
+
+
+
+
+    } else if (n.$type === 'bpmn:ParallelGateway') {
+      // 并行网关处理
+
+
+    } else if (n.$type === 'bpmn:StartEvent') {
+      // 开始节点 处理
+      n.outgoing?.forEach((nn) => {
+        // 获得连线是否有指向节点。如果有，则进行高亮
+        let targetActivity = historyData.find((m) => m.activityId === nn.targetRef.id);
+        if (targetActivity) {
+          canvas.addMarker(nn.id, 'highlight') // 高亮【bpmn:SequenceFlow】连线
+          canvas.addMarker(n.id, 'highlight') // 高亮【bpmn:StartEvent】开始节点（自己）
+        }
+      })
+    } else if (n.$type === 'bpmn:EndEvent') {
+      //结束节点处理
+      let targetActivity = historyData.find((m) => m.activityId === n.id);
+      canvas.addMarker(targetActivity.activityId, 'highlight')
+    } else if (n.$type === 'bpmn:ServiceTask') {
+      //服务处理
+
+    }
+  })
+}
+const getActivityHighlightCss = (activity) => {
+  return activity.endTime ? 'highlight' : 'highlight-todo'
+}
+const getResultCss = (result) => {
+
+  const resultCss = {
+    1: "highlight", //已通过
+    2: "highlight-reject", //不通过
+    3: "highlight-cancel", //已取消
+    4: "highlight-return", //退回
+    5: "highlight-return", //委派
+    6: "highlight-return",//待后加签任务完成
+    7: "highlight-return", //待前加签任务完成
+    8: "highlight-return", //待前置任务完成
+  };
+  if (resultCss[result]) {
+    return resultCss[result]
+  }
+  return 'highlight-todo'
 }
 const initModelListeners = () => {
   const EventBus = bpmnModeler.get('eventBus')
@@ -348,6 +417,7 @@ watch(
   () => props.flowWorkData,
   (newActivityData) => {
     processNodeInfo.value = props.flowWorkData.flowViewer
+    activityLists.value = props.flowWorkData.historyProcNodeList
   }
 )
 </script>
