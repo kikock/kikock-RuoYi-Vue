@@ -31,6 +31,8 @@
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
         <hutool.version>5.8.21</hutool.version>
+        <minio.version>8.5.11</minio.version>
+        <okhttp.version>4.12.0</okhttp.version>
         <dingtalk>2.0.18</dingtalk>
         <alibaba-dingtalk-service-sdk>2.0.0</alibaba-dingtalk-service-sdk>
         <oauth.version>1.16.5</oauth.version>
@@ -154,11 +156,27 @@
                 <artifactId>kaptcha</artifactId>
                 <version>${kaptcha.version}</version>
             </dependency>
-            <!--hutool工具类 5.8.18 ${hutool.version}-->
+            <!--hutool工具类 5.8.21 ${hutool.version}-->
             <dependency>
                 <groupId>cn.hutool</groupId>
                 <artifactId>hutool-all</artifactId>
                 <version>${hutool.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>okhttp</artifactId>
+                <version>${okhttp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.minio</groupId>
+                <artifactId>minio</artifactId>
+                <version>${minio.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>okhttp</artifactId>
+                        <groupId>com.squareup.okhttp3</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
