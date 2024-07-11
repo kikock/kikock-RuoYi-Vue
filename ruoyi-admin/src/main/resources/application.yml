@@ -125,7 +125,7 @@ swagger:
   # 是否开启 swagger
   enabled: true
   # 请求前缀
-  pathMapping: /doc
+  pathMapping: /
 # 防止XSS攻击
 xss:
   # 过滤开关
@@ -151,7 +151,14 @@ flowable:
   # 关闭历史任务定时任务job
   async-history-executor-activate: false
 
-
+# 对象存储服务配置
+file:
+  # MinIO自搭建对象存储服务
+  minio:
+    endpoint: http://211.149.159.61:8002 #存储服务域名
+    accessKey: 8MmWkyA6GbcE8RcBaqrc
+    secretKey: nHguOnJrMG9Nj7llba7azplqp16Km0wJQC6riuJ2
+    bucket: jx-minio   #存储桶名称
 social:
   enabled: true
   domain: localhost

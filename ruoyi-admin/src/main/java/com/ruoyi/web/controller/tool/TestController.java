@@ -1,9 +1,14 @@
 package com.ruoyi.web.controller.tool;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.web.service.SysLoginService;
 import io.swagger.annotations.*;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -12,16 +17,17 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * swagger 用户测试方法
+ * swagger 常用注解用例
  *
  * @author ruoyi
  */
-@Api(value = "接口测试",tags = "接口测试")
+@Api(value = "swagger测试接口",tags = "swagger常用注解用例")
 @RestController
-@RequestMapping("/test/user")
+@RequestMapping("/test")
 public class TestController extends BaseController{
     private final static Map<Integer,UserEntity> users = new LinkedHashMap<Integer,UserEntity>();
-
+    @Autowired
+    private SysLoginService loginService;
     {
         users.put(1, new UserEntity(1, "admin", "admin123", "15888888888"));
         users.put(2, new UserEntity(2, "ry", "admin123", "15666666666"));
@@ -85,6 +91,12 @@ public class TestController extends BaseController{
         } else {
             return R.fail("用户不存在");
         }
+    }
+    @ApiOperation("获取token")
+    @GetMapping("/token")
+    @Anonymous
+    public AjaxResult getToken(){
+       return  AjaxResult.success(loginService.mockUser("admin", "admin123")) ;
     }
 }
 
