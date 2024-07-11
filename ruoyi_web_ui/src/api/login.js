@@ -58,16 +58,20 @@ export function getCodeImg() {
   })
 }
 // 获取公钥
+
 export function getPublicKey() {
   return request({
-    url: '/getPublicKey',
+    url: '/oauth/getPublicKey',
+    headers: {
+      isToken: false
+    },
     method: 'get',
   })
 }
 // 获取第三方登录数据
 export function getOauthData() {
   return request({
-    url: '/system/socialApp/getOauthData',
+    url: '/oauth/getOauthData',
     headers: {
       isToken: false
     },

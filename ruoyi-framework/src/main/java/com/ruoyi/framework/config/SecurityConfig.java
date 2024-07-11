@@ -160,7 +160,6 @@ public class SecurityConfig{
                 AntPathRequestMatcher.antMatcher("/druid/**"),
                 AntPathRequestMatcher.antMatcher("/oauth/**"),
                 AntPathRequestMatcher.antMatcher("/oauthBack"),
-                AntPathRequestMatcher.antMatcher("/getPublicKey"),
                 AntPathRequestMatcher.antMatcher("/bpm/task/back"),
         };
     }
