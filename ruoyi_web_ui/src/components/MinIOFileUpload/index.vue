@@ -27,8 +27,8 @@
     <!-- 文件列表 -->
     <transition-group class="upload-file-list el-upload-list el-upload-list--text" name="el-fade-in-linear" tag="ul">
       <li :key="file.uid" class="el-upload-list__item ele-upload-list__item-content" v-for="(file, index) in fileList">
-        <el-link :href="`${baseUrl}${file.url}`" :underline="false" target="_blank">
-          <span class="el-icon-document"> {{ getFileName(file.name) }} </span>
+        <el-link :href="`${dowFileUrl}${file.minIOName}`" :underline="false" target="_blank">
+          <span class="el-icon-document"> {{ file.name }} </span>
         </el-link>
         <div class="ele-upload-list__item-content-action">
           <el-link :underline="false" @click="handleDelete(index)" type="danger">删除</el-link>
@@ -51,9 +51,9 @@ const props = defineProps({
   // 大小限制(MB)
   fileSize: {
     type: Number,
-    default: 5,
+    default: 20,
   },
-  // 文件类型, 例如['png', 'jpg', 'jpeg']
+  // 文件类型, 例如['png', 'jpg', 'jpeg'] 默认不进行校验
   fileType: {
     type: Array,
     default: () => [],
@@ -69,8 +69,8 @@ const { proxy } = getCurrentInstance();
 const emit = defineEmits();
 const number = ref(0);
 const uploadList = ref([]);
-const baseUrl = import.meta.env.VITE_APP_BASE_API;
-const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_API + "/common/upload"); // 上传文件服务器地址
+const dowFileUrl = import.meta.env.VITE_APP_BASE_API+"/minio/download/";
+const uploadFileUrl = ref(import.meta.env.VITE_APP_BASE_API + "/minio/upload"); // 上传文件服务器地址
 const headers = ref({ Authorization: "Bearer " + getToken() });
 const fileList = ref([]);
 const showTip = computed(
@@ -85,7 +85,9 @@ watch(() => props.modelValue, val => {
     // 然后将数组转为对象数组
     fileList.value = list.map(item => {
       if (typeof item === "string") {
-        item = { name: item, url: item };
+        console.log("保存的文件内容",item);
+        const str = item.split("@")
+        item = { name: str[1], minIOName: str[0], url: str[0] };
       }
       item.uid = item.uid || new Date().getTime() + temp++;
       return item;
@@ -134,7 +136,7 @@ function handleUploadError(err) {
 // 上传成功回调
 function handleUploadSuccess(res, file) {
   if (res.code === 200) {
-    uploadList.value.push({ name: res.fileName, url: res.fileName });
+    uploadList.value.push({ name: res.originalFilename, minIOName: res.newFileName, url: res.url });
     uploadedSuccessfully();
   } else {
     number.value--;
@@ -150,7 +152,10 @@ function handleDelete(index) {
   fileList.value.splice(index, 1);
   emit("update:modelValue", listToString(fileList.value));
 }
+// 删除文件
+function handleDowload(fileName) {
 
+}
 // 上传结束处理
 function uploadedSuccessfully() {
   if (number.value > 0 && uploadList.value.length === number.value) {
@@ -162,22 +167,16 @@ function uploadedSuccessfully() {
   }
 }
 
-// 获取文件名称
-function getFileName(name) {
-  if (name.lastIndexOf("/") > -1) {
-    return name.slice(name.lastIndexOf("/") + 1);
-  } else {
-    return "";
-  }
-}
 
 // 对象转成指定字符串分隔
 function listToString(list, separator) {
   let strs = "";
   separator = separator || ",";
   for (let i in list) {
-    if (list[i].url) {
-      strs += list[i].url + separator;
+    if (list[i].minIOName) {
+      //保存文件 modelValue值 为  minio服务器生成文件名称+@+上传原文件名称
+      //多文件使用 "," 分隔
+      strs += list[i].minIOName+"@" +list[i].name+ separator;
     }
   }
   return strs != '' ? strs.substr(0, strs.length - 1) : '';

@@ -153,9 +153,10 @@ flowable:
 
 # 对象存储服务配置
 file:
-  # MinIO自搭建对象存储服务
+  # MinIO自搭建对象存储服务 119.6.253.214:8001
   minio:
-    endpoint: http://211.149.159.61:8002 #存储服务域名
+#    endpoint: http://211.149.159.61:8002 #存储服务域名
+    endpoint: http://119.6.253.214:8002 #存储服务域名
     accessKey: 8MmWkyA6GbcE8RcBaqrc
     secretKey: nHguOnJrMG9Nj7llba7azplqp16Km0wJQC6riuJ2
     bucket: jx-minio   #存储桶名称

@@ -142,10 +142,20 @@
                   </el-form-item>
                </el-col>
                <el-col :span="24">
-                  <el-form-item label="内容">
+                  <el-form-item label="内容1">
                     <editor v-model="form.noticeContent" :min-height="192"/>
                   </el-form-item>
                </el-col>
+              <el-col :span="24">
+                <el-form-item label="minio附件" prop="file">
+                 <MinIOFileUpload v-model="form.file"></MinIOFileUpload>
+                </el-form-item>
+              </el-col>
+              <el-col :span="24">
+                <el-form-item label="附件" prop="file2">
+                  <FileUpload v-model="form.file2"></FileUpload>
+                </el-form-item>
+              </el-col>
             </el-row>
          </el-form>
          <template #footer>
@@ -160,6 +170,8 @@
 
 <script setup name="Notice">
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice";
+import FileUpload from '@/components/FileUpload/index.vue'
+import MinIOFileUpload from '@/components/MinIOFileUpload/index.vue'
 
 const { proxy } = getCurrentInstance();
 const { sys_notice_status, sys_notice_type } = proxy.useDict("sys_notice_status", "sys_notice_type");
@@ -212,7 +224,8 @@ function reset() {
     noticeTitle: undefined,
     noticeType: undefined,
     noticeContent: undefined,
-    status: "0"
+    status: "0",
+    file: undefined
   };
   proxy.resetForm("noticeRef");
 }
@@ -250,6 +263,8 @@ function handleUpdate(row) {
 }
 /** 提交按钮 */
 function submitForm() {
+  console.log(form.value);
+  return
   proxy.$refs["noticeRef"].validate(valid => {
     if (valid) {
       if (form.value.noticeId != undefined) {
