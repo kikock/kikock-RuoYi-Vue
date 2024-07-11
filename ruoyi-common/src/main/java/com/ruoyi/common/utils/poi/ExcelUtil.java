@@ -1,5 +1,8 @@
 package com.ruoyi.common.utils.poi;
 
+import cn.hutool.core.collection.CollectionUtil;
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.support.ExcelTypeEnum;
 import com.ruoyi.common.annotation.Excel;
 import com.ruoyi.common.annotation.Excel.ColumnType;
 import com.ruoyi.common.annotation.Excel.Type;
@@ -29,9 +32,10 @@ import org.apache.poi.xssf.usermodel.*;
 import org.openxmlformats.schemas.drawingml.x2006.spreadsheetDrawing.CTMarker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import com.alibaba.excel.EasyExcel;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -1428,28 +1432,80 @@ public class ExcelUtil<T>{
         }
         return method;
     }
+
     /**
      * 对excel表单默认第一个索引名转换成list（EasyExcel）
      *
      * @param is 输入流
      * @return 转换后集合
      */
-    public List<T> importEasyExcel(InputStream is) throws Exception
-    {
+    public List<T> importEasyExcel(InputStream is) throws Exception{
         return EasyExcel.read(is).head(clazz).sheet().doReadSync();
     }
 
     /**
      * 对list数据源将其里面的数据导入到excel表单（EasyExcel）
      *
-     * @param list 导出数据集合
+     * @param list      导出数据集合
      * @param sheetName 工作表的名称
      * @return 结果
      */
-    public AjaxResult exportEasyExcel(List<T> list, String sheetName)
-    {
+    public AjaxResult exportEasyExcel(List<T> list, String sheetName){
         String filename = encodingFilename(sheetName);
         EasyExcel.write(getAbsoluteFile(filename), clazz).sheet(sheetName).doWrite(list);
         return AjaxResult.success(filename);
+    }
+
+    /**
+     * 对list数据源将其里面的数据导入到excel表单（EasyExcel）
+     *
+     * @param list      导出数据集合
+     * @param sheetName 工作表的名称
+     * @return 结果
+     */
+    public void exportEasyExcel(HttpServletResponse response, List<T> list, String sheetName){
+        try {
+            EasyExcel.write(response.getOutputStream(), clazz).sheet(sheetName).doWrite(list);
+        } catch (IOException e) {
+            log.error("导出EasyExcel异常{}", e.getMessage());
+        }
+    }
+
+
+    /**
+     * 测试解析excel文件转换成csv文本
+     */
+    public static String excelToCsv(MultipartFile multipartFile){
+        //返回数据
+        StringBuilder sb = new StringBuilder();
+        try {
+            File file = ResourceUtils.getFile("D:\\kikock_poject\\study\\yp\\bi_poject\\ruoyi-admin\\src\\main\\resources\\test.xlsx");
+//            List<Map<String,String>> list = EasyExcel.read(file)
+            List<Map<String,String>> list = EasyExcel.read(multipartFile.getInputStream())
+                    .excelType(ExcelTypeEnum.XLSX)
+                    .sheet()
+                    .headRowNumber(0)
+                    .doReadSync();
+
+            if (CollectionUtil.isNotEmpty(list)) {
+                //获取解析头
+                LinkedHashMap<String,String> headMap = (LinkedHashMap<String,String>) list.get(0);
+                sb.append(org.apache.commons.lang3.StringUtils.join(headMap.values(), ",")).append("\n");
+                for (int i = 1; i < list.size(); i++) {
+                    LinkedHashMap<String,String> dataMap = (LinkedHashMap<String,String>) list.get(i);
+                    sb.append(org.apache.commons.lang3.StringUtils.join(dataMap.values(), ",")).append("\n");
+                }
+            }
+        } catch (IOException e) {
+            log.error("解析Excel数据异常{}", e.getMessage());
+            return "";
+        }
+        return sb.toString();
+    }
+
+
+    public static void main(String[] args) throws FileNotFoundException{
+        String s = ExcelUtil.excelToCsv(null);
+        System.out.println(s);
     }
 }

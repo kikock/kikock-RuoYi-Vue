@@ -19,6 +19,7 @@ import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -29,7 +30,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.crypto.BadPaddingException;
 
 /**
@@ -55,6 +55,7 @@ public class SysLoginService{
     private ISysConfigService configService;
     @Autowired
     private SysPermissionService permissionService;
+
     /**
      * 登录验证
      *
@@ -234,6 +235,6 @@ public class SysLoginService{
         // 生成token
         String token = tokenService.createToken(loginUser);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return AjaxResult.success().put("token",token);
+        return AjaxResult.success().put("token", token);
     }
 }

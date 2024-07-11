@@ -4,18 +4,20 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
-import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.minio.MinioConfig;
 import com.ruoyi.framework.minio.MinioUtils;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.util.List;
 
@@ -27,7 +29,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/minio")
-@Api(value = "MinIO储存库接口",tags = "MinIO储存库接口")
+@Tag(name = "MinIO储存库接口")
 public class MinioFileController{
 
     @Autowired
@@ -37,7 +39,7 @@ public class MinioFileController{
     MinioConfig minioConfig;
     //列表
     @GetMapping("/list")
-    @ApiOperation("获取MinIO储存库附件列表")
+    @Operation(summary = "获取MinIO储存库附件列表")
     public AjaxResult list(){
         List<String> strings = minioService.listObjects();
         return AjaxResult.success(strings);
@@ -45,7 +47,10 @@ public class MinioFileController{
 
     //删除
     @PutMapping("/delete")
-    @ApiOperation("删除MinIO储存库附件")
+    @Operation(summary = "删除MinIO储存库附件")
+    @Parameters({
+            @Parameter(name = "filename", description = "文件名称", required = true, in = ParameterIn.QUERY)
+    })
     public AjaxResult delete(@RequestParam String filename){
         minioService.deleteObject(filename);
         return AjaxResult.success(true);
@@ -53,7 +58,10 @@ public class MinioFileController{
 
     //上传文件
     @PostMapping("/upload")
-    @ApiOperation("上传附件到MinIO储存库")
+    @Operation(summary = "上传附件到MinIO储存库")
+    @Parameters({
+            @Parameter(name = "file", description = "文件", required = true, in = ParameterIn.QUERY)
+    })
     public AjaxResult upload(@RequestParam("file") MultipartFile file){
         try {
             //http://119.6.253.214:8002/jx-minio/1720662975260.jpg
@@ -78,7 +86,10 @@ public class MinioFileController{
 
     //下载minio服务的文件
     @GetMapping("/download/{filename}")
-    @ApiOperation("下载MinIO储存库附件")
+    @Operation(summary = "下载MinIO储存库附件")
+    @Parameters({
+            @Parameter(name = "filename", description = "文件名称", required = true, in = ParameterIn.QUERY)
+    })
     public void download(@PathVariable("filename") String filename, HttpServletResponse response){
         try {
             InputStream fileInputStream = minioService.getObject(filename);
@@ -95,7 +106,7 @@ public class MinioFileController{
 
     //获取minio文件的下载地址
     @GetMapping("/getHttpUrl")
-    @ApiOperation("获取MinIO储存库附件地址")
+    @Operation(summary = "获取MinIO储存库附件地址")
     public AjaxResult getHttpUrl(@RequestParam String filename){
         try {
             String url = minioService.getObjectUrl(filename);

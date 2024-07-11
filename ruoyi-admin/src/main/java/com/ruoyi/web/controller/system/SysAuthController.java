@@ -1,8 +1,10 @@
 package com.ruoyi.web.controller.system;
 
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.domain.entity.SysUser;
+import com.ruoyi.common.utils.RSAUtil;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.framework.social.SocialUtil;
 import com.ruoyi.framework.social.properties.SocialProperties;
@@ -12,8 +14,13 @@ import com.ruoyi.system.domain.SysSocialUserBind;
 import com.ruoyi.system.domain.vo.AuthCallbackVo;
 import com.ruoyi.system.service.ISysSocialAppService;
 import com.ruoyi.system.service.ISysSocialUserBindService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.zhyd.oauth.model.AuthResponse;
@@ -21,13 +28,7 @@ import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 第三方认证授权处理
@@ -37,11 +38,10 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 @RestController
 @AllArgsConstructor
-@ConditionalOnProperty(value = "social.enabled", havingValue = "true")
-@Api(value = "第三方登陆", tags = "第三方登陆端点")
+@Tag(name = "认证授权接口")
+@RequestMapping("/oauth")
 public class SysAuthController extends BaseController{
     private final SocialProperties socialProperties;
-
     @Autowired
     private ISysSocialUserBindService socialUserBindService;
 
@@ -56,8 +56,12 @@ public class SysAuthController extends BaseController{
     /**
      * 授权完毕跳转
      */
-    @ApiOperation(value = "授权登录（RequestMapping）")
-    @RequestMapping("/oauth/render/{source}")
+    @Operation(summary = "第三方登陆授权用户登录")
+    @Parameters({
+            @Parameter(name = "source", description = "授权系统标识", required = true, in = ParameterIn.QUERY)
+    })
+    @GetMapping("/render/{source}")
+    @Anonymous
     public AjaxResult renderAuth(@PathVariable("source") String source, HttpServletResponse response){
         AjaxResult ajax = AjaxResult.success();
         AuthRequest authRequest = SocialUtil.getAuthRequest(source, socialProperties);
@@ -72,8 +76,9 @@ public class SysAuthController extends BaseController{
     /**
      * 获取认证信息
      */
-    @ApiOperation(value = "获取认证信息（RequestMapping）")
-    @RequestMapping("/oauth/callback/{source}")
+    @PostMapping("/callback/{source}")
+    @Operation(hidden = true)
+    @Anonymous
     public AjaxResult login(@PathVariable("source") String source, @RequestBody AuthCallbackVo callbackVo){
         AuthRequest authRequest = SocialUtil.getAuthRequest(source, socialProperties);
         AuthResponse<AuthUser> response = authRequest.login(callbackVo.getAuthCallback());
@@ -107,9 +112,50 @@ public class SysAuthController extends BaseController{
     /**
      * 撤销授权
      */
-    @RequestMapping("/oauth/unbind/{authId}")
+    /**
+     * 获取认证信息
+     */
+    @Operation(summary = "撤销用户认证授权")
+    @Parameters({
+            @Parameter(name = "authId", description = "三方唯一uuid", required = true, in = ParameterIn.QUERY)
+    })
+    @GetMapping("/unbind/{authId}")
     public AjaxResult unbindAuthUser(@PathVariable("authId") String authId){
         return socialUserBindService.deleteAuthUser(authId);
+    }
+
+    /**
+     * 开发获取模拟认证信息,获取Authorization
+     */
+    @Operation(summary = "开发获取模拟认证信息,获取Authorization")
+    @GetMapping("/getToken")
+    @Anonymous
+    public AjaxResult getToken(){
+        //模拟用户 获取token
+        String token = loginService.mockUser("admin", "admin123");
+        return AjaxResult.success(String.format("Authorization: %s", token));
+    }
+
+    /**
+     * 获取公钥：前端用来密码加密
+     *
+     * @return 公钥信息
+     */
+    @GetMapping("/getPublicKey")
+    @Anonymous
+    @Hidden
+    public RSAUtil.MyRSAPublicKey getPublicKey(){
+        return RSAUtil.generatePublicKey();
+    }
+
+    /**
+     * 获取社交应用参数详细信息
+     */
+    @GetMapping(value = "/getOauthData")
+    @Anonymous
+    @Hidden
+    public AjaxResult getOauthData(){
+        return success(sysSocialAppService.getInitSysSocialAppList());
     }
 
 }

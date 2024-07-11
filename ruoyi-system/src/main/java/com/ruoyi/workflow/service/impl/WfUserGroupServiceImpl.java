@@ -7,10 +7,11 @@ import com.ruoyi.common.utils.DateUtils;
 import com.ruoyi.workflow.domain.WfUserGroup;
 import com.ruoyi.workflow.mapper.WfUserGroupMapper;
 import com.ruoyi.workflow.service.IWfUserGroupService;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Resource;
+
 import java.util.Arrays;
 import java.util.List;
 

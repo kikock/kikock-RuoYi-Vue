@@ -4,7 +4,6 @@ import com.github.pagehelper.PageHelper;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
-import com.ruoyi.common.core.domain.MoreSelect;
 import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysRole;
 import com.ruoyi.common.core.domain.entity.SysUser;
@@ -16,11 +15,11 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.service.ISysDeptService;
 import com.ruoyi.system.service.ISysPostService;
 import com.ruoyi.system.service.ISysRoleService;
 import com.ruoyi.system.service.ISysUserService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +27,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,6 +61,7 @@ public class SysUserController extends BaseController{
         List<SysUser> list = userService.selectUserList(user);
         return getDataTable(list);
     }
+
     @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/listUserSimple")
     public TableDataInfo listSimple(){
@@ -229,6 +228,7 @@ public class SysUserController extends BaseController{
     public AjaxResult deptTree(SysDept dept){
         return success(deptService.selectDeptTreeList(dept));
     }
+
     /**
      * 分页获取组件下拉数据
      */

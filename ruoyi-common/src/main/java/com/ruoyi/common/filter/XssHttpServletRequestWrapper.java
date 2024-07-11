@@ -2,14 +2,14 @@ package com.ruoyi.common.filter;
 
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.html.EscapeUtil;
+import jakarta.servlet.ReadListener;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.apache.commons.io.IOUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
@@ -88,7 +88,6 @@ public class XssHttpServletRequestWrapper extends HttpServletRequestWrapper{
     /**
      * 是否是Json请求
      *
-     * @param request
      */
     public boolean isJsonRequest(){
         String header = super.getHeader(HttpHeaders.CONTENT_TYPE);

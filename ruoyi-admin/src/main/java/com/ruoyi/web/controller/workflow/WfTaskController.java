@@ -5,12 +5,13 @@ import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.service.IWfTaskService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
+
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;

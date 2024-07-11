@@ -1,6 +1,8 @@
 package com.ruoyi.framework.config.properties;
 
+import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.common.annotation.Anonymous;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RegExUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
@@ -21,6 +23,7 @@ import java.util.regex.Pattern;
  * @author ruoyi
  */
 @Configuration
+@Slf4j
 public class PermitAllUrlProperties implements InitializingBean, ApplicationContextAware{
     private static final Pattern PATTERN = Pattern.compile("\\{(.*?)\\}");
 
@@ -40,15 +43,20 @@ public class PermitAllUrlProperties implements InitializingBean, ApplicationCont
 
             // 获取方法上边的注解 替代path variable 为 *
             Anonymous method = AnnotationUtils.findAnnotation(handlerMethod.getMethod(), Anonymous.class);
-            Optional.ofNullable(method).ifPresent(anonymous -> Objects.requireNonNull(info.getPatternsCondition().getPatterns())
+            if(ObjectUtil.isNotEmpty(method))
+                log.info(String.format("方法忽略权限注解:[%s]", handlerMethod.getMethod().getName()));
+            Optional.ofNullable(method).ifPresent(anonymous -> Objects.requireNonNull(info.getPathPatternsCondition().getPatternValues()) //
                     .forEach(url -> urls.add(RegExUtils.replaceAll(url, PATTERN, ASTERISK))));
 
             // 获取类上边的注解, 替代path variable 为 *
             Anonymous controller = AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), Anonymous.class);
-            Optional.ofNullable(controller).ifPresent(anonymous -> Objects.requireNonNull(info.getPatternsCondition().getPatterns())
+            if(ObjectUtil.isNotEmpty(controller))
+                log.info(String.format("类忽略权限注解:[%s]", handlerMethod.getBeanType().getName()));
+            Optional.ofNullable(controller).ifPresent(anonymous -> Objects.requireNonNull(info.getPathPatternsCondition().getPatternValues())
                     .forEach(url -> urls.add(RegExUtils.replaceAll(url, PATTERN, ASTERISK))));
         });
     }
+
 
     @Override
     public void setApplicationContext(ApplicationContext context) throws BeansException{

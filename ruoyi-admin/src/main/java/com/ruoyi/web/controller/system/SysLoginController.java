@@ -83,15 +83,4 @@ public class SysLoginController{
         List<SysMenu> menus = menuService.selectMenuTreeByUserId(userId);
         return AjaxResult.success(menuService.buildMenus(menus));
     }
-
-    /**
-     * 获取公钥：前端用来密码加密
-     *
-     * @return 公钥信息
-     */
-    @GetMapping("/getPublicKey")
-    public RSAUtil.MyRSAPublicKey getPublicKey(){
-        return RSAUtil.generatePublicKey();
-    }
-
 }

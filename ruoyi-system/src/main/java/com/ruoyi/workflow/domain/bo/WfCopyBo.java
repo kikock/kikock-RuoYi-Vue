@@ -6,8 +6,8 @@ import com.ruoyi.common.core.validate.EditGroup;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * 流程抄送业务对象 wf_copy
