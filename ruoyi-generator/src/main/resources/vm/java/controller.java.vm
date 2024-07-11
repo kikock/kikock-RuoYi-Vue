@@ -1,7 +1,7 @@
 package ${packageName}.controller;
 
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +32,6 @@ import com.ruoyi.common.core.page.TableDataInfo;
 */
 @RestController
 @RequestMapping("/${moduleName}/${businessName}")
-@Api(value = "${functionName}接口", tags = "${functionName}接口")
 public class ${ClassName}Controller extends BaseController
 {
 @Autowired
@@ -43,7 +42,6 @@ private I${ClassName}Service ${className}Service;
 */
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:list')")
 @GetMapping("/list")
-@ApiOperation(value = "查询${functionName}列表")
 #if($table.crud || $table.sub)
 public TableDataInfo list(${ClassName} ${className})
 {
@@ -65,7 +63,6 @@ return success(list);
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:export')")
 @Log(title = "${functionName}", businessType = BusinessType.EXPORT)
 @PostMapping("/export")
-@ApiOperation(value = "导出${functionName}列表")
 public void export(HttpServletResponse response, ${ClassName} ${className})
 {
 List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
@@ -78,7 +75,6 @@ util.exportExcel(response, list, "${functionName}数据");
 */
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:query')")
 @GetMapping(value = "/{${pkColumn.javaField}}")
-@ApiOperation(value = "获取${functionName}详细信息")
 public AjaxResult getInfo(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField})
 {
 return success(${className}Service.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField}));
@@ -90,7 +86,6 @@ return success(${className}Service.select${ClassName}By${pkColumn.capJavaField}(
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:add')")
 @Log(title = "${functionName}", businessType = BusinessType.INSERT)
 @PostMapping
-@ApiOperation(value = "新增${functionName}")
 public AjaxResult add(@RequestBody ${ClassName} ${className})
 {
 return toAjax(${className}Service.insert${ClassName}(${className}));
@@ -102,7 +97,6 @@ return toAjax(${className}Service.insert${ClassName}(${className}));
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:edit')")
 @Log(title = "${functionName}", businessType = BusinessType.UPDATE)
 @PutMapping
-@ApiOperation(value = "修改${functionName}")
 public AjaxResult edit(@RequestBody ${ClassName} ${className})
 {
 return toAjax(${className}Service.update${ClassName}(${className}));
@@ -114,7 +108,6 @@ return toAjax(${className}Service.update${ClassName}(${className}));
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:remove')")
 @Log(title = "${functionName}", businessType = BusinessType.DELETE)
 @DeleteMapping("/{${pkColumn.javaField}s}")
-@ApiOperation(value = "删除${functionName}")
 public AjaxResult remove(@PathVariable ${pkColumn.javaType}[] ${pkColumn.javaField}s)
 {
 return toAjax(${className}Service.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s));

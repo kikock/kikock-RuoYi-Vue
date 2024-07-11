@@ -38,8 +38,9 @@
         <oauth.version>1.16.5</oauth.version>
         <guava.version>32.0.1-jre</guava.version>
         <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
-        <!-- Bpm 工作流相关 -->
-        <flowable.version>6.8.0</flowable.version>
+        <!-- Bpm 工作流相关  springBoor3 需要7.0以上-->
+        <flowable.version>7.0.0</flowable.version>
+<!--        <flowable.version>6.8.0</flowable.version>-->
         <!-- 新增mybatis包 -->
         <mybatis-spring-boot.version>3.0.2</mybatis-spring-boot.version>
         <!-- 新增 XML 数据处理 -->

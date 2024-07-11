@@ -9,6 +9,7 @@ import com.ruoyi.flowable.utils.ProcessUtils;
 import com.ruoyi.workflow.domain.vo.WfDeployVo;
 import com.ruoyi.workflow.mapper.WfDeployFormMapper;
 import com.ruoyi.workflow.service.IWfDeployService;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.flowable.common.engine.impl.db.SuspensionState;
 import org.flowable.engine.RepositoryService;

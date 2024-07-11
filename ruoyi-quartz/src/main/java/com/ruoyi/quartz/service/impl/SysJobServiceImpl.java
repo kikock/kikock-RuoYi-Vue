@@ -8,6 +8,7 @@ import com.ruoyi.quartz.service.ISysJobService;
 import com.ruoyi.quartz.util.CronUtils;
 import com.ruoyi.quartz.util.ScheduleUtils;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
@@ -28,7 +29,7 @@ public class SysJobServiceImpl implements ISysJobService{
     @Autowired
     private Scheduler scheduler;
 
-    @Autowired
+    @Resource
     private SysJobMapper jobMapper;
 
     /**

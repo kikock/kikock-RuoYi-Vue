@@ -4,10 +4,10 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ObjectUtil;
 import com.ruoyi.flowable.common.constant.ProcessConstants;
 import com.ruoyi.flowable.common.enums.ProcessStatus;
+import jakarta.annotation.Resource;
 import org.flowable.common.engine.api.delegate.event.FlowableEngineEntityEvent;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.delegate.event.AbstractFlowableEngineEventListener;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GlobalEventListener extends AbstractFlowableEngineEventListener {
 
-    @Autowired
+    @Resource
     private RuntimeService runtimeService;
 
     /**

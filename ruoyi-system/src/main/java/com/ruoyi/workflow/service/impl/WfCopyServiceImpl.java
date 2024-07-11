@@ -9,6 +9,7 @@ import com.ruoyi.workflow.domain.WfCopy;
 import com.ruoyi.workflow.domain.bo.WfTaskBo;
 import com.ruoyi.workflow.mapper.WfCopyMapper;
 import com.ruoyi.workflow.service.IWfCopyService;
+import jakarta.annotation.Resource;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ import java.util.List;
 public class WfCopyServiceImpl implements IWfCopyService{
     @Autowired
     private WfCopyMapper wfCopyMapper;
-    @Autowired
+    @Resource
     private  HistoryService historyService;
 
 

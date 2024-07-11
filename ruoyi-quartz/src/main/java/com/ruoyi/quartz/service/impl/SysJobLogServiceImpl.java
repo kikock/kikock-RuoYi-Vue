@@ -3,6 +3,7 @@ package com.ruoyi.quartz.service.impl;
 import com.ruoyi.quartz.domain.SysJobLog;
 import com.ruoyi.quartz.mapper.SysJobLogMapper;
 import com.ruoyi.quartz.service.ISysJobLogService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +16,7 @@ import java.util.List;
  */
 @Service
 public class SysJobLogServiceImpl implements ISysJobLogService{
-    @Autowired
+    @Resource
     private SysJobLogMapper jobLogMapper;
 
     /**
