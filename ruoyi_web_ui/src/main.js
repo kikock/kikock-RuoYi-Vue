@@ -34,6 +34,10 @@ import RightToolbar from '@/components/RightToolbar'
 import Editor from "@/components/Editor"
 // 文件上传组件
 import FileUpload from "@/components/FileUpload"
+// 上传文件组件
+import MinIOFileUpload from "@/components/MinIOFileUpload"
+// 上传图片组件
+import MinIOUpload from "@/components/MinIOUpload"
 // 图片上传组件
 import ImageUpload from "@/components/ImageUpload"
 // 图片预览组件
@@ -73,6 +77,8 @@ app.component('Pagination', Pagination)
 app.component('SelectMore', SelectMore)
 app.component('TreeSelect', TreeSelect)
 app.component('FileUpload', FileUpload)
+app.component('MinIOFileUpload', MinIOFileUpload)
+app.component('MinIOUpload', MinIOUpload)
 app.component('ImageUpload', ImageUpload)
 app.component('ImagePreview', ImagePreview)
 app.component('RightToolbar', RightToolbar)

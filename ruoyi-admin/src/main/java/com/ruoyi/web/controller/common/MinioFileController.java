@@ -3,6 +3,9 @@ package com.ruoyi.web.controller.common;
 import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.file.FileUtils;
+import com.ruoyi.framework.minio.MinioConfig;
 import com.ruoyi.framework.minio.MinioUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +33,8 @@ public class MinioFileController{
     @Autowired
     MinioUtils minioService;
 
+    @Autowired
+    MinioConfig minioConfig;
     //列表
     @GetMapping("/list")
     @ApiOperation("获取MinIO储存库附件列表")
@@ -51,23 +56,30 @@ public class MinioFileController{
     @ApiOperation("上传附件到MinIO储存库")
     public AjaxResult upload(@RequestParam("file") MultipartFile file){
         try {
-            // todo 完善文件命名逻辑
+            //http://119.6.253.214:8002/jx-minio/1720662975260.jpg
+            StringBuilder sb =new StringBuilder();
+            sb.append(minioConfig.getEndpoint()).append("/").append(minioConfig.getBucketName()).append("/");
             InputStream is = file.getInputStream(); //得到文件流
-            String fileName = file.getOriginalFilename(); //文件名
-            String newFileName = System.currentTimeMillis() + "." + StringUtils.substringAfterLast(fileName, ".");
-            // todo 完善类型校验逻辑
-            String contentType = file.getContentType();  //类型
+            String originalFilename = file.getOriginalFilename(); //文件名
+            String newFileName = DateUtils.dateTime()+System.currentTimeMillis() + "." + StringUtils.substringAfterLast(originalFilename, ".");
+            String contentType = file.getContentType();  //文件类型
+            sb.append(newFileName);
             minioService.uploadObject(is, newFileName, contentType);
-            return AjaxResult.success(newFileName);
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("url", sb.toString());
+            ajax.put("fileName", sb.toString());
+            ajax.put("newFileName", newFileName); //minio服务器文件名称
+            ajax.put("originalFilename", originalFilename); //上传文件名称
+            return ajax;
         } catch (Exception e) {
             throw new ServiceException("上传失败",HttpStatus.ERROR);
         }
     }
 
     //下载minio服务的文件
-    @GetMapping("/download")
+    @GetMapping("/download/{filename}")
     @ApiOperation("下载MinIO储存库附件")
-    public void download(@RequestParam String filename, HttpServletResponse response){
+    public void download(@PathVariable("filename") String filename, HttpServletResponse response){
         try {
             InputStream fileInputStream = minioService.getObject(filename);
             // todo 完善文件命名逻辑
