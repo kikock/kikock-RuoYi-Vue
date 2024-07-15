@@ -7,13 +7,13 @@ spring:
       # 主库数据源
       master:
         #                #本地数据库
-       url: jdbc:mysql://localhost:3306/ry_flowable_vue?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8&useSSL=true&allowMultiQueries=true&autoReconnect=true
-       username: root
-       password: 111111
+#       url: jdbc:mysql://localhost:3306/ry_flowable_vue7?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8&useSSL=true&allowMultiQueries=true&autoReconnect=true
+#       username: root
+#       password: 111111
         #测试数据库
-#        url: jdbc:mysql://211.149.159.61:3306/ry_flowable_vue?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8&useSSL=true&allowMultiQueries=true&autoReconnect=true
-#        username: root
-#        password: QsMLvnhR80Ger1yK
+        url: jdbc:mysql://localhost:3306/ry_flowable_vue6?nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf8&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2b8&useSSL=true&allowMultiQueries=true&autoReconnect=true
+        username: root
+        password: 111111
 
       # 从库数据源
       slave:
