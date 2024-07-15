@@ -67,4 +67,6 @@ public interface IWfUserGroupService{
 
     public List<String> getGroupIds(String userId);
 
+    public List<String> getUserIdsByGroupId(String groupId);
+
 }

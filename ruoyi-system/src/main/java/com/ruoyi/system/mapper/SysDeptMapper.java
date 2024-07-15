@@ -119,5 +119,7 @@ public interface SysDeptMapper{
 
     public List<SysDept> selectBatchIds(List<Long> ids);
 
-    List<SelectMoreVo> getSimpleList(String keywords);
+    public List<SelectMoreVo> getSimpleList(String keywords);
+
+    public List<String> getUserIdsByDeptId(String deptId);
 }

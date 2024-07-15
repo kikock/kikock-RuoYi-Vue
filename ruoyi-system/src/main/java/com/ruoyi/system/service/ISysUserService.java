@@ -4,6 +4,7 @@ import com.ruoyi.common.core.domain.entity.SysDept;
 import com.ruoyi.common.core.domain.entity.SysUser;
 import com.ruoyi.common.core.domain.vo.SelectMoreVo;
 import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

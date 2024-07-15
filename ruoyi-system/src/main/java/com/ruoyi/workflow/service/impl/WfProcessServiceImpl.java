@@ -1025,11 +1025,6 @@ public class WfProcessServiceImpl extends FlowServiceFactory implements IWfProce
                 StringBuilder stringBuilder = new StringBuilder();
                 for (HistoricIdentityLink identityLink : linksForTask) {
                     if ("candidate".equals(identityLink.getType())) {
-//                        if (StringUtils.isNotBlank(identityLink.getUserId())) {
-//                            Long userId = Long.parseLong(identityLink.getUserId());
-//                            SysUserSimpleVo sysUserSimpleVo = userService.findSimpleUserById(userId);
-//                            stringBuilder.append(sysUserSimpleVo.getName()).append(",");
-//                        }
                         if (StringUtils.isNotBlank(identityLink.getGroupId())) {
                             if (identityLink.getGroupId().startsWith(TaskConstants.ROLES_GROUP_PREFIX)) {
                                 elementVo.setCandidateType(TaskConstants.ROLES_GROUP_PREFIX);

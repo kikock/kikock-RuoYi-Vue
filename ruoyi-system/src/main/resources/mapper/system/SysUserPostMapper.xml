@@ -29,4 +29,9 @@
             (#{item.userId},#{item.postId})
         </foreach>
     </insert>
+
+    <select id="getUserIdsByPostId"  resultType="string">
+        SELECT user_id   FROM `sys_user_post` WHERE `post_id` = #{postId}
+    </select>
+
 </mapper>

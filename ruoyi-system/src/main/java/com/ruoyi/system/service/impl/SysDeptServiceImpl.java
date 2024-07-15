@@ -302,6 +302,11 @@ public class SysDeptServiceImpl implements ISysDeptService{
         return deptMapper.getSimpleList(keywords);
     }
 
+    @Override
+    public List<String> getUserIdsByDeptId(String deptId){
+        return deptMapper.getUserIdsByDeptId(deptId);
+    }
+
 
     /**
      * 递归列表

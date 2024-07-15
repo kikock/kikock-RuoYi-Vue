@@ -417,4 +417,11 @@ public class SysRoleServiceImpl implements ISysRoleService{
     public Set<Long> selectUsersBatchIds(Set<Long> ids){
         return roleMapper.selectUsersBatchIds(ids);
     }
+
+    @Override
+    public List<String> getUserIdsByRoleId(String roleId){
+        return userRoleMapper.getUserIdsByRoleId(roleId);
+    }
+
+
 }

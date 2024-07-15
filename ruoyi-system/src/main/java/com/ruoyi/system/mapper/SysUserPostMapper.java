@@ -1,6 +1,7 @@
 package com.ruoyi.system.mapper;
 
 import com.ruoyi.system.domain.SysUserPost;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -41,4 +42,13 @@ public interface SysUserPostMapper{
      * @return 结果
      */
     public int batchUserPost(List<SysUserPost> userPostList);
+
+
+    /**
+     * 获取岗位对应所有用户id
+     *
+     * @param postId 岗位id
+     * @return 结果
+     */
+    public  List<String> getUserIdsByPostId(@Param("postId") String postId);
 }

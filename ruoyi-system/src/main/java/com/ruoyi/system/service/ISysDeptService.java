@@ -131,4 +131,7 @@ public interface ISysDeptService{
      * 分页获取组件下拉数据
      */
     public List<SelectMoreVo> getSimpleList(String keywords);
+
+    public  List<String> getUserIdsByDeptId(String deptId);
+
 }
