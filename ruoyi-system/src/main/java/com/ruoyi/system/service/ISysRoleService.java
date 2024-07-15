@@ -6,6 +6,7 @@ import com.ruoyi.common.core.domain.vo.SysUserSimpleVo;
 import com.ruoyi.system.domain.SysPost;
 import com.ruoyi.system.domain.SysUserRole;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -182,4 +183,7 @@ public interface ISysRoleService{
 
 
     public Set<Long> selectUsersBatchIds(Set<Long> ids);
+
+
+   public List<String> getUserIdsByRoleId(String roleId);
 }

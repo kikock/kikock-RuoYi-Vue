@@ -128,4 +128,8 @@ public class WfUserGroupServiceImpl implements IWfUserGroupService{
         return wfUserGroupMapper.getGroupIds(userId);
     }
 
+    @Override
+    public List<String> getUserIdsByGroupId(String groupId){
+        return wfUserGroupMapper.getUserIdsByGroupId(groupId);
+    }
 }

@@ -74,5 +74,5 @@ public interface WfUserGroupMapper{
 
     public  List<String> getGroupIds(@Param("userId") String userId);
 
-
+    public List<String> getUserIdsByGroupId(String groupId);
 }

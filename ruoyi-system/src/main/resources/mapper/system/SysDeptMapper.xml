@@ -258,4 +258,8 @@
             </if>
         </where>
     </select>
+
+    <select id="getUserIdsByDeptId"  resultType="string">
+        SELECT user_id   FROM `sys_user` WHERE `dept_id` = #{deptId}
+    </select>
 </mapper>

@@ -195,4 +195,9 @@ public class SysPostServiceImpl implements ISysPostService{
         });
     }
 
+    @Override
+    public List<String> getUserIdsByPostId(String postId){
+        return userPostMapper.getUserIdsByPostId(postId);
+    }
+
 }

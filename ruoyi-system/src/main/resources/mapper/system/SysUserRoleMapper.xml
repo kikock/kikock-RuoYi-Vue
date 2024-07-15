@@ -40,4 +40,7 @@
             #{userId}
         </foreach>
     </delete>
+    <select id="getUserIdsByRoleId"  resultType="string">
+        SELECT user_id   FROM `sys_user_role` WHERE `role_id` = #{roleId}
+    </select>
 </mapper>
