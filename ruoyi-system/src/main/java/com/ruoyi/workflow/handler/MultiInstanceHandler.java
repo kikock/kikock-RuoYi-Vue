@@ -64,10 +64,13 @@ public class MultiInstanceHandler{
                 if ("ROLES".equals(dataType)) {
                     // 通过角色id，获取所有用户id集合
 
-
+                    List<String> roles = userTask.getCandidateGroups();
+                    System.out.println(roles);
 
                 } else if ("DEPTS".equals(dataType)) {
                     // 通过部门id，获取所有用户id集合
+                    List<String> depts = userTask.getCandidateGroups();
+                    System.out.println(depts);
 //                    LambdaQueryWrapper<SysUser> lqw = Wrappers.lambdaQuery(SysUser.class).select(SysUser::getUserId).in(SysUser::getDeptId, groups);
 //                    userIds = SimpleQuery.list(lqw, SysUser::getUserId);
                 }
@@ -105,11 +108,15 @@ public class MultiInstanceHandler{
 
                 if ("ROLES".equals(dataType)) {
                     // 通过角色id，获取所有用户id集合
-
+                    List<String> roles = userTask.getCandidateGroups();
+                    System.out.println(roles);
 
 
                 } else if ("DEPTS".equals(dataType)) {
                     // 通过部门id，获取所有用户id集合
+                    List<String> depts = userTask.getCandidateGroups();
+                    System.out.println(depts);
+
 //                    LambdaQueryWrapper<SysUser> lqw = Wrappers.lambdaQuery(SysUser.class).select(SysUser::getUserId).in(SysUser::getDeptId, groups);
 //                    userIds = SimpleQuery.list(lqw, SysUser::getUserId);
                 }

@@ -2,6 +2,9 @@
 <h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi v3.8.8</h1>
 <h4 align="center">基于SpringBoot+Vue前后端分离的Java快速开发框架</h4>
 <h4 align="center">基于RuoYi v3.8.8版本修改</h4>
+
+* 原版请移步（[RuoYi-Vue](https://gitee.com/y_project/RuoYi-Vue)
+
 ## 平台简介
 
 若依是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
