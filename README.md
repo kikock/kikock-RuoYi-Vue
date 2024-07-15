@@ -1,7 +1,7 @@
 
-<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi v3.8.6</h1>
+<h1 align="center" style="margin: 30px 0 30px; font-weight: bold;">RuoYi v3.8.8</h1>
 <h4 align="center">基于SpringBoot+Vue前后端分离的Java快速开发框架</h4>
-<h4 align="center">基于RuoYi v3.8.6版本修改</h4>
+<h4 align="center">基于RuoYi v3.8.8版本修改</h4>
 ## 平台简介
 
 若依是一套全部开源的快速开发平台，毫无保留给个人及企业免费使用。
@@ -12,7 +12,7 @@
 * 支持加载动态权限菜单，多方式轻松权限控制。
 * 高效率开发，使用代码生成器可以一键生成前后端代码。
 * 提供了技术栈（[Vue3](https://v3.cn.vuejs.org) [Element Plus](https://element-plus.org/zh-CN) [Vite](https://cn.vitejs.dev)）版本[RuoYi-Vue3]并使用setup语法。
-
+* 使用flowable工作流 v7.0.0
 
 ### 项目目录说明
 
@@ -53,4 +53,9 @@
 ## 新增业务/功能
 1. 第三方登录: 用户新增第三方社交账号登录功能
 2. 前端密码加密功能
+3. 使用flowable工作流7.0.0版本
+4. spring Boot版本更新到3.1.5
+5. 新增minio文件存储服务
+6. echarts可视化图表
+7. 
 
