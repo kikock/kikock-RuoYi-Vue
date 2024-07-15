@@ -89,14 +89,4 @@ public class SysSocialAppController extends BaseController{
     public AjaxResult remove(@PathVariable Long[] ids){
         return toAjax(sysSocialAppService.deleteSysSocialAppByIds(ids));
     }
-
-    /**
-     * 获取社交应用参数详细信息
-     */
-    @GetMapping(value = "/getOauthData")
-    @Anonymous
-    public AjaxResult getOauthData(){
-        return success(sysSocialAppService.getInitSysSocialAppList());
-    }
-
 }
