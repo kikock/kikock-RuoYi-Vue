@@ -177,16 +177,25 @@ springdoc:
     operations-sorter: alpha
   api-docs:
     path: /v3/api-docs
-  #  group-configs:
-  #    - group: '授权接口'
-  #      paths-to-match: '/oauth/**'
-  #      packages-to-scan: com.ruoyi.web.controller.system
-  #    - group: 'xxx接口'
-  #      paths-to-match: '/xxx/**'
-  #      packages-to-scan: com.ruoyi.web.controller.biword
-  #    - group: '登录注册接口'
-  #      paths-to-match: '/**'
-  #      packages-to-scan: com.ruoyi.web.controller.system
+
+  group-configs:
+    #分组名
+    - group: '授权接口'
+      #按路径匹配
+      pathsToMatch: '/oauth/**'
+      #分组名
+    - group: '系统接口'
+      #按包路径匹配
+      packagesToScan: com.ruoyi.web.controller.system
+    - group: '任务中心'
+      #按包路径匹配
+      packagesToScan: com.ruoyi.quartz.controller
+    - group: '系统监控'
+      #按包路径匹配
+      packagesToScan: com.ruoyi.web.controller.monitor
+    - group: '工作流'
+      #按包路径匹配
+      packagesToScan: com.ruoyi.web.controller.workflow
   default-flat-param-object: true
 # knife4j的增强配置，不需要增强可以不配
 knife4j:

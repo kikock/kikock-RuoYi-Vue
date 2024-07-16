@@ -17,6 +17,9 @@ import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.domain.vo.SocialUserVo;
 import com.ruoyi.system.service.ISysSocialUserBindService;
 import com.ruoyi.system.service.ISysUserService;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/system/user/profile")
+@Tag(name = "个人信息")
 public class SysProfileController extends BaseController{
     @Autowired
     private ISysUserService userService;
@@ -42,6 +46,7 @@ public class SysProfileController extends BaseController{
      * 个人信息
      */
     @GetMapping
+    @Operation(summary = "个人信息查询")
     public AjaxResult profile(){
         LoginUser loginUser = getLoginUser();
         SysUser user = loginUser.getUser();
@@ -59,6 +64,7 @@ public class SysProfileController extends BaseController{
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "个人信息修改")
     public AjaxResult updateProfile(@RequestBody SysUser user){
         LoginUser loginUser = getLoginUser();
         SysUser currentUser = loginUser.getUser();
@@ -84,6 +90,7 @@ public class SysProfileController extends BaseController{
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
+    @Hidden
     public AjaxResult updatePwd(String oldPassword, String newPassword) throws Exception{
 //      LoginUser loginUser = getLoginUser();
         LoginUser loginUser = tokenService.getLoginUser(ServletUtils.getRequest());
@@ -114,6 +121,7 @@ public class SysProfileController extends BaseController{
      */
     @Log(title = "用户头像", businessType = BusinessType.UPDATE)
     @PostMapping("/avatar")
+    @Hidden
     public AjaxResult avatar(@RequestParam("avatarfile") MultipartFile file) throws Exception{
         if (!file.isEmpty()) {
             LoginUser loginUser = getLoginUser();

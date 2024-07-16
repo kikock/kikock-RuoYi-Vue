@@ -32,6 +32,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 */
 @RestController
 @RequestMapping("/${moduleName}/${businessName}")
+@Tag(name = "${functionName}")
 public class ${ClassName}Controller extends BaseController
 {
 @Autowired
@@ -43,6 +44,7 @@ private I${ClassName}Service ${className}Service;
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:list')")
 @GetMapping("/list")
 #if($table.crud || $table.sub)
+@Operation(summary = "获取${functionName}列表")
 public TableDataInfo list(${ClassName} ${className})
 {
 startPage();
@@ -63,6 +65,7 @@ return success(list);
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:export')")
 @Log(title = "${functionName}", businessType = BusinessType.EXPORT)
 @PostMapping("/export")
+@Operation(summary = "导出${functionName}列表")
 public void export(HttpServletResponse response, ${ClassName} ${className})
 {
 List<${ClassName}> list = ${className}Service.select${ClassName}List(${className});
@@ -75,6 +78,10 @@ util.exportExcel(response, list, "${functionName}数据");
 */
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:query')")
 @GetMapping(value = "/{${pkColumn.javaField}}")
+@Operation(summary = "获取${functionName}详细信息")
+@Parameters({
+@Parameter(name = "${pkColumn.javaField}", description = "${functionName}id", required = true, in = ParameterIn.PATH)
+})
 public AjaxResult getInfo(@PathVariable("${pkColumn.javaField}") ${pkColumn.javaType} ${pkColumn.javaField})
 {
 return success(${className}Service.select${ClassName}By${pkColumn.capJavaField}(${pkColumn.javaField}));
@@ -86,6 +93,7 @@ return success(${className}Service.select${ClassName}By${pkColumn.capJavaField}(
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:add')")
 @Log(title = "${functionName}", businessType = BusinessType.INSERT)
 @PostMapping
+@Operation(summary = "新增${functionName}")
 public AjaxResult add(@RequestBody ${ClassName} ${className})
 {
 return toAjax(${className}Service.insert${ClassName}(${className}));
@@ -97,6 +105,7 @@ return toAjax(${className}Service.insert${ClassName}(${className}));
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:edit')")
 @Log(title = "${functionName}", businessType = BusinessType.UPDATE)
 @PutMapping
+@Operation(summary = "修改${functionName}")
 public AjaxResult edit(@RequestBody ${ClassName} ${className})
 {
 return toAjax(${className}Service.update${ClassName}(${className}));
@@ -108,6 +117,10 @@ return toAjax(${className}Service.update${ClassName}(${className}));
 @PreAuthorize("@ss.hasPermi('${permissionPrefix}:remove')")
 @Log(title = "${functionName}", businessType = BusinessType.DELETE)
 @DeleteMapping("/{${pkColumn.javaField}s}")
+@Operation(summary = "删除${functionName}")
+@Parameters({
+@Parameter(name = "${pkColumn.javaField}s", description = "${functionName}id", required = true, in = ParameterIn.PATH)
+})
 public AjaxResult remove(@PathVariable ${pkColumn.javaType}[] ${pkColumn.javaField}s)
 {
 return toAjax(${className}Service.delete${ClassName}By${pkColumn.capJavaField}s(${pkColumn.javaField}s));

@@ -4,6 +4,11 @@ import com.ruoyi.common.constant.CacheConstants;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.domain.SysCache;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +24,7 @@ import java.util.*;
  */
 @RestController
 @RequestMapping("/monitor/cache")
+@Tag(name = "缓存监控")
 public class CacheController{
     @Autowired
     private RedisTemplate<String,String> redisTemplate;
@@ -37,6 +43,7 @@ public class CacheController{
     //        caches.add(new SysCache(CacheConstants.ADDITIONAL_INFO, "用户额外数据"));
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @GetMapping()
+    @Operation(summary = "获取redis缓存列表")
     public AjaxResult getInfo() throws Exception{
         Properties info = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info());
         Properties commandStats = (Properties) redisTemplate.execute((RedisCallback<Object>) connection -> connection.info("commandstats"));
@@ -60,12 +67,17 @@ public class CacheController{
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @GetMapping("/getNames")
+    @Operation(summary = "获取监控缓存名称")
     public AjaxResult cache(){
         return AjaxResult.success(caches);
     }
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @GetMapping("/getKeys/{cacheName}")
+    @Operation(summary = "获取根据名称获取缓存")
+    @Parameters({
+            @Parameter(name = "cacheName", description = "获取根据名称获取缓存", required = true, in = ParameterIn.QUERY)
+    })
     public AjaxResult getCacheKeys(@PathVariable String cacheName){
         Set<String> cacheKeys = redisTemplate.keys(cacheName + "*");
         return AjaxResult.success(cacheKeys);
@@ -73,6 +85,11 @@ public class CacheController{
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @GetMapping("/getValue/{cacheName}/{cacheKey}")
+    @Operation(summary = "获取根据名称和键获取缓存值")
+    @Parameters({
+            @Parameter(name = "cacheName", description = "名称", required = true, in = ParameterIn.QUERY),
+            @Parameter(name = "cacheKey", description = "键值", required = true, in = ParameterIn.QUERY)
+    })
     public AjaxResult getCacheValue(@PathVariable String cacheName, @PathVariable String cacheKey){
         String cacheValue = redisTemplate.opsForValue().get(cacheKey);
         SysCache sysCache = new SysCache(cacheName, cacheKey, cacheValue);
@@ -81,6 +98,10 @@ public class CacheController{
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @DeleteMapping("/clearCacheName/{cacheName}")
+    @Operation(summary = "根据名称清空缓存")
+    @Parameters({
+            @Parameter(name = "cacheName", description = "名称", required = true, in = ParameterIn.QUERY),
+    })
     public AjaxResult clearCacheName(@PathVariable String cacheName){
         Collection<String> cacheKeys = redisTemplate.keys(cacheName + "*");
         redisTemplate.delete(cacheKeys);
@@ -89,6 +110,10 @@ public class CacheController{
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @DeleteMapping("/clearCacheKey/{cacheKey}")
+    @Operation(summary = "根据键值清空缓存")
+    @Parameters({
+            @Parameter(name = "cacheKey", description = "键值", required = true, in = ParameterIn.QUERY)
+    })
     public AjaxResult clearCacheKey(@PathVariable String cacheKey){
         redisTemplate.delete(cacheKey);
         return AjaxResult.success();
@@ -96,6 +121,7 @@ public class CacheController{
 
     @PreAuthorize("@ss.hasPermi('monitor:cache:list')")
     @DeleteMapping("/clearCacheAll")
+    @Operation(summary = "清空全部缓存")
     public AjaxResult clearCacheAll(){
         Collection<String> cacheKeys = redisTemplate.keys("*");
         redisTemplate.delete(cacheKeys);

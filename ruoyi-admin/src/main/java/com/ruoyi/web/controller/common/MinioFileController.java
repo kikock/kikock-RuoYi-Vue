@@ -4,6 +4,7 @@ import com.ruoyi.common.constant.HttpStatus;
 import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.exception.ServiceException;
 import com.ruoyi.common.utils.DateUtils;
+import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.minio.MinioConfig;
 import com.ruoyi.framework.minio.MinioUtils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -92,6 +93,9 @@ public class MinioFileController{
     })
     public void download(@PathVariable("filename") String filename, HttpServletResponse response){
         try {
+            if (!FileUtils.checkAllowDownload(filename)) {
+                throw new Exception(com.ruoyi.common.utils.StringUtils.format("文件名称({})非法，不允许下载。 ", filename));
+            }
             InputStream fileInputStream = minioService.getObject(filename);
             // todo 完善文件命名逻辑
             String newFileName = System.currentTimeMillis() + "." + StringUtils.substringAfterLast(filename, ".");

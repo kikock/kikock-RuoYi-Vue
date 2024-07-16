@@ -13,6 +13,11 @@ import com.ruoyi.quartz.domain.SysJob;
 import com.ruoyi.quartz.service.ISysJobService;
 import com.ruoyi.quartz.util.CronUtils;
 import com.ruoyi.quartz.util.ScheduleUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import org.quartz.SchedulerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +33,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/monitor/job")
+@Tag(name = "任务中心")
 public class SysJobController extends BaseController{
     @Autowired
     private ISysJobService jobService;
@@ -37,6 +43,7 @@ public class SysJobController extends BaseController{
      */
     @PreAuthorize("@ss.hasPermi('monitor:job:list')")
     @GetMapping("/list")
+    @Operation(summary = "查询定时任务列表")
     public TableDataInfo list(SysJob sysJob){
         startPage();
         List<SysJob> list = jobService.selectJobList(sysJob);
@@ -49,6 +56,7 @@ public class SysJobController extends BaseController{
     @PreAuthorize("@ss.hasPermi('monitor:job:export')")
     @Log(title = "定时任务", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
+    @Operation(summary = "导出定时任务列表")
     public void export(HttpServletResponse response, SysJob sysJob){
         List<SysJob> list = jobService.selectJobList(sysJob);
         ExcelUtil<SysJob> util = new ExcelUtil<SysJob>(SysJob.class);
@@ -60,6 +68,10 @@ public class SysJobController extends BaseController{
      */
     @PreAuthorize("@ss.hasPermi('monitor:job:query')")
     @GetMapping(value = "/{jobId}")
+    @Operation(summary = "获取定时任务详细信息")
+    @Parameters({
+            @Parameter(name = "jobId", description = "任务id", required = true, in = ParameterIn.PATH)
+    })
     public AjaxResult getInfo(@PathVariable("jobId") Long jobId){
         return success(jobService.selectJobById(jobId));
     }
@@ -70,6 +82,7 @@ public class SysJobController extends BaseController{
     @PreAuthorize("@ss.hasPermi('monitor:job:add')")
     @Log(title = "定时任务", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增定时任务")
     public AjaxResult add(@RequestBody SysJob job) throws SchedulerException, TaskException{
         if (!CronUtils.isValid(job.getCronExpression())) {
             return error("新增任务'" + job.getJobName() + "'失败，Cron表达式不正确");
@@ -94,6 +107,7 @@ public class SysJobController extends BaseController{
     @PreAuthorize("@ss.hasPermi('monitor:job:edit')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改定时任务")
     public AjaxResult edit(@RequestBody SysJob job) throws SchedulerException, TaskException{
         if (!CronUtils.isValid(job.getCronExpression())) {
             return error("修改任务'" + job.getJobName() + "'失败，Cron表达式不正确");
@@ -118,6 +132,7 @@ public class SysJobController extends BaseController{
     @PreAuthorize("@ss.hasPermi('monitor:job:changeStatus')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/changeStatus")
+    @Operation(summary = "定时任务状态修改")
     public AjaxResult changeStatus(@RequestBody SysJob job) throws SchedulerException{
         SysJob newJob = jobService.selectJobById(job.getJobId());
         newJob.setStatus(job.getStatus());
@@ -130,6 +145,7 @@ public class SysJobController extends BaseController{
     @PreAuthorize("@ss.hasPermi('monitor:job:changeStatus')")
     @Log(title = "定时任务", businessType = BusinessType.UPDATE)
     @PutMapping("/run")
+    @Operation(summary = "定时任务立即执行一次")
     public AjaxResult run(@RequestBody SysJob job) throws SchedulerException{
         boolean result = jobService.run(job);
         return result ? success() : error("任务不存在或已过期！");
@@ -141,6 +157,10 @@ public class SysJobController extends BaseController{
     @PreAuthorize("@ss.hasPermi('monitor:job:remove')")
     @Log(title = "定时任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{jobIds}")
+    @Operation(summary = "删除定时任务")
+    @Parameters({
+            @Parameter(name = "jobIds", description = "任务id", required = true, in = ParameterIn.PATH)
+    })
     public AjaxResult remove(@PathVariable Long[] jobIds) throws SchedulerException, TaskException{
         jobService.deleteJobByIds(jobIds);
         return success();

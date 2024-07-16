@@ -12,6 +12,11 @@ import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.system.service.ISysDeptService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -27,6 +32,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/system/dept")
+@Tag(name = "部门管理")
 public class SysDeptController extends BaseController{
     @Autowired
     private ISysDeptService deptService;
@@ -36,6 +42,7 @@ public class SysDeptController extends BaseController{
      */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list")
+    @Operation(summary = "查询部门列表")
     public AjaxResult list(SysDept dept){
         List<SysDept> depts = deptService.selectDeptList(dept);
         return success(depts);
@@ -46,6 +53,10 @@ public class SysDeptController extends BaseController{
      */
     @PreAuthorize("@ss.hasPermi('system:dept:list')")
     @GetMapping("/list/exclude/{deptId}")
+    @Operation(summary = "查询部门列表（排除节点）")
+    @Parameters({
+            @Parameter(name = "deptId", description = "部门id", required = false, in = ParameterIn.PATH)
+    })
     public AjaxResult excludeChild(@PathVariable(value = "deptId", required = false) Long deptId){
         List<SysDept> depts = deptService.selectDeptList(new SysDept());
         depts.removeIf(d -> d.getDeptId().intValue() == deptId || ArrayUtils.contains(StringUtils.split(d.getAncestors(), ","), deptId + ""));
@@ -57,6 +68,10 @@ public class SysDeptController extends BaseController{
      */
     @PreAuthorize("@ss.hasPermi('system:dept:query')")
     @GetMapping(value = "/{deptId}")
+    @Operation(summary = "根据部门编号获取详细信息")
+    @Parameters({
+            @Parameter(name = "deptId", description = "部门id", required = true, in = ParameterIn.PATH)
+    })
     public AjaxResult getInfo(@PathVariable Long deptId){
         deptService.checkDeptDataScope(deptId);
         return success(deptService.selectDeptById(deptId));
@@ -68,6 +83,7 @@ public class SysDeptController extends BaseController{
     @PreAuthorize("@ss.hasPermi('system:dept:add')")
     @Log(title = "部门管理", businessType = BusinessType.INSERT)
     @PostMapping
+    @Operation(summary = "新增部门")
     public AjaxResult add(@Validated @RequestBody SysDept dept){
         if (!deptService.checkDeptNameUnique(dept)) {
             return error("新增部门'" + dept.getDeptName() + "'失败，部门名称已存在");
@@ -82,6 +98,7 @@ public class SysDeptController extends BaseController{
     @PreAuthorize("@ss.hasPermi('system:dept:edit')")
     @Log(title = "部门管理", businessType = BusinessType.UPDATE)
     @PutMapping
+    @Operation(summary = "修改部门")
     public AjaxResult edit(@Validated @RequestBody SysDept dept){
         Long deptId = dept.getDeptId();
         deptService.checkDeptDataScope(deptId);
@@ -102,6 +119,10 @@ public class SysDeptController extends BaseController{
     @PreAuthorize("@ss.hasPermi('system:dept:remove')")
     @Log(title = "部门管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{deptId}")
+    @Operation(summary = "删除部门")
+    @Parameters({
+            @Parameter(name = "deptId", description = "部门id", required = true, in = ParameterIn.PATH)
+    })
     public AjaxResult remove(@PathVariable Long deptId){
         if (deptService.hasChildByDeptId(deptId)) {
             return warn("存在下级部门,不允许删除");
@@ -117,6 +138,10 @@ public class SysDeptController extends BaseController{
      * 分页获取组件下拉数据
      */
     @PostMapping("/simpleList")
+    @Operation(summary = "分页获取下拉组件部门数据")
+    @Parameters({
+            @Parameter(name = "keywords", description = "关键字", required = true, in = ParameterIn.QUERY)
+    })
     public TableDataInfo simpleList(@RequestBody SelectMoreRequest request){
         PageHelper.startPage(request.getPageNum(), request.getPageSize());
         List<SelectMoreVo> list = deptService.getSimpleList(request.getKeywords());

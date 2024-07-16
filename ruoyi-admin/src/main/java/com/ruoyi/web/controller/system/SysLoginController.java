@@ -12,6 +12,7 @@ import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.system.domain.vo.SocialUserVo;
 import com.ruoyi.system.service.ISysMenuService;
 import com.ruoyi.system.service.ISysSocialUserBindService;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ import java.util.Set;
  * @author ruoyi
  */
 @RestController
+@Hidden
 public class SysLoginController{
     @Autowired
     private SysLoginService loginService;

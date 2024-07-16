@@ -7,6 +7,8 @@ import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.file.FileUploadUtils;
 import com.ruoyi.common.utils.file.FileUtils;
 import com.ruoyi.framework.config.ServerConfig;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -29,6 +31,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/common")
+@Tag(name = "附件通用请求处理(现使用minio处理附件)")
 public class CommonController{
     private static final Logger log = LoggerFactory.getLogger(CommonController.class);
 
@@ -44,6 +47,7 @@ public class CommonController{
      * @param delete   是否删除
      */
     @GetMapping("/download")
+    @Operation(summary = "本地附件下载")
     public void fileDownload(String fileName, Boolean delete, HttpServletResponse response, HttpServletRequest request){
         try {
             if (!FileUtils.checkAllowDownload(fileName)) {
@@ -67,6 +71,7 @@ public class CommonController{
      * 通用上传请求（单个）
      */
     @PostMapping("/upload")
+    @Operation(summary = "上传附件（单个）")
     public AjaxResult uploadFile(MultipartFile file) throws Exception{
         try {
             // 上传文件路径
@@ -89,6 +94,7 @@ public class CommonController{
      * 通用上传请求（多个）
      */
     @PostMapping("/uploads")
+    @Operation(summary = "上传附件（多个）")
     public AjaxResult uploadFiles(List<MultipartFile> files) throws Exception{
         try {
             // 上传文件路径
@@ -121,6 +127,7 @@ public class CommonController{
      * 本地资源通用下载
      */
     @GetMapping("/download/resource")
+    @Operation(summary = "本地资源下载")
     public void resourceDownload(String resource, HttpServletRequest request, HttpServletResponse response)
             throws Exception{
         try {
